@@ -15,7 +15,7 @@ $(EXE): $(OBJ)
 	$(CXX) $(CFLAG) -o $@ $(OBJ)
 
 %.o: %.cc $(HDR)
-	$(CC) $(CFLAG) -o $@ -c $<
+	$(CXX) $(CFLAG) -o $@ -c $<
 
 clean:
 	rm -f $(OBJ) $(EXE)
