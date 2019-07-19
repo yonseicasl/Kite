@@ -3,14 +3,14 @@
 
 using namespace std;
 
-static string banner = " \
-*******************************************************\n \
-* Kite: An architecture simulator for five-stage      *\n \
-* pipeline modeling of RISC-V instruction set         *\n \
-* Developed by William J. Song                        *\n \
-* School of Electrical Engineering, Yonsei University *\n \
-* Version: 1.6                                        *\n \
-*******************************************************\n \
+static string banner = "\
+*******************************************************\n\
+* Kite: An architecture simulator for five-stage      *\n\
+* pipeline modeling of RISC-V instruction set         *\n\
+* Developed by William J. Song                        *\n\
+* School of Electrical Engineering, Yonsei University *\n\
+* Version: 1.6                                        *\n\
+*******************************************************\n\
 ";
 
 int main(int argc, char **argv) {
