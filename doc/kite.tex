@@ -1,0 +1,460 @@
+\documentclass[10pt]{article}
+
+\usepackage[letterpaper,margin=1.0in]{geometry}
+\usepackage{array}
+\usepackage{fancyvrb}
+\usepackage{indentfirst}
+\usepackage[hidelinks]{hyperref}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{secdot}
+\usepackage{sectsty}
+\usepackage{times}
+\usepackage{verbatimbox}
+\usepackage[dvipsnames]{xcolor}
+\sectionfont{\fontsize{12pt}{12pt}\selectfont}
+
+\begin{document}
+\title{Kite: An Architecture Simulator for RISC-V Instruction Set}
+\author{William J. Song\\
+        School of Electrical Engineering, Yonsei University\\
+        \href{mailto:wjhsong@yonsei.ac.kr}{wjhsong@yonsei.ac.kr}}
+\date{July 2019 (Version 1.6)}
+\maketitle
+
+\section{Introduction} \label{sec:introduction}
+\emph{Kite} is an architecture simulator for five-stage pipeline modeling of RISC-V instruction set \cite{waterman_riscv2019}.
+It was developed primarily for an educational purpose as a part of undergraduate project of EEE3530 Computer Architecture.
+Kite implements a five-stage pipeline model described in \emph{Computer Organization and Design, RISC-V Edition: The Hardware and Software Interface} by D. Patterson and J. Hennessey \cite{patterson_morgan2017}.
+Kite aims at offering an easy-to-use simulation framework and precise timing model as described in the book.
+It supports the most of basic instructions used in the book such as {\tt add}, {\tt slli}, {\tt ld}, {\tt sd}, {\tt beq} instructions.
+Users can easily compose assembly programs using the instructions and execute them through the pipeline model for architectural studies.
+The pipeline model of Kite provides several functionalities encompassing instruction dependency check (i.e., data hazards), pipeline stalls, data forwarding (optional), branch prediction (optional), cache and memory hierarchy, etc.
+The remainder of this document describes the details of Kite implementation and usage.
+
+\section{Prerequisite, Download, and Installation} \label{sec:install}
+Kite implements a five-stage pipeline model using C++.
+As pointed out earlier in the introduction of this document, Kite was developed primarily for an educational purpose.
+The objective is to have the apprentices of computer architecture experience the usage of architecture simulations via a simple, exemplary framework.
+If you join the computer architecture community, you are very much likely to start using some sort of architecture simulators for your study, research, or work.
+The majority of architecture simulators are written in C/C++, since this programming language is the most suitable one to interface between computer hardware and software.
+
+Kite requires only g++ compiler to build, and it does not depend on any other libraries or external tools to run.
+It has been validated in Ubuntu 18.04 (Bionic Beaver) and Mac OS 10.14 (Mojave).
+To obtain a copy of Kite v1.6, use the following command in terminal.
+Enter {\tt kite/} directory, and build it using a {\tt make} command.
+
+\begin{Verbatim}[frame=single,fontsize=\small]
+$ git clone --branch v1.6 https://github.com/yonsei-icsl/kite
+$ cd kite/
+$ make -j
+\end{Verbatim}
+
+\section{Program Code, Register and Memory States} \label{sec:inputs}
+Running Kite needs three input files, i) program code, ii) register state, and iii) data memory state.
+The program code refers to a file containing RISC-V assembly instructions.
+In the main directory of Kite (i.e., {\tt kite/}), you may find a file named {\tt program\char`_code} that contains the following instructions after comment lines.
+
+\begin{Verbatim}[frame=single,fontsize=\small]
+# Kite program code
+loop:   beq  x11, x0,  exit
+        remu x5,  x10, x11
+        add  x10, x11, x0
+        add  x11, x5,  x0
+        beq  x0,  x0,  loop
+exit:   sd   x10, 400(x0)
+\end{Verbatim}
+
+In the program code, the {\tt \#} symbol is reserved to represent the beginning of comment.
+Everything after {\tt \#} until the end of line is treated as a comment and not read.
+Every instruction in the program code is sequentially assigned a PC starting from PC = 4.
+For instance, {\tt beq} is the first instruction in the code above, and it is assigned the PC value of 4.
+The next instruction, {\tt remu}, has PC = 8 since every RISC-V instruction is 4 bytes long \cite{waterman_riscv2019}.
+The PC value of zero (PC = 0) is reserved as invalid.
+Kite sequentially loads the instructions in the program code, and branch or jump instructions may alter the next PC to fetch.
+Note that all the labels and instructions are case-insensitive.
+The program ends when the next PC naturally goes out of code segment where there exist no valid instruction.
+Users can easily compose RISC-V assembly codes by using instructions listed in the table below.
+The current version of Kite supports the following instructions.
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{>{\centering\arraybackslash} m{0.60in}|
+                    >{\centering\arraybackslash} m{1.65in}|
+                    >{\centering\arraybackslash} m{3.70in}
+                   }
+    \hline
+    Types                   & Instructions              & Operations            \\ \hline \hline
+    \multirow{13}{*}{R type}& {\tt add  rd, rs1, rs2}   & {\tt rd = rs1 + rs2}  \\
+                            & {\tt and  rd, rs1, rs2}   & {\tt rd = rs1 \& rs2} \\
+                            & {\tt div  rd, rs1, rs2}   & {\tt rd = rs1 / rs2}  \\
+                            & {\tt divu rd, rs1, rs2}   & {\tt rd = (uint64\char`_t)rs1 / (uint64\char`_t)rs2} \\
+                            & {\tt mul  rd, rs1, rs2}   & {\tt rd = rs1 * rs2}  \\
+                            & {\tt or   rd, rs1, rs2}   & {\tt rd = rs1 | rs2}  \\
+                            & {\tt rem  rd, rs1, rs2}   & {\tt rd = rs1 \% rs2} \\
+                            & {\tt remu rd, rs1, rs2}   & {\tt rd = (uint64\char`_t)rs1 \% (uint64\char`_t)rs2} \\
+                            & {\tt sll  rd, rs1, rs2}   & {\tt rd = rs1 << rs2} \\
+                            & {\tt sra  rd, rs1, rs2}   & {\tt rd = rs1 >> rs2} \\
+                            & {\tt srl  rd, rs1, rs2}   & {\tt rd = (uint64\char`_t)rs1 >> rs2} \\
+                            & {\tt sub  rd, rs1, rs2}   & {\tt rd = rs1 - rs2}  \\
+                            & {\tt xor  rd, rs1, rs2}   & {\tt rd = rs1 \^ rs2} \\ \hline
+    \multirow{9}{*}{I type} & {\tt addi rd, rs1, imm}   & {\tt rd = rs1 + imm}  \\
+                            & {\tt andi rd, rs1, imm}   & {\tt rd = rs1 \& imm} \\
+                            & {\tt jalr rd, imm(rs1)}   & {\tt rd = pc + 4, pc = rs1 + imm} \\
+                            & {\tt slli rd, rs1, imm}   & {\tt rd = rs1 << imm} \\
+                            & {\tt srai rd, rs1, imm}   & {\tt rd = rs1 >> imm} \\
+                            & {\tt srli rd, rs1, imm}   & {\tt rd = (uint64\char`_t)rs1 << imm} \\
+                            & {\tt ld   rd, imm(rs1)}   & {\tt rd = memory[rs1 + imm]} \\
+                            & {\tt ori  rd, rs1, imm}   & {\tt rd = rs1 | imm}  \\
+                            & {\tt xoir rd, rs1, imm}   & {\tt rd = rs1 \^ imm} \\ \hline
+    S type                  & {\tt sd   rs2, imm(rs1)}  & {\tt memory[rs1 + imm] = rs1} \\ \hline
+    \multirow{4}{*}{SB type}& {\tt beq  rs1, rs2, imm}  & {\tt pc = (rs1 == rs2 ? pc + imm<<1 : pc + 4) } \\
+                            & {\tt bge  rs1, rs2, imm}  & {\tt pc = (rs1 >= rs2 ? pc + imm<<1 : pc + 4)} \\
+                            & {\tt blt  rs1, rs2, imm}  & {\tt pc = (rs1 < rs2 ? pc + imm<<1 : pc + 4)} \\
+                            & {\tt bne  rs1, rs2, imm}  & {\tt pc = (rs1 != rs2 ? pc + imm<<1 : pc + 4)} \\ \hline
+    UJ type                 & {\tt jal  rd, imm}        & {\tt rd = pc + 4, pc = pc + imm<<1} \\ \hline
+    No type                 & {\tt nop}                 & No operation          \\ \hline
+    \end{tabular}
+\end{table}
+
+Register state refers to {\tt reg\char`_state} file that contains the state of 32 integer registers.
+The register state is loaded by Kite when a simulation starts and used to initialize the register file of processor pipeline.
+You may fine the following the in the register state file after comment lines.
+
+\begin{Verbatim}[frame=single,fontsize=\small]
+# Kite register state
+x0 = 0
+x1 = 0
+x2 = 8
+x3 = 0
+
+...
+
+x10 = 21
+x11 = 15
+
+...
+
+x31 = 0
+\end{Verbatim}
+
+The left of equal sign indicates a register name (e.g., {\tt x10}), and the right-hand side defines its value.
+Since {\tt x0} register is hard-wired to zero \cite{patterson_morgan2017}, a non-zero value assigned to this register is discarded.
+The example above shows that {\tt x10} and {\tt x11} registers are set to 21 and 15, respectively.
+When a simulation starts, Kite should find that {\tt x10} and {\tt x11} registers contain the value of 21 and 15, respectively.
+The program code initiates instruction executions based on these register values.
+
+Memory state refers to {\tt memory\char`_state} file that contains the initial state of data memory.
+Similar to the register state, the memory state is used to initialize the contents of data memory.
+The following shows an example of memory state file.
+
+\begin{Verbatim}[frame=single,fontsize=\small]
+# Kite memory state
+0 = 0
+8 = 4
+16 = 5
+24 = 0
+32 = 4
+40 = 0
+
+...
+
+\end{Verbatim}
+
+The baseline code of Kite creates 1KB data memory, and its size is easily modifiable.
+A memory block is 8 bytes (or 64 bits) long, and all accesses to data memory must obey the 8-byte alignment.
+In other words, the memory address of a load or store instruction always have to be a multiple of 8.
+The memory address alignment is strictly enforced, and failures result in the termination of simulation.
+In each line of the memory state shown above, the left of equal sign is a memory address in multiple of 8, and the right side defines a 64-bit value stored at the address.
+The memory state file does not have to list all memory addresses to initialize data memory.
+The values of unlisted addresses are set to zero by default.
+
+\section{Running Kite Simulations} \label{sec:running}
+Based on the information of input files (i.e., program code, register state, and data memory state), you can run an example program named {\tt program\char`_code} along with {\tt reg\char`_state} and {\tt memory\char`_state} files.
+After executing the program, Kite prints out simulation results.
+The results include the statistics of pipeline (e.g., total clock cycles, instructions), data cache, and final states of register file and data memory.
+
+\begin{Verbatim}[frame=single,fontsize=\small]
+$ ./kite program_code
+
+*******************************************************
+* Kite: An architecture simulator for five-stage      *
+* pipeline modeling of RISC-V instruction set         *
+* Developed by William J. Song                        *
+* School of Electrical Engineering, Yonsei University *
+* Version: 1.6                                        *
+*******************************************************
+
+Start running ...
+Done.
+
+======== [Kite Pipeline Stats] =========
+Total number of clock cycles = 48
+Total number of stalled cycles = 6
+Total number of executed instructions = 17
+Cycles per instruction = 2.824
+
+Data cache stats:
+    Number of loads = 0
+    Number of stores = 1
+    Number of writebacks = 0
+    Miss rate = 1.000 (1/1)
+
+Register file state:
+x0 = 0
+x1 = 0
+x2 = 8
+x3 = 0
+x4 = 0
+x5 = 0
+x6 = 0
+x7 = 0
+x8 = 0
+x9 = 0
+x10 = 3
+x11 = 0
+x12 = 0
+x13 = 0
+x14 = 0
+x15 = 0
+x16 = 0
+x17 = 0
+x18 = 0
+x19 = 0
+x20 = 32
+x21 = 400
+x22 = 720
+x23 = 0
+x24 = 0
+x25 = 0
+x26 = 0
+x27 = 0
+x28 = 0
+x29 = 0
+x30 = 0
+x31 = 0
+
+Memory state (all accessed addresses):
+(400) = 3
+\end{Verbatim}
+
+The baseline pipeline model of Kite does not include branch prediction and data forwarding features.
+Hence, the pipeline stalls at every encounter of conditional branch instruction until its outcomes (i.e., taken or not-taken branch, and branch target) are solved.
+With the lack of data forwarding, a dependent instruction whose source operand is produced by a preceding instruction stalls until the preceding instruction writes the value in register file at writeback stage.
+Kite offers the branch prediction and data forwarding features as options.
+You can enable them by re-compiling Kite with {\tt OPT="-DBR\char`_PRED -DDATA\char`_FWD"} flags, where {\tt -DBR\char`_PRED} enables branch prediction, and {\tt -DDATA\char`_FWD} enables data forwarding, respectively.
+With both features enabled, you should find improvements in performance (i.e., cycles per instruction) for the same example code as follows.
+
+\begin{Verbatim}[frame=single,fontsize=\small]
+$ make clean
+$ make -j OPT="-DBR_PRED -DDATA_FWD"
+$ ./kite program_code
+
+*******************************************************
+* Kite: An architecture simulator for five-stage      *
+* pipeline modeling of RISC-V instruction set         *
+* Developed by William J. Song                        *
+* School of Electrical Engineering, Yonsei University *
+* Version: 1.6                                        *
+*******************************************************
+
+Start running ...
+Done.
+
+======== [Kite Pipeline Stats] =========
+Total number of clock cycles = 36
+Total number of stalled cycles = 3
+Total number of executed instructions = 17
+Cycles per instruction = 2.118
+Number of pipeline flushes = 4
+Branch prediction accuracy = 0.429 (3/7)
+
+Data cache stats:
+    Number of loads = 0
+    Number of stores = 1
+    Number of writebacks = 0
+    Miss rate = 1.000 (1/1)
+
+Register file state:
+x0 = 0
+x1 = 0
+x2 = 8
+x3 = 0
+x4 = 0
+x5 = 0
+x6 = 0
+x7 = 0
+x8 = 0
+x9 = 0
+x10 = 3
+x11 = 0
+x12 = 0
+x13 = 0
+x14 = 0
+x15 = 0
+x16 = 0
+x17 = 0
+x18 = 0
+x19 = 0
+x20 = 32
+x21 = 400
+x22 = 720
+x23 = 0
+x24 = 0
+x25 = 0
+x26 = 0
+x27 = 0
+x28 = 0
+x29 = 0
+x30 = 0
+x31 = 0
+
+Memory state (all accessed addresses):
+(400) = 3
+\end{Verbatim}
+
+Kite provides a debugging option that prints out the detailed progress of instructions at every pipeline stage and at every clock cycle.
+To enable the debugging option, use {\tt -DDEBUG} flag as follows.
+\begin{Verbatim}[frame=single,fontsize=\small]
+$ make clean
+$ make -j OPT="-DDEBUG" 
+$ ./kite program_code
+
+*******************************************************
+* Kite: An architecture simulator for five-stage      *
+* pipeline modeling of RISC-V instruction set         *
+* Developed by William J. Song                        *
+* School of Electrical Engineering, Yonsei University *
+* Version: 1.6                                        *
+*******************************************************
+
+Start running ...
+1 : fetch : [pc=4] beq x11, x0, 10(exit) [beq 0, 0, 10(exit)]
+2 : decode : [pc=4] beq x11, x0, 10(exit) [beq 15, 0, 10(exit)]
+3 : execution : [pc=4] beq x11, x0, 10(exit) [beq 15, 0, 10(exit)]
+4 : memory : [pc=4] beq x11, x0, 10(exit) [beq 15, 0, 10(exit)]
+5 : writeback : [pc=4] beq x11, x0, 10(exit) [beq 15, 0, 10(exit)]
+5 : fetch : [pc=8] remu x5, x10, x11 [remu 0, 0, 0]
+6 : decode : [pc=8] remu x5, x10, x11 [remu 0, 21, 15]
+6 : fetch : [pc=12] add x10, x11, x0 [add 0, 0, 0]
+7 : alu : [pc=8] remu x5, x10, x11 [remu 6, 21, 15]
+7 : decode : [pc=12] add x10, x11, x0 [add 0, 15, 0]
+7 : fetch : [pc=16] add x11, x5, x0 [add 0, 0, 0]
+8 : execution : [pc=8] remu x5, x10, x11 [remu 6, 21, 15]
+8 : decode : [pc=12] add x10, x11, x0 [add 0, 15, 0]
+8 : fetch : [pc=16] add x11, x5, x0 [add 0, 0, 0]
+9 : memory : [pc=8] remu x5, x10, x11 [remu 6, 21, 15]
+9 : execution : [pc=12] add x10, x11, x0 [add 15, 15, 0]
+9 : fetch : [pc=16] add x11, x5, x0 [add 0, 0, 0]
+10 : writeback : [pc=8] remu x5, x10, x11 [remu 6, 21, 15]
+10 : memory : [pc=12] add x10, x11, x0 [add 15, 15, 0]
+10 : decode : [pc=16] add x11, x5, x0 [add 0, 6, 0]
+10 : fetch : [pc=20] beq x0, x0, -8(loop) [beq 0, 0, -8(loop)]
+
+...
+\end{Verbatim}
+
+As shown in the example above, the debug message reveals the details of instruction executions in the pipeline.
+For instance, the first instruction of program code, {\tt beq}, is fetched at clock cycle \# 1, and the debug message shows {\tt 1} {\tt :} {\tt fetch} {\tt :} {\tt[pc = 4] beq x11, x0, 10(exit) [beq 0, 0, 10(exit)]}.
+The leading {\tt 1} indicates that it is clock cycle \#1, and {\tt fetch} means that the subsequent information is about an instruction at fetch stage.
+{\tt pc = 4} shows that the instruction at fetch stage has the PC of 4.
+The remaining of debug message follows the instruction format.
+Since the last argument of {\tt beq} instruction is an immediate value (i.e., distance to a branch target in unit of 2 bytes), the debug message shows {\tt 10(exit)} which means the immediate value is {\tt 10} and it replaces a label {\tt exit} in the program code.
+The repeating instruction format inside the squared brackets shows the values of register operands.
+Since the registers are not yet read in fetch stage, the values of {\tt x11} and {\tt x0} registers are simply shown as zeros.
+The correct values of source operand registers are shown when the instruction moves to decode stage, and the value of destination operand register (if any) becomes available when the instruction reaches execute stage.
+As described, users can look at the details of instruction executions in the pipeline by enabling the debugging option.
+
+\section{Implementation} \label{sec:implementation}
+This section describes more advanced contents about the implementation of Kite codes in case you have to modify them.
+You can find that Kite is comprised of following files.
+Explanations of them will follow in an order better to explain rather than in the alphabetical order.
+\begin{Verbatim}[frame=single,fontsize=\small]
+$ ls | grep ".h\|.cc"
+
+alu.cc            data_cache.cc    defs.h           inst_memory.h   proc.cc
+alu.h             data_cache.h     inst.cc          main.cc         proc.h
+br_predictor.cc   data_memory.cc   inst.h           pipe_reg.cc     reg_file.cc
+br_predictor.h    data_memory.h    inst_memory.cc   pipe_reg.h      reg_file.h
+\end{Verbatim}
+
+{\tt main.cc} apparently includes a {\tt main()} function that creates, initializes, and runs Kite.
+{\tt defs.h} declares the {\tt enum} list of RISC-V instructions (e.g., {\tt op\char`_add, op\char`_ld)}, instruction types (e.g., {\tt op\char`_r\char`_type, op\char`_i\char`_type}), integer registers (e.g., {\tt reg\char`_x0, reg\char`_x1}), and ALU latencies of all supported instructions.
+Importantly, Kite supports multi-cycle ALU executions.
+{\tt defs.h} defines that {\tt div}, {\tt divu}, {\tt mul}, {\tt remu}, and {\tt remu} instructions take two cycles for an ALU to execute.
+All other instructions take one clock cycle.
+{\tt defs.h} provides several macros near the end of file to convert strings to {\tt enum} lists (e.g., {\tt get\char`_op\char`_opcode()}, {\tt get\char`_op\char`_type()}), and vice versa.
+
+{\tt inst.h/cc} files define an instruction class used in Kite.
+RISC-V instructions in a program code (e.g., {\tt program\char`_\\ code}) are read when a simulation initiates, and the assembly instructions of character strings are converted to {\tt inst\char`_t} class that carries necessary instruction information such as program counter (i.e., {\tt pc}), register numbers (e.g., {\tt rs1\char`_num}), register values (e.g., {\tt rs1\char`_val}), memory addresses (e.g., {\tt memory\char`_addr}), control directives (e.g., {\tt alu\char`_latency}, {\tt rd\char`_ready}).
+The instructions are initially stored in instruction memory, and they are fetched and executed by being passed from a pipeline stage to another.
+
+{\tt inst\char`_memory.h/cc} files implement an instruction memory model.
+It provides processor pipeline with instructions indicated by program counter (PC).
+Precisely, the instruction memory creates a copy of an instruction and returns a pointer to it.
+Thus, the processor pipeline works on the pointer to instruction rather than actual copy of it.
+When a simulation starts, instruction memory loads a program code (e.g., {\tt program\char`_code}) that contains RISC-V assembly instructions.
+It parses the program code and stores the instructions in the {\tt inst\char`_t} class.
+Instruction memory keeps supplying the processor pipeline with instructions until the PC goes out of code segment where there exists no valid instruction.
+Note that PC = 0 is reserved as invalid, and it makes the pipeline stop fetching instructions.
+
+{\tt pipe\char`_reg.h/cc} define a class {\tt pipe\char`_reg\char`_t} that models a pipeline register connecting two adjacent stages such as IF/ID.
+The class has four functions to manipulate the pipeline register.
+{\tt read()} function probes the pipeline register and returns a pointer to an instruction if it holds one.
+This function does not automatically remove the instruction from the pipeline register, instead it requires explicitly invoking {\tt clear()} function to remove the instruction from it.
+{\tt write()} function writes an instruction in the pipeline register, and {\tt is\char`_available()} tests if the pipeline register is free and thus contains no instruction inside.
+
+{\tt reg\char`_file.h/cc} implements a register file in a class named {\tt reg\char`_file\char`_t}.
+The register file includes 32 64-bit integer registers (i.e., {\tt x0}-{\tt x31}).
+It can be read or written via {\tt read()} or {\tt write()} functions by specifying a register number to access.
+When a simulation starts, the register file load the state file (i.e., {\tt reg\char`_state}) that contains the initial values of registers.
+Notably, dependency checking logic is embedded into register file, instead of probing pipeline registers to detect data hazards.
+Checking data dependency is simply done by maintaining a table that traces which instruction is the latest producer of each register.
+When a branch mis-prediction occurs, the table is flushed to discard the information of wrong-path instructions.
+
+{\tt alu.h/cc} model an arithmetic-logical unit (ALU) that executes instructions based on their operation types.
+To be type-safe, operands of unsigned integers such as {\tt divu} are cast to {\tt uint64\char`_t} to produce correct results.
+It is assumed that instructions cannot be pipelined within an ALU, or otherwise out-of-order executions may possibly occur.
+Since some instructions (e.g., {\tt div}, {\tt mul}) take multiple cycles to run by the ALU, subsequent instructions following the multi-cycle instructions stall until the ALU becomes free.
+
+{\tt data\char`_memory.h/cc} define data memory that holds data values.
+When a simulation starts, the data memory loads the state file (i.e., {\tt memory\char`_state}) to set memory addresses to contain defined values.
+To align with 64-bit registers, data memory requires that the memory address of a load or store instruction must be a multiple of 8.
+The default size of data memory is 1KB, and the size is easily modifiable by entering a different size in {\tt data\char`_memory\char`_t} constructor.
+All the memory addresses of load and stores instructions must fall into the defined address space.
+
+{\tt data\char`_cache.h/cc} include a data cache that contains a subset of memory blocks.
+Although the size of memory block is 8 bytes in the data memory to align with 64-bit registers, a cache block can be of any length as far as it is greater than 8 bytes and a power of two.
+The default cache model in Kite implements 1KB direct-mapped cache of 8-byte cache blocks, but it also has been tested with other configurations such as set-associative caches with different-sized cache blocks.
+However, those models are not included in the baseline code for students to work as a programming assignment.
+
+{\tt br\char`_predictor.h/cc} define two classes, {\tt br\char`_predictor\char`_t} and {\tt br\char`_target\char`_buffer\char`_t}, that represent branch predictor and branch target buffer (BTB), respectively.
+The functions of both branch predictor and BTB are left nearly empty, again for students to work as a programming assignment.
+The default branch predictor always guesses that branches are not taken, and thus the BTB are not really utilized in the simulation.
+
+{\tt proc.h/cc} implement a processor pipeline model.
+The processor is defined as {\tt proc\char`_t} class that contains datapath components including instruction memory ({\tt inst\char`_memory\char`_t}), register file ({\tt reg\char`_file\char`_t}), ALU ({\tt alu\char`_t}), data cache ({\tt data\char`_cache\char`_t}) and data memory ({\tt data\char`_memory\char`_t}), branch predictor ({\tt br\char`_predictor\char`_t}) and BTB ({\tt br\char`_target\char`_buffer\char`_t}), and four pipeline registers ({\tt pipe\char`_reg\char`_t}) of IF/ID, ID/EX, EX/MEM, and MEM/ WB.
+The {\tt run()} function of {\tt proc\char`_t} executes the five-stage pipeline in a while-loop as long as there are in-flight instructions in the pipeline.
+Note that the pipeline stages are executed backwards from writeback to fetch stages, not from fetch to writeback stages.
+Each stage function such as {\tt fetch()} or {\tt decode()} defines the behaviors of corresponding stage to process incoming instructions.
+At the end of program execution, {\tt proc\char`_t} prints out the summary of execution results including total number of clock cycles, stalled cycles, and executed instructions, followed by cycles per instruction, number of pipeline flushes and branch prediction accuracy (if branch prediction is enabled), and data cache statistics such as number of loads, stores, writebacks, and miss rate.
+Following the pipeline statistics shows the final state of register file and data memory.
+For the data memory, only accessed memory addresses are printed, and other untouched addresses are not shown.
+
+\section{Contact} \label{sec:contact}
+In case you notice a bug or have a question regarding the use of Kite simulator, please feel free to contact Dr. William Song via email, \href{mailto:wjhsong@yonsei.ac.kr}{wjhsong@yonsei.ac.kr}.
+ 
+\begin{thebibliography}{2}
+\bibitem{waterman_riscv2019}
+    A. Waterman and K. Asanovic, 
+    ``The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA,''
+    \emph{SiFive Inc.} and \emph{University of California, Berkeley},
+    June, 2019.
+\bibitem{patterson_morgan2017}
+    D. Patterson and J. Hennessey,
+    ``Computer Organization and Design RISC-V Edition: The Hardware Software Interface,''
+    \emph{Morgan Kaufmann}, 1st Ed.,
+    Apr. 2017.
+\end{thebibliography}
+
+\end{document}
