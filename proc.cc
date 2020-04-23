@@ -203,7 +203,7 @@ void proc_t::fetch() {
             // Write instruction in IF/ID pipeline register.
             if_id_preg.write(inst);
             // Do branch prediction for conditional branches.
-            if(inst && (get_op_type(inst->op) == op_sb_type)) {
+            if(get_op_type(inst->op) == op_sb_type) {
 #ifdef BR_PRED
                 // Set PC to branch target if predicted to be taken.
                 inst->pred_taken = br_predictor->is_taken(inst->pc);
