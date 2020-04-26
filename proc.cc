@@ -264,7 +264,7 @@ void proc_t::print_stats() {
     // Print data cache stats.
     data_cache->print_stats();
     // Print register file state.
-    cout << endl << "Register file state:" << endl;
+    cout << endl << "Register state:" << endl;
     for(unsigned i = 0; i < num_kite_regs; i++) {
         cout << "x" << i << " = " << reg_file->read(i) << endl;
     }

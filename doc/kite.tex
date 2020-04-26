@@ -20,7 +20,7 @@
 \author{William J. Song\\
         School of Electrical Engineering, Yonsei University\\
         \href{mailto:wjhsong@yonsei.ac.kr}{wjhsong@yonsei.ac.kr}}
-\date{April 2020 (Version 1.61)}
+\date{April 2020 (Version 1.7)}
 \maketitle
 
 
@@ -46,12 +46,12 @@ If you are not familiar with C++ programming in Linux, this will be a perfect mo
 The simple implementation of Kite makes it really easy to install.
 It requires only g++ compiler to build, and it does not depend on any other libraries or external tools to run.
 It has been validated in Ubuntu 16.04 (Xenial), Ubuntu 18.04 (Bionic Beaver), Mac OS 10.14 (Majave), and Mac OS 10.15 (Catalina).
-The latest release of Kite is v1.61.
-To obtain a copy of Kite v1.61, use the following {\tt git} command in terminal.
+The latest release of Kite is v1.7.
+To obtain a copy of Kite v1.7, use the following {\tt git} command in terminal.
 Then, enter the {\tt kite/} directory and build the simulator using a {\tt make} command.
 
 \begin{Verbatim}[frame=single,fontsize=\small]
-$ git clone --branch v1.61 https://github.com/yonsei-icsl/kite
+$ git clone --branch v1.7 https://github.com/yonsei-icsl/kite
 $ cd kite/
 $ make -j
 \end{Verbatim}
@@ -61,6 +61,7 @@ $ make -j
 Kite needs three input files to run, i) program code, ii) register state, and iii) data memory state.
 A program code refers to a plain text file containing RISC-V assembly instructions.
 In the main directory of Kite (i.e., {\tt kite/}), you should find a file named {\tt program\char`_code} that contains the following RISC-V instructions after some comment lines.
+\pagebreak
 
 \begin{Verbatim}[frame=single,fontsize=\small]
 # Kite program code
@@ -125,6 +126,26 @@ Pseudo instructions (e.g., {\tt nop}, {\tt mv}) are not supported.
     \end{tabular}
 \end{table}
 
+The exemplary program code shown above implements an Euclid's algorithm that finds a greatest common divisor (GCD) of two unsigned integer numbers in {\tt x10} and {\tt x11}.
+The equivalent program code in C/C++ is shown below for easier understanding.
+For instance, suppose that {\tt x10} {\tt =} {\tt 21} and {\tt x11} {\tt =} {\tt 15}.
+In the first iteration, the remainder of {\tt x10} {\tt /} {\tt x11} (i.e., modulo operation) is stored in the {\tt x5} register, which is {\tt x5} {\tt =} {\tt 6}.
+Then, {\tt x11} and {\tt x5} are copied to {\tt x10} and {\tt x11}, respectively.
+The second iteration makes {\tt x5} {\tt =} {\tt 3} by taking the remainder of {\tt 15} {\tt /} {\tt 6}, and {\tt x10} {\tt =} {\tt 6} and {\tt x11} {\tt =} {\tt 3}.
+In the third iteration, {\tt x5} {\tt =} {\tt 0}, {\tt x10} {\tt =} {\tt 3}, and {\tt x11} {\tt =} {\tt 0}.
+The loop reaches the end for {\tt x11} {\tt ==} {\tt 0}.
+The last line of code stores the {\tt x10} value containing the GCD of {\tt 21} and {\tt 15} in data memory at the address {\tt 400} (or at index {\tt 50} if the data memory is viewed a doubleword array).
+
+\begin{Verbatim}[frame=single,fontsize=\small]
+# Equivalent program code in C/C++
+while(x11 != 0) {       // loop: beq  x11, x0,  exit
+    x5 = x10 % x11;     //       remu x5,  x10, x11
+    x10 = x11;          //       add  x10, x11, x0
+    x11 = x5;           //       add  x11, x5,  x0
+}                       //       beq  x0,  x0,  loop
+memory[50] = x10;       // exit: sd   x10, 400(x0)
+\end{Verbatim}
+
 Register state refers to the {\tt reg\char`_state} file that contains the state (i.e., values) of 32 integer registers of RISC-V.
 The register state is loaded when a simulation starts and used for initializing the registers of processor pipeline.
 You may find the following after comment lines in the register state file.
@@ -164,7 +185,6 @@ The following shows an example of memory state file.
 16 = 5
 24 = 0
 32 = 4
-40 = 0
 
 ...
 
@@ -183,9 +203,9 @@ Values of unlisted memory addresses will be set to zero (i.e., 64-bit zero) by d
 
 
 \section{Running Kite Simulations} \label{sec:running}
-Based on the information of input files (i.e., program code, register state, and data memory state), you can run an example program named {\tt program\char`_code} along with {\tt reg\char`_state} and {\tt memory\char`_state} files.
-After executing the program, Kite prints out simulation results.
-The results include the statistics of pipeline (e.g., total clock cycles, instructions), data cache, and final states of register file and data memory.
+Running a Kite simulation invokes a program code associated with register and memory states.
+After a program run, Kite prints out simulation results including pipeline statistics (e.g., total clock cycles, number of instructions), cache statistics (e.g., number of load and stores), and final states of registers and data memory.
+The following shows an example of Kite simulation executing {\tt program\char`_code}.
 
 \begin{Verbatim}[frame=single,fontsize=\small]
 $ ./kite program_code
@@ -195,7 +215,7 @@ $ ./kite program_code
 * pipeline modeling of RISC-V instruction set         *
 * Developed by William J. Song                        *
 * School of Electrical Engineering, Yonsei University *
-* Version: 1.6                                        *
+* Version: 1.7                                        *
 *******************************************************
 
 Start running ...
@@ -213,7 +233,7 @@ Data cache stats:
     Number of writebacks = 0
     Miss rate = 1.000 (1/1)
 
-Register file state:
+Register state:
 x0 = 0
 x1 = 0
 x2 = 8
@@ -251,12 +271,14 @@ Memory state (all accessed addresses):
 (400) = 3
 \end{Verbatim}
 
-The baseline pipeline model of Kite does not include branch prediction and data forwarding features.
-Hence, the pipeline stalls at every encounter of conditional branch instruction until its outcomes (i.e., taken or not-taken branch, and branch target) are solved.
-With the lack of data forwarding, a dependent instruction whose source operand is produced by a preceding instruction stalls until the preceding instruction writes the value in register file at writeback stage.
-Kite offers the branch prediction and data forwarding features as options.
-You can enable them by re-compiling Kite with {\tt OPT="-DBR\char`_PRED -DDATA\char`_FWD"} flags, where {\tt -DBR\char`_PRED} enables branch prediction, and {\tt -DDATA\char`_FWD} enables data forwarding, respectively.
-With both features enabled, you should find improvements in performance (i.e., cycles per instruction) for the same example code as follows.
+The default pipeline model of Kite does not include branch prediction and data forwarding features.
+The pipeline stalls at every encounter of conditional branch instruction until its outcome is resolved (i.e., taken or not-taken branch direction and branch target address).
+The lack of data forwarding also stalls the pipeline when an instruction depends on its preceding instructions.
+The pipeline stall is lifted when the preceding instructions write their results to registers that the stalled instruction depends on.
+
+Kite offers branch prediction and data forwarding as optional features.
+These options can be enabled by re-compiling Kite with {\tt OPT="-DBR\char`_PRED} {\tt -DDATA\char`_FWD"} flags, where {\tt -DBR\char`_PRED} enables branch prediction, and {\tt -DDATA\char`_FWD} enables data forwarding, respectively.
+When both features are enabled, noticeable performance improvements (i.e., cycles per instruction) should be observed as follows.
 
 \begin{Verbatim}[frame=single,fontsize=\small]
 $ make clean
@@ -268,7 +290,7 @@ $ ./kite program_code
 * pipeline modeling of RISC-V instruction set         *
 * Developed by William J. Song                        *
 * School of Electrical Engineering, Yonsei University *
-* Version: 1.6                                        *
+* Version: 1.7                                        *
 *******************************************************
 
 Start running ...
@@ -288,46 +310,19 @@ Data cache stats:
     Number of writebacks = 0
     Miss rate = 1.000 (1/1)
 
-Register file state:
+Register state:
 x0 = 0
 x1 = 0
 x2 = 8
 x3 = 0
-x4 = 0
-x5 = 0
-x6 = 0
-x7 = 0
-x8 = 0
-x9 = 0
-x10 = 3
-x11 = 0
-x12 = 0
-x13 = 0
-x14 = 0
-x15 = 0
-x16 = 0
-x17 = 0
-x18 = 0
-x19 = 0
-x20 = 32
-x21 = 400
-x22 = 720
-x23 = 0
-x24 = 0
-x25 = 0
-x26 = 0
-x27 = 0
-x28 = 0
-x29 = 0
-x30 = 0
-x31 = 0
 
-Memory state (all accessed addresses):
-(400) = 3
+...
+
 \end{Verbatim}
 
 Kite provides a debugging option that prints out the detailed progress of instructions at every pipeline stage and at every clock cycle.
-To enable the debugging option, use {\tt -DDEBUG} flag as follows.
+To enable the debugging option, Kit has to be compiled with a {\tt -DDEBUG} flag as follows.
+
 \begin{Verbatim}[frame=single,fontsize=\small]
 $ make clean
 $ make -j OPT="-DDEBUG" 
@@ -338,7 +333,7 @@ $ ./kite program_code
 * pipeline modeling of RISC-V instruction set         *
 * Developed by William J. Song                        *
 * School of Electrical Engineering, Yonsei University *
-* Version: 1.6                                        *
+* Version: 1.7                                        *
 *******************************************************
 
 Start running ...
