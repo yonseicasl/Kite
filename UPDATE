@@ -103,6 +103,8 @@ Update history:
       registers, ALU, and data memory are empty.
 
 * Version 1.7 (April 26, 2020)
+    - A bug is fixed in inst_memory.cc when parsing UJ-type instruction
+      (i.e., jal).
     - A redundant condition in proc_t::fetch() is removed. It checked if inst
       was valid before get_op_type(inst->op) == op_sb_type for conditional
       branches. It was unnecessary since the this line of code was never

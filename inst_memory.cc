@@ -217,14 +217,13 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
                      << " at line #" << m_line_num << endl;
                 exit(1);
             }
-            if(!is_reg_str(args[1]) || !is_num_str(args[2])) {
+            if(!is_reg_str(args[1])) {
                 cerr << "Error: invalid instruction format: " << m_inst_str
                      << " at line #" << m_line_num << endl;
                 exit(1);
             }
             inst.rd_num  = get_regnum(args[1]);
-            inst.imm     = get_imm(args[2]);
-            inst.label   = args[3];
+            inst.label   = args[2];
             break;
         }
         default: { break; } // Nothing to do
