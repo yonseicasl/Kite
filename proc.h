@@ -21,7 +21,7 @@ public:
 private:
     void writeback();                       // Writeback stage
     void memory();                          // Memory stage
-    void execution();                       // Execution stage
+    void execute();                         // Execute stage
     void decode();                          // Instruction decode stage
     void fetch();                           // Instruction fetch stage
     void flush();                           // Flush pipeline.

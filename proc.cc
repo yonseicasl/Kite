@@ -59,7 +59,7 @@ void proc_t::run() {
         // Process pipeline stages backwards.
         writeback();
         memory();
-        execution();
+        execute();
         decode();
         fetch();
     }
@@ -142,8 +142,8 @@ void proc_t::memory() {
 #endif
 }
 
-// Execution stage
-void proc_t::execution() {
+// Execute stage
+void proc_t::execute() {
     inst_t *inst = 0;
     // Execution stage makes a progress only if EX/MEM pipeline register is free.
     if(ex_mem_preg.is_free()) {
@@ -160,7 +160,7 @@ void proc_t::execution() {
     }
 #ifdef DEBUG
     if((inst = ex_mem_preg.read())) {
-        cout << ticks << " : execution : " << get_inst_str(inst, true) << endl;
+        cout << ticks << " : execute : " << get_inst_str(inst, true) << endl;
     }
 #endif
 }

@@ -128,12 +128,12 @@ Pseudo instructions (e.g., {\tt nop}, {\tt mv}) are not supported.
 
 The exemplary program code shown above implements an Euclid's algorithm that finds a greatest common divisor (GCD) of two unsigned integer numbers in {\tt x10} and {\tt x11}.
 The equivalent program code in C/C++ is shown below for easier understanding.
-For instance, suppose that {\tt x10} {\tt =} {\tt 21} and {\tt x11} {\tt =} {\tt 15}.
-In the first iteration, the remainder of {\tt x10} {\tt /} {\tt x11} (i.e., modulo operation) is stored in the {\tt x5} register, which is {\tt x5} {\tt =} {\tt 6}.
+For instance, suppose that {\tt x10 = 21} and {\tt x11 = 15}.
+In the first iteration, the remainder of {\tt x10 / x11} (i.e., modulo operation) is stored in the {\tt x5} register, which is {\tt x5 = 6}.
 Then, {\tt x11} and {\tt x5} are copied to {\tt x10} and {\tt x11}, respectively.
-The second iteration makes {\tt x5} {\tt =} {\tt 3} by taking the remainder of {\tt 15} {\tt /} {\tt 6}, and {\tt x10} {\tt =} {\tt 6} and {\tt x11} {\tt =} {\tt 3}.
-In the third iteration, {\tt x5} {\tt =} {\tt 0}, {\tt x10} {\tt =} {\tt 3}, and {\tt x11} {\tt =} {\tt 0}.
-The loop reaches the end for {\tt x11} {\tt ==} {\tt 0}.
+The second iteration makes {\tt x5 = 3} by taking the remainder of {\tt 15 / 6}, and {\tt x10 = 6} and {\tt x11 = 3}.
+In the third iteration, {\tt x5 = 0}, {\tt x10 = 3}, and {\tt x11 = 0}.
+The loop reaches the end for {\tt x11 == 0}.
 The last line of code stores the {\tt x10} value containing the GCD of {\tt 21} and {\tt 15} in data memory at the address {\tt 400} (or at index {\tt 50} if the data memory is viewed a doubleword array).
 
 \begin{Verbatim}[frame=single,fontsize=\small]
@@ -362,12 +362,18 @@ Start running ...
 ...
 \end{Verbatim}
 
-As shown in the example above, the debug message reveals the details of instruction executions in the pipeline.
-For instance, the first instruction of program code, {\tt beq}, is fetched at clock cycle \# 1, and the debug message shows {\tt 1} {\tt :} {\tt fetch} {\tt :} {\tt[pc = 4] beq x11, x0, 10(exit) [beq 0, 0, 10(exit)]}.
-The leading {\tt 1} indicates that it is clock cycle \#1, and {\tt fetch} means that the subsequent information is about an instruction at fetch stage.
-{\tt pc = 4} shows that the instruction at fetch stage has the PC of 4.
-The remaining of debug message follows the instruction format.
-Since the last argument of {\tt beq} instruction is an immediate value (i.e., distance to a branch target in unit of 2 bytes), the debug message shows {\tt 10(exit)} which means the immediate value is {\tt 10} and it replaces a label {\tt exit} in the program code.
+The example above shows that turning on the debugging option reveals the details of instruction executions along the pipeline.
+For instance, the first instruction of program code, {\tt beq}, is fetched at clock cycle \#1.
+The debug message shows {\tt 1} {\tt :} {\tt fetch} {\tt :} {\tt[pc = 4] beq x11, x0, 10(exit) [beq 0, 0, 10(exit)]}.
+The leading {\tt 1} indicates the clock cycle \#1, and {\tt fetch} means that the instruction is currently at the fetch stage.
+{\tt pc=4} shows the PC of corresponding instruction.
+The remainder of debug message follows the instruction format.
+Since the last argument of {\tt beq} instruction is an immediate value (i.e., offset to a branch target in unit of two bytes), the debug message shows {\tt 10(exit)} which means that the immediate value is {\tt 10} and it replaces the {\tt exit} label in the program code.
+The repeated instruction format inside the squared brackets shows the actual values of register operands.
+Since the registers are not yet read in the fetch stage, the values of {\tt x11} and {\tt x0} registers are simply shown as zeros.
+The correct values of source operand registers appear when the instruction moves to decode stage, and the value of destination operand register (if any) becomes available when the instruction reaches execute stage.
+
+
 The repeating instruction format inside the squared brackets shows the values of register operands.
 Since the registers are not yet read in fetch stage, the values of {\tt x11} and {\tt x0} registers are simply shown as zeros.
 The correct values of source operand registers are shown when the instruction moves to decode stage, and the value of destination operand register (if any) becomes available when the instruction reaches execute stage.
