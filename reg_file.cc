@@ -129,12 +129,8 @@ void reg_file_t::load_reg_state() {
         }
         loaded |= (0b1 << reg_num);
 
-        // x0 is not hard-wired to zero.
-        if(regs[0] != 0) {
-            cerr << "Error: x0 cannot contain non-zero values"
-                 << " at line #" << line_num << " of reg_state" << endl;
-            exit(1);
-        }
+        // x0 is hard-wired to zero.
+        regs[0] = 0;
     }
 
     // Check if all register states are initialized.

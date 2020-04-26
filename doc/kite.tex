@@ -173,7 +173,7 @@ The left of an equal sign is a register name (e.g., {\tt x10}), and the right si
 The example above shows that {\tt x10} and {\tt x11} registers are set to 21 and 15, respectively.
 When a simulation starts, the registers are initialized accordingly.
 A program code will initiate instruction executions based on the defined register state.
-Since the {\tt x0} register in RISC-V is hard-wired to zero \cite{patterson_morgan2017}, assigning non-zero values to it throws an error.
+Since the {\tt x0} register in RISC-V is hard-wired to zero \cite{patterson_morgan2017}, assigning non-zero values to it is automatically discarded.
 
 Memory state refers to the {\tt memory\char`_state} file that contains initial values of data memory at discrete memory addresses.
 Similar to the register state, the memory state is used for initializing the contents of data memory.
