@@ -14,46 +14,53 @@
 \usepackage[dvipsnames]{xcolor}
 \sectionfont{\fontsize{12pt}{12pt}\selectfont}
 
+
 \begin{document}
 \title{Kite: An Architecture Simulator for RISC-V Instruction Set}
 \author{William J. Song\\
         School of Electrical Engineering, Yonsei University\\
         \href{mailto:wjhsong@yonsei.ac.kr}{wjhsong@yonsei.ac.kr}}
-\date{July 2019 (Version 1.6)}
+\date{April 2020 (Version 1.61)}
 \maketitle
 
+
 \section{Introduction} \label{sec:introduction}
-\emph{Kite} is an architecture simulator for five-stage pipeline modeling of RISC-V instruction set \cite{waterman_riscv2019}.
-It was developed primarily for an educational purpose as a part of undergraduate project of EEE3530 Computer Architecture.
-Kite implements a five-stage pipeline model described in \emph{Computer Organization and Design, RISC-V Edition: The Hardware and Software Interface} by D. Patterson and J. Hennessey \cite{patterson_morgan2017}.
-Kite aims at offering an easy-to-use simulation framework and precise timing model as described in the book.
-It supports the most of basic instructions used in the book such as {\tt add}, {\tt slli}, {\tt ld}, {\tt sd}, {\tt beq} instructions.
-Users can easily compose assembly programs using the instructions and execute them through the pipeline model for architectural studies.
-The pipeline model of Kite provides several functionalities encompassing instruction dependency check (i.e., data hazards), pipeline stalls, data forwarding (optional), branch prediction (optional), cache and memory hierarchy, etc.
-The remainder of this document describes the details of Kite implementation and usage.
+\emph{Kite} is an architecture simulator that models a five-stage pipeline of RISC-V instruction set \cite{waterman_riscv2019}.
+The initial version of Kite was developed in 2019 primarily for an educational purpose as a part of EEE3530 Computer Architecture.
+Kite implements the five-stage pipeline model described in \emph{Computer Organization and Design, RISC-V Edition: The Hardware and Software Interface} by D. Patterson and J. Hennessey \cite{patterson_morgan2017}.
+The objective of Kite is to provide students with an easy-to-use simulation framework and precise timing model as described in the book.
+It supports most of basic instructions introduced in the book such as {\tt add}, {\tt slli}, {\tt ld}, {\tt sd}, {\tt beq} instructions.
+Simulator users can easily compose RISC-V assembly programs and execute them through the provided pipeline model for entry-level architectural studies.
+The pipeline model in Kite provides several functionalities including instruction dependency checks (i.e., data hazards), pipeline stalls, data forwarding or bypassing (optional), branch predictions (optional), data cache structures, etc.
+The remainder of this document describes the details of Kite implementations and usages.
+
 
 \section{Prerequisite, Download, and Installation} \label{sec:install}
-Kite implements a five-stage pipeline model using C++.
+The five-stage pipeline model in Kite is implemented in C++.
 As pointed out earlier in the introduction of this document, Kite was developed primarily for an educational purpose.
-The objective is to have the apprentices of computer architecture experience the usage of architecture simulations via a simple, exemplary framework.
-If you join the computer architecture community, you are very much likely to start using some sort of architecture simulators for your study, research, or work.
-The majority of architecture simulators are written in C/C++, since this programming language is the most suitable one to interface between computer hardware and software.
+Its objective is to have the apprentices of computer architecture experience the usages of architecture simulations with the simple, easy-to-use framework.
+If you join the computer architecture world for your career (either product development or research), you will certainly have to use some sort of architecture simulators for your work or research.
+The majority of architecture simulators are written in C/C++ since this programming language is the most suitable one to interface between computer hardware and software.
+If you are not familiar with C++ programming in Linux, this will be a perfect moment for you to have hands-on experiences with Kite.
 
-Kite requires only g++ compiler to build, and it does not depend on any other libraries or external tools to run.
-It has been validated in Ubuntu 18.04 (Bionic Beaver) and Mac OS 10.14 (Mojave).
-To obtain a copy of Kite v1.6, use the following command in terminal.
-Enter {\tt kite/} directory, and build it using a {\tt make} command.
+The simple implementation of Kite makes it really easy to install.
+It requires only g++ compiler to build, and it does not depend on any other libraries or external tools to run.
+It has been validated in Ubuntu 16.04 (Xenial), Ubuntu 18.04 (Bionic Beaver), Mac OS 10.14 (Majave), and Mac OS 10.15 (Catalina).
+The latest release of Kite is v1.61.
+To obtain a copy of Kite v1.61, use the following {\tt git} command in terminal.
+Then, enter the {\tt kite/} directory and build the simulator using a {\tt make} command.
 
 \begin{Verbatim}[frame=single,fontsize=\small]
-$ git clone --branch v1.6 https://github.com/yonsei-icsl/kite
+$ git clone --branch v1.61 https://github.com/yonsei-icsl/kite
 $ cd kite/
 $ make -j
 \end{Verbatim}
 
+
 \section{Program Code, Register and Memory States} \label{sec:inputs}
-Running Kite needs three input files, i) program code, ii) register state, and iii) data memory state.
-The program code refers to a file containing RISC-V assembly instructions.
-In the main directory of Kite (i.e., {\tt kite/}), you may find a file named {\tt program\char`_code} that contains the following instructions after comment lines.
+Kite needs three input files to run, i) program code, ii) register state, and iii) data memory state.
+A program code refers to a plain text file containing RISC-V assembly instructions.
+In the main directory of Kite (i.e., {\tt kite/}), you should find a file named {\tt program\char`_code} that contains the following RISC-V instructions after some comment lines.
 
 \begin{Verbatim}[frame=single,fontsize=\small]
 # Kite program code
@@ -65,18 +72,19 @@ loop:   beq  x11, x0,  exit
 exit:   sd   x10, 400(x0)
 \end{Verbatim}
 
-In the program code, the {\tt \#} symbol is reserved to represent the beginning of comment.
+In the program code, a {\tt \#} symbol is reserved to indicate the beginning of comment.
 Everything after {\tt \#} until the end of line is treated as a comment and not read.
-Every instruction in the program code is sequentially assigned a PC starting from PC = 4.
-For instance, {\tt beq} is the first instruction in the code above, and it is assigned the PC value of 4.
-The next instruction, {\tt remu}, has PC = 8 since every RISC-V instruction is 4 bytes long \cite{waterman_riscv2019}.
+Each instruction in the program code is sequentially assigned an address starting from PC = 4.
+For example, {\tt beq} is the first instruction in the code above, and it is given the PC value of 4.
+The next instruction, {\tt remu}, has PC = 8 because every RISC-V instruction is 4 bytes long \cite{waterman_riscv2019}.
+Instructions in the program code are sequentially loaded from top to bottom unless branch or jump instructions alter the next PC to fetch.
+Note that labels, instructions, and register operands are case-insensitive, which means that {\tt beq}, {\tt Beq}, {\tt BEQ} are all identical.
+The program ends when the next PC naturally goes out of code segment where there exists no valid instruction.
 The PC value of zero (PC = 0) is reserved as invalid.
-Kite sequentially loads the instructions in the program code, and branch or jump instructions may alter the next PC to fetch.
-Note that all the labels and instructions are case-insensitive.
-The program ends when the next PC naturally goes out of code segment where there exist no valid instruction.
-Users can easily compose RISC-V assembly codes by using instructions listed in the table below.
-The current version of Kite supports the following instructions.
-
+The current version of Kite supports the following list of RISC-V basic instructions.
+Instructions in the table are sorted in alphabetical order in each type.
+Pseudo instructions (e.g., {\tt nop}, {\tt mv}) are not supported.
+ 
 \begin{table}[!ht]
     \centering
     \begin{tabular}{>{\centering\arraybackslash} m{0.60in}|
@@ -84,7 +92,7 @@ The current version of Kite supports the following instructions.
                     >{\centering\arraybackslash} m{3.70in}
                    }
     \hline
-    Types                   & Instructions              & Operations            \\ \hline \hline
+    Types                   & RISC-V instructions       & Operations in C/C++   \\ \hline \hline
     \multirow{13}{*}{R type}& {\tt add  rd, rs1, rs2}   & {\tt rd = rs1 + rs2}  \\
                             & {\tt and  rd, rs1, rs2}   & {\tt rd = rs1 \& rs2} \\
                             & {\tt div  rd, rs1, rs2}   & {\tt rd = rs1 / rs2}  \\
@@ -97,7 +105,7 @@ The current version of Kite supports the following instructions.
                             & {\tt sra  rd, rs1, rs2}   & {\tt rd = rs1 >> rs2} \\
                             & {\tt srl  rd, rs1, rs2}   & {\tt rd = (uint64\char`_t)rs1 >> rs2} \\
                             & {\tt sub  rd, rs1, rs2}   & {\tt rd = rs1 - rs2}  \\
-                            & {\tt xor  rd, rs1, rs2}   & {\tt rd = rs1 \^ rs2} \\ \hline
+                            & {\tt xor  rd, rs1, rs2}   & {\tt rd = rs1 \string^ rs2} \\ \hline
     \multirow{9}{*}{I type} & {\tt addi rd, rs1, imm}   & {\tt rd = rs1 + imm}  \\
                             & {\tt andi rd, rs1, imm}   & {\tt rd = rs1 \& imm} \\
                             & {\tt jalr rd, imm(rs1)}   & {\tt rd = pc + 4, pc = rs1 + imm} \\
@@ -106,7 +114,7 @@ The current version of Kite supports the following instructions.
                             & {\tt srli rd, rs1, imm}   & {\tt rd = (uint64\char`_t)rs1 << imm} \\
                             & {\tt ld   rd, imm(rs1)}   & {\tt rd = memory[rs1 + imm]} \\
                             & {\tt ori  rd, rs1, imm}   & {\tt rd = rs1 | imm}  \\
-                            & {\tt xoir rd, rs1, imm}   & {\tt rd = rs1 \^ imm} \\ \hline
+                            & {\tt xori rd, rs1, imm}   & {\tt rd = rs1 \string^ imm} \\ \hline
     S type                  & {\tt sd   rs2, imm(rs1)}  & {\tt memory[rs1 + imm] = rs1} \\ \hline
     \multirow{4}{*}{SB type}& {\tt beq  rs1, rs2, imm}  & {\tt pc = (rs1 == rs2 ? pc + imm<<1 : pc + 4) } \\
                             & {\tt bge  rs1, rs2, imm}  & {\tt pc = (rs1 >= rs2 ? pc + imm<<1 : pc + 4)} \\
@@ -117,9 +125,9 @@ The current version of Kite supports the following instructions.
     \end{tabular}
 \end{table}
 
-Register state refers to {\tt reg\char`_state} file that contains the state of 32 integer registers.
-The register state is loaded by Kite when a simulation starts and used to initialize the register file of processor pipeline.
-You may fine the following the in the register state file after comment lines.
+Register state refers to the {\tt reg\char`_state} file that contains the state (i.e., values) of 32 integer registers of RISC-V.
+The register state is loaded when a simulation starts and used for initializing the registers of processor pipeline.
+You may find the following after comment lines in the register state file.
 
 \begin{Verbatim}[frame=single,fontsize=\small]
 # Kite register state
@@ -138,14 +146,15 @@ x11 = 15
 x31 = 0
 \end{Verbatim}
 
-The left of equal sign indicates a register name (e.g., {\tt x10}), and the right-hand side defines its value.
-Since {\tt x0} register is hard-wired to zero \cite{patterson_morgan2017}, a non-zero value assigned to this register is discarded.
+The register state file must list all 32 integer registers from {\tt x0} to {\tt x31}.
+The left of an equal sign is a register name (e.g., {\tt x10}), and the right side defines its initial value.
 The example above shows that {\tt x10} and {\tt x11} registers are set to 21 and 15, respectively.
-When a simulation starts, Kite should find that {\tt x10} and {\tt x11} registers contain the value of 21 and 15, respectively.
-The program code initiates instruction executions based on these register values.
+When a simulation starts, the registers are initialized accordingly.
+A program code will initiate instruction executions based on the defined register state.
+Since the {\tt x0} register in RISC-V is hard-wired to zero \cite{patterson_morgan2017}, assigning non-zero values to it throws an error.
 
-Memory state refers to {\tt memory\char`_state} file that contains the initial state of data memory.
-Similar to the register state, the memory state is used to initialize the contents of data memory.
+Memory state refers to the {\tt memory\char`_state} file that contains initial values of data memory at discrete memory addresses.
+Similar to the register state, the memory state is used for initializing the contents of data memory.
 The following shows an example of memory state file.
 
 \begin{Verbatim}[frame=single,fontsize=\small]
@@ -161,13 +170,17 @@ The following shows an example of memory state file.
 
 \end{Verbatim}
 
-The baseline code of Kite creates 1KB data memory, and its size is easily modifiable.
-A memory block is 8 bytes (or 64 bits) long, and all accesses to data memory must obey the 8-byte alignment.
+The baseline code of Kite creates an 1KB data memory, and its size is easily modifiable in {\tt proc\char`_t::init()} in the {\tt proc.cc} file.
+Each memory block is 8 bytes (or 64 bits) long, and accesses to the data memory must obey the 8-byte alignment.
 In other words, the memory address of a load or store instruction always have to be a multiple of 8.
-The memory address alignment is strictly enforced, and failures result in the termination of simulation.
-In each line of the memory state shown above, the left of equal sign is a memory address in multiple of 8, and the right side defines a 64-bit value stored at the address.
-The memory state file does not have to list all memory addresses to initialize data memory.
-The values of unlisted addresses are set to zero by default.
+The memory address alignment is strictly enforced, and a failure will terminate a simulation.
+The 8-byte alignment rule restricts the scope of memory data handling since byte-granular instructions such as {\tt lbu} and {\tt sb} cannot be fully supported.
+But, the byte-granular instructions are not in the list of supported instructions anyways.
+This restriction may be lifted in future releases.
+At each line of the memory state shown above, the left of an equal sign is a memory address in multiple of 8, and the right side defines a 64-bit value stored at the memory address.
+Notably, the memory state file does not have to list all the memory addresses in the 1KB space.
+Values of unlisted memory addresses will be set to zero (i.e., 64-bit zero) by default.
+
 
 \section{Running Kite Simulations} \label{sec:running}
 Based on the information of input files (i.e., program code, register state, and data memory state), you can run an example program named {\tt program\char`_code} along with {\tt reg\char`_state} and {\tt memory\char`_state} files.

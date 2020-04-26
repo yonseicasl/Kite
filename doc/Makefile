@@ -1,11 +1,11 @@
 PAPER = kite
 TEX = $(wildcard *.tex)
-FIGS = $(wildcard figures/*.pdf)
-SRC = $(wildcard *.cls *.sty)
+FIG = $(wildcard *.png)
+PDF = $(wildcard *.pdf)
 
 .PHONY: all clean
 
-$(PAPER).pdf: $(TEX) $(BIB) $(FIGS) $(SRC)
+$(PAPER).pdf: $(TEX) $(FIG)
 	rm -rf *.glsdefs
 	pdflatex $(PAPER)
 	pdflatex $(PAPER)
@@ -13,7 +13,7 @@ $(PAPER).pdf: $(TEX) $(BIB) $(FIGS) $(SRC)
 tar:
 	make; make clean
 	mkdir $(PAPER)
-	cp -rf $(TEX) $(SRC) *.pdf figures Makefile $(PAPER)/
+	cp -rf $(TEX) $(FIG) $(PDF) Makefile $(PAPER)/
 	zip -r $(PAPER).zip $(PAPER)
 	rm -rf $(PAPER)
 

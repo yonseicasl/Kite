@@ -87,6 +87,9 @@ void reg_file_t::load_reg_state() {
         exit(1);
     }
 
+    // A bit vector to check if all registers are initialized.
+    unsigned loaded = 0;
+
     string line;
     size_t line_num = 0;
     while(getline(file_stream, line)) {
@@ -103,18 +106,43 @@ void reg_file_t::load_reg_state() {
         // Trim the line.
         line.erase(0, l+1);
 
-        // Set register value.
+        // Set a register value.
         transform(reg_name.begin(), reg_name.end(), reg_name.begin(), ::tolower);
         size_t reg_num = get_regnum(reg_name);
         if(!is_reg_str(reg_name) || (reg_num >= num_kite_regs)) {
             cerr << "Error: invalid register name " << reg_name
-                 << " at line #" << line_num << endl;
+                 << " at line #" << line_num << " of reg_state" << endl;
             exit(1);
         }
-        regs[get_regnum(reg_name)] = get_imm(line);
+        if(line.length() <= 0) {
+            cerr << "Error: invalid register value for " << reg_name
+                 << " at line #" << line_num << " of reg_state" << endl;
+            exit(1);
+        }
+        regs[reg_num] = get_imm(line);
 
-        // x0 is hard-wired to zero.
-        regs[0] = 0;
+        // Mark that the register state has been loaded.
+        if((loaded >> reg_num) & 0b1) {
+            cerr << "Error: redefinition of register state for " << reg_name
+                 << " at line #" << line_num << " of reg_state" << endl;
+            exit(1);
+        }
+        loaded |= (0b1 << reg_num);
+
+        // x0 is not hard-wired to zero.
+        if(regs[0] != 0) {
+            cerr << "Error: x0 cannot contain non-zero values"
+                 << " at line #" << line_num << " of reg_state" << endl;
+            exit(1);
+        }
+    }
+
+    // Check if all register states are initialized.
+    if(loaded != unsigned(-1)) {
+        unsigned reg_num = 0;
+        while(loaded & 0b1) { loaded = loaded >> 1; reg_num++; }
+        cerr << "Error: register state of x" << reg_num << " is undefined" << endl;
+        exit(1);
     }
 
     // Close register state file.

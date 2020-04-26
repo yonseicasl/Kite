@@ -3,7 +3,7 @@
 # pipeline modeling of RISC-V instruction set         #
 # Developed by William J. Song                        #
 # School of Electrical Engineering, Yonsei University #
-# Version: 1.6                                        #
+# Version: 1.7                                        #
 #######################################################
 
 Update history:
@@ -101,4 +101,16 @@ Update history:
       Extra conditions are added to the simulation loop to check if ALU and
       data memory are busy. The simulation can terminate when all pipeline
       registers, ALU, and data memory are empty.
+
+* Version 1.7 (April 26, 2020)
+    - A redundant condition in proc_t::fetch() is removed. It checked if inst
+      was valid before get_op_type(inst->op) == op_sb_type for conditional
+      branches. It was unnecessary since the this line of code was never
+      executed when inst_memory->read(pc) returned null.
+    - A few error checking lines are added to reg_file.cc. Previously undefined
+      registers in reg_state were initialized to zero by default. After the
+      update, all the registers must be explicitly initialized.
+    - Error checking lines are added to data_memory.cc to detect an undefined
+      memory address or value on the left or right side of an equal sign.
+    - Documentation is updated by proofreading and structural reorganizing.
 

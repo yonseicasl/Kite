@@ -97,16 +97,16 @@ void data_memory_t::load_memory_state() {
         line.erase(0, l+1);
         string data_str = line;
 
-        // Check if memory address is valid.
-        if(!is_num_str(addr_str) || !is_num_str(data_str)) {
+        // Check if memory address and data are valid.
+        if(!is_num_str(addr_str) || !is_num_str(data_str) ||
+           !addr_str.length()    || !data_str.length()) {
             cerr << "Error: invalid memory address and/or data " << addr_str
                  << " = " << data_str << " at line #" << line_num
                  << " of memory_state" << endl;
-            cout << (((addr_str[0] == '-') ? (addr_str.find_first_not_of("0123456789", 1) == string::npos) : (addr_str.find_first_not_of("0123456789") == string::npos))) << endl;
-            cout << is_num_str(addr_str) << endl;
             exit(1);
         }
-        // Convert memory address and data string to numbers. 
+
+        // Convert memory address and data string to numbers.
         uint64_t memory_addr = get_imm(addr_str); 
         int64_t memory_data = get_imm(data_str);
         // Check the alignment of memory address.
@@ -118,14 +118,15 @@ void data_memory_t::load_memory_state() {
         // Memory address cannot go out of bounds.
         if((memory_addr+8) > memory_size) {
             cerr << "Error: memory address " << memory_addr << " is out of bounds"
-                 << " at line#" << line_num << " of memory_state" << endl;
+                 << " at line #" << line_num << " of memory_state" << endl;
             exit(1);
         }
-        // Check if multiple memory addresses are defined and conflicting.
+        // Check if multiple different values are defined at the same memory address.
         int64_t &dword = memory[memory_addr>>3];
         if(dword && (dword != memory_data)) {
-            cerr << "Error: memory address conflicts with " << memory_addr
-                 << " at line #" << line_num << " of memory_state" << endl;
+            cerr << "Error: memory address " << memory_addr
+                 << " has multiple values defined at line # " << line_num
+                 << " of memory_state" << endl;
             exit(1);
         }
         // Store memory data.
