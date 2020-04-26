@@ -79,12 +79,13 @@ Each instruction in the program code is sequentially assigned an address startin
 For example, {\tt beq} is the first instruction in the code above, and it is given the PC value of 4.
 The next instruction, {\tt remu}, has PC = 8 because every RISC-V instruction is 4 bytes long \cite{waterman_riscv2019}.
 Instructions in the program code are sequentially loaded from top to bottom unless branch or jump instructions alter the next PC to fetch.
-Note that labels, instructions, and register operands are case-insensitive, which means that {\tt beq}, {\tt Beq}, {\tt BEQ} are all identical.
 The program ends when the next PC naturally goes out of code segment where there exists no valid instruction.
 The PC value of zero (PC = 0) is reserved as invalid.
+Note that labels, instructions, and register operands are case-insensitive.
+It means that {\tt beq}, {\tt Beq}, {\tt BEQ} are all identical in the program code.
 The current version of Kite supports the following list of RISC-V basic instructions.
 Instructions in the table are sorted in alphabetical order in each type.
-Pseudo instructions (e.g., {\tt nop}, {\tt mv}) are not supported.
+Pseudo instructions (e.g., {\tt mv}, {\tt not}) are not supported.
  
 \begin{table}[!ht]
     \centering
