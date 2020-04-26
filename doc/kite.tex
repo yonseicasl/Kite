@@ -371,13 +371,9 @@ The remainder of debug message follows the instruction format.
 Since the last argument of {\tt beq} instruction is an immediate value (i.e., offset to a branch target in unit of two bytes), the debug message shows {\tt 10(exit)} which means that the immediate value is {\tt 10} and it replaces the {\tt exit} label in the program code.
 The repeated instruction format inside the squared brackets shows the actual values of register operands.
 Since the registers are not yet read in the fetch stage, the values of {\tt x11} and {\tt x0} registers are simply shown as zeros.
-The correct values of source operand registers appear when the instruction moves to decode stage, and the value of destination operand register (if any) becomes available when the instruction reaches execute stage.
+The correct values of source operand registers appear when the instruction moves to the decode stage, and the value of destination operand register (if any) becomes available when the instruction reaches the execute stage.
+As described, turning on the debugging option discloses the details of instruction executions in the pipeline.
 
-
-The repeating instruction format inside the squared brackets shows the values of register operands.
-Since the registers are not yet read in fetch stage, the values of {\tt x11} and {\tt x0} registers are simply shown as zeros.
-The correct values of source operand registers are shown when the instruction moves to decode stage, and the value of destination operand register (if any) becomes available when the instruction reaches execute stage.
-As described, users can look at the details of instruction executions in the pipeline by enabling the debugging option.
 
 \section{Implementation} \label{sec:implementation}
 This section describes more advanced contents about the implementation of Kite codes in case you have to modify them.
