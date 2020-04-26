@@ -196,7 +196,7 @@ Each memory block is 8 bytes (or 64 bits) long, and accesses to the data memory 
 In other words, the memory address of a load or store instruction always have to be a multiple of 8.
 The memory address alignment is strictly enforced, and a failure will terminate a simulation.
 The 8-byte alignment rule restricts the scope of memory data handling since byte-granular instructions such as {\tt lbu} and {\tt sb} cannot be fully supported.
-But, the byte-granular instructions are not in the list of supported instructions anyways.
+So, the byte-granular instructions are not in the list of supported instructions.
 This restriction may be lifted in future releases.
 At each line of the memory state shown above, the left of an equal sign is a memory address in multiple of 8, and the right side defines a 64-bit value stored at the memory address.
 Notably, the memory state file does not have to list all the memory addresses in the 1KB space.
