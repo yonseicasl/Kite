@@ -117,7 +117,7 @@ Pseudo instructions (e.g., {\tt mv}, {\tt not}) are not supported.
                             & {\tt ld   rd, imm(rs1)}   & {\tt rd = memory[rs1 + imm]} \\
                             & {\tt ori  rd, rs1, imm}   & {\tt rd = rs1 | imm}  \\
                             & {\tt xori rd, rs1, imm}   & {\tt rd = rs1 \string^ imm} \\ \hline
-    S type                  & {\tt sd   rs2, imm(rs1)}  & {\tt memory[rs1 + imm] = rs1} \\ \hline
+    S type                  & {\tt sd   rs2, imm(rs1)}  & {\tt memory[rs1 + imm] = rs2} \\ \hline
     \multirow{4}{*}{SB type}& {\tt beq  rs1, rs2, imm}  & {\tt pc = (rs1 == rs2 ? pc + imm<<1 : pc + 4) } \\
                             & {\tt bge  rs1, rs2, imm}  & {\tt pc = (rs1 >= rs2 ? pc + imm<<1 : pc + 4)} \\
                             & {\tt blt  rs1, rs2, imm}  & {\tt pc = (rs1 < rs2 ? pc + imm<<1 : pc + 4)} \\
