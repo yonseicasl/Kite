@@ -110,7 +110,7 @@ Pseudo instructions (e.g., {\tt mv}, {\tt not}) are not supported.
                             & {\tt xor  rd, rs1, rs2}   & {\tt rd = rs1 \string^ rs2} \\ \hline
     \multirow{9}{*}{I type} & {\tt addi rd, rs1, imm}   & {\tt rd = rs1 + imm}  \\
                             & {\tt andi rd, rs1, imm}   & {\tt rd = rs1 \& imm} \\
-                            & {\tt jalr rd, imm(rs1)}   & {\tt rd = pc + 4, pc = rs1 + imm} \\
+                            & {\tt jalr rd, imm(rs1)}   & {\tt rd = pc + 4, pc = (rs1 + imm) \& -2} \\
                             & {\tt slli rd, rs1, imm}   & {\tt rd = rs1 << imm} \\
                             & {\tt srai rd, rs1, imm}   & {\tt rd = rs1 >> imm} \\
                             & {\tt srli rd, rs1, imm}   & {\tt rd = (uint64\char`_t)rs1 << imm} \\
