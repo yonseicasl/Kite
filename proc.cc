@@ -179,7 +179,7 @@ void proc_t::decode() {
                 // Write instruction in ID/EX pipeline register.
                 id_ex_preg.write(inst);
                 // Update PC for unconditional jumps.
-                if(inst->op == op_jalr) { pc = inst->rs1_val + inst->imm; }
+                if(inst->op == op_jalr) { pc = (inst->rs1_val + inst->imm) & -2; }
                 else if(inst->op == op_jal) { pc = inst->pc + (inst->imm<<1); }
             }
         }
