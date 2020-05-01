@@ -114,5 +114,13 @@ Update history:
       update, all the registers must be explicitly initialized.
     - Error checking lines are added to data_memory.cc to detect an undefined
       memory address or value on the left or right side of an equal sign.
-    - Documentation is updated by proofreading and structural reorganizing.
+    - Documentation is updated by proofreading and structurally reorganizing.
+
+* Minor updates for a future release (May 1, 2020)
+    - A typo in the documentation is fixed, i.e., sd instruction format in the
+      supported instruction table.
+    - RISC-V specification defines that a jalr instruction resets the LSB of
+      a new PC, which requires an extra AND operation with uint64_t(-2). This
+      minor change is added to Kite to conform to the specification but has no
+      impacts on simulation results.
 
