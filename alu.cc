@@ -12,16 +12,16 @@ alu_t::alu_t(uint64_t *m_ticks) :
 alu_t::~alu_t() {
 }
 
-// Get an instruction leaving the ALU.
-// It may take multiple cycles to execute instructions depending on the types.
+// Get an instruction leaving the ALU. It may take multiple cycles for the ALU
+// to execute instructions depending on their types.
 inst_t* alu_t::get_output() {
     inst_t *inst = 0;
-    // Ticks has elapsed for the execution latency of instruction.
+    // The instruction has been staying enough number of ticks in the ALU.
     if(*ticks >= exit_ticks) {
         inst = run_inst;
         run_inst = 0;
-        // Mark that rd value is ready and thus can be forwarded.
-        // Rd of ld instruction becomes ready in memory stage.
+        // Mark the rd value of instruction is ready for forwarding.
+        // The rd value of ld instruction becomes ready in the memory stage.
 #ifdef DATA_FWD
         if(inst && (inst->rd_num > 0) && (inst->op != op_ld)) {
             inst->rd_ready = true;
@@ -36,16 +36,16 @@ bool alu_t::is_free() {
     return !run_inst;
 }
 
-// Execute the instruction.
+// Execute an instruction.
 void alu_t::run(inst_t *m_inst) {
-    // Set run_inst and its exit ticks to leave the ALU.
+    // Set run_inst and its exit ticks that the run_inst can leave the ALU.
     run_inst = m_inst;
     exit_ticks = *ticks + m_inst->alu_latency - 1;
 
     // Divide-by-zero exception
     bool divide_by_zero = false;
 
-    // ALU operations for different types of instructions.
+    // ALU operations for different type of instructions.
     switch(m_inst->op) {
         case op_add:  { m_inst->rd_val = m_inst->rs1_val + m_inst->rs2_val; break; }
         case op_and:  { m_inst->rd_val = m_inst->rs1_val & m_inst->rs2_val; break; }
@@ -90,6 +90,7 @@ void alu_t::run(inst_t *m_inst) {
         case op_bne:  { m_inst->branch_target = (m_inst->rs1_val != m_inst->rs2_val) ? 
                                                 (m_inst->pc + (m_inst->imm << 1)) :
                                                 (m_inst->pc + 4); break; }
+        case op_lui:  { m_inst->rd_val = m_inst->imm << 20; break; }
         case op_jal:  { m_inst->rd_val = m_inst->pc + 4; break; }
         default:      { break; } // Nothing to do
     }
@@ -103,7 +104,7 @@ void alu_t::run(inst_t *m_inst) {
 #endif
 }
 
-// Remove instruction from the ALU.
+// Remove an instruction from the ALU.
 inst_t* alu_t::flush() {
     inst_t *inst = run_inst;
     run_inst = 0;

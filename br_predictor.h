@@ -9,8 +9,8 @@ public:
     br_predictor_t(uint64_t m_size);
     ~br_predictor_t();
 
-    bool is_taken(uint64_t m_pc);                       // Is branch predicted to be taken?
-    void update(uint64_t m_pc, bool m_taken);           // Update prediction counter.
+    bool is_taken(uint64_t m_pc);                       // Is a branch predicted to be taken?
+    void update(uint64_t m_pc, bool m_taken);           // Update a prediction counter.
 
 private:
     uint64_t num_entries;                               // Number of counters
@@ -23,8 +23,8 @@ public:
     br_target_buffer_t(uint64_t m_size);
     ~br_target_buffer_t();
 
-    uint64_t get_target(uint64_t m_pc);                 // Get branch target address.
-    void update(uint64_t m_pc, uint64_t m_target_addr); // Update branch target buffer.
+    uint64_t get_target(uint64_t m_pc);                 // Get a branch target address.
+    void update(uint64_t m_pc, uint64_t m_target_addr); // Update the branch target buffer.
 
 private:
     uint64_t num_entries;                               // Number of target addresses

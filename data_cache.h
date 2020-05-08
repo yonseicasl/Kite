@@ -30,16 +30,16 @@ public:
                  uint64_t m_block_size = 8, uint64_t m_ways = 1);
     ~data_cache_t();
 
-    void connect(data_memory_t *m_memory);      // Connect to lower-level memory.
+    void connect(data_memory_t *m_memory);      // Connect to the lower-level memory.
     bool is_free() const;                       // Is cache free?
     void read(inst_t *m_inst);                  // Read data from cache.
     void write(inst_t *m_inst);                 // Write data in cache.
-    void handle_response(int64_t *m_data);      // Handle memory response.
+    void handle_response(int64_t *m_data);      // Handle a memory response.
     bool run();                                 // Run data cache, and return true when busy.
     void print_stats();                         // Print cache stats.
 
 private:
-    data_memory_t *memory;                      // Pointer to lower-level memory
+    data_memory_t *memory;                      // Pointer to the lower-level memory
     uint64_t *ticks;                            // Pointer to processor clock ticks
     block_t** blocks;                           // Cache blocks
 

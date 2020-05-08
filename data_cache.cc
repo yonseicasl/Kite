@@ -23,13 +23,13 @@ data_cache_t::data_cache_t(uint64_t *m_ticks, uint64_t m_cache_size,
     num_stores(0),
     num_writebacks(0),
     missed_inst(0) {
-    // Calculate block offset.
+    // Calculate the block offset.
     uint64_t val = block_size;
     while(!(val & 0b1)) {
         val = val >> 1; block_offset++;
         block_mask = (block_mask << 1) | 0b1;
     }
-    // Check if block size is a multiple of doubleword.
+    // Check if the block size is a multiple of doubleword.
     if((block_size & 0b111) || (val != 1)) {
         cerr << "Error: cache block size must be a power of doubleword" << endl;
         exit(1);
@@ -37,7 +37,7 @@ data_cache_t::data_cache_t(uint64_t *m_ticks, uint64_t m_cache_size,
 
     // Calculate the number of sets.
     num_sets = cache_size / block_size / num_ways;
-    // Calculate set offset and mask.
+    // Calculate the set offset and mask.
     val = num_sets;
     while(!(val & 0b1)) {
         val = val >> 1; set_offset++;
@@ -57,12 +57,12 @@ data_cache_t::data_cache_t(uint64_t *m_ticks, uint64_t m_cache_size,
 }
 
 data_cache_t::~data_cache_t() {
-    // Deallocate cache blocks.
+    // Deallocate the cache blocks.
     for(uint64_t i = 0; i < num_sets; i++) { delete blocks[i]; }
     delete [] blocks;
 }
 
-// Connect to lower-level memory.
+// Connect to the lower-level memory.
 void data_cache_t::connect(data_memory_t *m_memory) { memory = m_memory; }
 
 // Is cache free?
@@ -70,14 +70,14 @@ bool data_cache_t::is_free() const { return !missed_inst; }
 
 // Read data from cache.
 void data_cache_t::read(inst_t *m_inst) {
-    // Check memory address alignment.
+    // Check the memory address alignment.
     uint64_t addr = m_inst->memory_addr;
     if(addr & 0b111) {
         cerr << "Error: invalid alignment of memory address " << addr << endl;
         exit(1);
     }
 
-    // Calculate set index and tag.
+    // Calculate the set index and tag.
     uint64_t set_index = (addr & set_mask) >> block_offset;
     uint64_t tag = addr >> set_offset;
 
@@ -86,7 +86,7 @@ void data_cache_t::read(inst_t *m_inst) {
     if(!block->valid || (block->tag != tag)) { block = 0; }
     
     if(block) { // Cache hit
-        // Update last access time.
+        // Update the last access time.
         block->last_access = *ticks;
         // Read a doubleword in the block.
         m_inst->rd_val = *(block->data + ((addr & block_mask) >> 3));
@@ -109,23 +109,23 @@ void data_cache_t::read(inst_t *m_inst) {
 
 // Write data in memory.
 void data_cache_t::write(inst_t *m_inst) {
-    // Check memory address alignment.
+    // Check the memory address alignment.
     uint64_t addr = m_inst->memory_addr;
     if(addr & 0b111) {
         cerr << "Error: invalid alignment of memory address " << addr << endl;
         exit(1);
     }
 
-    // Calculate set index and tag.
+    // Calculate the set index and tag.
     uint64_t set_index = (addr & set_mask) >> block_offset;
     uint64_t tag = addr >> set_offset;
 
-    // Check direct-mapped cache entry.
+    // Check the direct-mapped cache entry.
     block_t *block = &blocks[set_index][0];
     if(!block->valid || (block->tag != tag)) { block = 0; }
 
     if(block) { // Cache hit
-        // Update last access time and dirty flag.
+        // Update the last access time and dirty flag.
         block->last_access = *ticks;
         block->dirty = true;
         // Write a doubleword in the block.
@@ -144,9 +144,9 @@ void data_cache_t::write(inst_t *m_inst) {
     }
 }
 
-// Handle memory response.
+// Handle a memory response.
 void data_cache_t::handle_response(int64_t *m_data) {
-    // Calculate set index and tag.
+    // Calculate the set index and tag.
     uint64_t addr = missed_inst->memory_addr;
     uint64_t set_index = (addr & set_mask) >> block_offset;
     uint64_t tag = addr >> set_offset;
@@ -160,20 +160,20 @@ void data_cache_t::handle_response(int64_t *m_data) {
              << " (tag = " << tag << ", set = " << set_index << ")" << endl;
     }
 #endif
-    // Place missed block.
+    // Place the missed block.
     *allocator = block_t(tag, m_data, /* valid */ true);
 
-    // Replay cache access.
+    // Replay the cache access.
     if(missed_inst->op == op_ld) { read(missed_inst); }
     else { write(missed_inst); }
-    // Clear missed instruction so that cache becomes free.
+    // Clear the missed instruction so that the cache becomes free.
     missed_inst = 0;
 }
 
 // Run data cache.
 bool data_cache_t::run() {
-    memory->run();          // Run data memory.
-    return missed_inst;     // Return true if cache is busy.
+    memory->run();          // Run the data memory.
+    return missed_inst;     // Return true if the cache is busy.
 }
 
 // Print cache stats.

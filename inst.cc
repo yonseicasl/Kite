@@ -46,14 +46,14 @@ inst_t::inst_t(const inst_t &m_inst) :
 inst_t::~inst_t() {
 }
 
-// Convert Kite instruction to string format.
+// Convert a Kite instruction to string format.
 string get_inst_str(inst_t *inst, bool details) {
     stringstream ss;
    
     // PC of instruction.
     if(details) { ss << "[pc=" << inst->pc << "] "; }
 
-    // Compose appropriate instruction format.
+    // Compose an appropriate instruction format.
     switch(get_op_type(inst->op)) {
         case op_r_type: {
             // R-type format: op rd, rs1, rs2
@@ -139,6 +139,21 @@ string get_inst_str(inst_t *inst, bool details) {
                    << inst->rs2_val             << ", "
                    << inst->imm                 << "("
                    << inst->label               << ")"
+                   << "]";
+            }
+            break;
+        }
+        case op_u_type: {
+            // U-type format: op rd, imm
+            ss << kite_opcode_str[inst->op]     << " "
+               << kite_reg_str[inst->rd_num]    << ", "
+               << inst->imm;
+            // Show register values.
+            if(details) {
+                ss << " ["
+                   << kite_opcode_str[inst->op] << " "
+                   << inst->rd_val              << ", "
+                   << inst->imm
                    << "]";
             }
             break;

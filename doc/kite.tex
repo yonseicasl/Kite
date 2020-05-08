@@ -122,6 +122,7 @@ Pseudo instructions (e.g., {\tt mv}, {\tt not}) are not supported.
                             & {\tt bge  rs1, rs2, imm}  & {\tt pc = (rs1 >= rs2 ? pc + imm<<1 : pc + 4)} \\
                             & {\tt blt  rs1, rs2, imm}  & {\tt pc = (rs1 < rs2 ? pc + imm<<1 : pc + 4)} \\
                             & {\tt bne  rs1, rs2, imm}  & {\tt pc = (rs1 != rs2 ? pc + imm<<1 : pc + 4)} \\ \hline
+    U type                  & {\tt lui  rd, imm}        & {\tt rd = imm << 20; } \\ \hline
     UJ type                 & {\tt jal  rd, imm}        & {\tt rd = pc + 4, pc = pc + imm<<1} \\ \hline
     No type                 & {\tt nop}                 & No operation          \\ \hline
     \end{tabular}

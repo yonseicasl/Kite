@@ -123,4 +123,9 @@ Update history:
       a new PC, which requires an extra AND operation with uint64_t(-2). This
       minor change is added to Kite to conform to the specification but has no
       impacts on simulation results.
+    - Support for a U-type instruction (i.e., lui instruction) has been added.
+    - When loading a program code, constant values are checked if they fit into
+      the immediate field of instructions, i.e., 12 bits for I-type and 20 bits
+      for U-type instructions. Likewise, PC-relative distances of SB-type and
+      UJ-type instructions must fit into the immediate fields.
 

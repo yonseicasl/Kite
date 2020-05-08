@@ -39,6 +39,8 @@ enum kite_opcode {
     op_bge,
     op_blt,
     op_bne,
+    /* U-type */
+    op_lui,
     /* UJ-type */
     op_jal,
 
@@ -52,6 +54,7 @@ enum kite_opcode_type {
     op_i_type,
     op_s_type,
     op_sb_type,
+    op_u_type,
     op_uj_type,
     op_opcode_types,
 };
@@ -93,7 +96,7 @@ enum kite_reg {
     num_kite_regs,
 };
 
-// Kite instruction type array mapped to the instruction list
+// Kite instruction types aligned with the instructions list
 static kite_opcode_type kite_op_type[num_kite_opcodes] __attribute__((unused)) = {
     op_no_type, // op_nop
     /* R-type */
@@ -127,11 +130,13 @@ static kite_opcode_type kite_op_type[num_kite_opcodes] __attribute__((unused)) =
     op_sb_type, // op_bge
     op_sb_type, // op_blt
     op_sb_type, // op_bne
+    /* U-type */
+    op_u_type,  // op_lui
     /* UJ-type */
     op_uj_type, // op_jal
 };
 
-// Kite instruction ALU latency array mapped to the instruction list
+// Kite instruction ALU latencies aligned with the instructions list
 static unsigned kite_op_latency[num_kite_opcodes] __attribute__((unused)) = {
     1,  // op_nop
     /* R-type */
@@ -165,11 +170,13 @@ static unsigned kite_op_latency[num_kite_opcodes] __attribute__((unused)) = {
     1,  // op_bge
     1,  // op_blt
     1,  // op_bne
+    /* U-type */
+    1,  // op_lui
     /* UJ-type */
     1,  // op_jal
 };
 
-// Kite instruction string array mapped to the instruction list
+// Kite instruction strings aligned with the instructions list
 static std::string kite_opcode_str[num_kite_opcodes] __attribute__((unused)) = {
     "nop",
     /* R-type */
@@ -203,11 +210,13 @@ static std::string kite_opcode_str[num_kite_opcodes] __attribute__((unused)) = {
     "bge",
     "blt",
     "bne",
+    /* U-type */
+    "lui",
     /* UJ-type */
     "jal",
 };
 
-// Kite register string array mapped to the register list
+// Kite register strings aligned with the registers list
 static std::string kite_reg_str[num_kite_regs] __attribute__((unused)) = {
     "x0",
     "x1",
@@ -246,7 +255,7 @@ static std::string kite_reg_str[num_kite_regs] __attribute__((unused)) = {
 // Numbers
 static std::string numbers = "0123456789";
 
-// Convert string to kite_opcode
+// Convert a string to kite_opcode
 #define get_opcode(m_string) \
     (kite_opcode)distance(&kite_opcode_str[0], find(&kite_opcode_str[0], &kite_opcode_str[num_kite_opcodes], m_string.c_str()))
 
@@ -258,20 +267,20 @@ static std::string numbers = "0123456789";
 #define get_op_latency(m_op) \
     kite_op_latency[m_op]
 
-// Convert string to kite_reg
+// Convert a string to kite_reg
 #define get_regnum(m_string) \
     (kite_reg)distance(&kite_reg_str[0], find(&kite_reg_str[0], &kite_reg_str[num_kite_regs], m_string.c_str()))
 
-// Convert string to 64-bit integer.
+// Convert a string to 64-bit integer.
 #define get_imm(m_string) \
     (int64_t)atoll(m_string.c_str())
 
-// Check if string is a number.
+// Check if a string is a number.
 #define is_num_str(m_string) \
     ((m_string[0] == '-') ? (m_string.find_first_not_of(numbers, 1) == string::npos) : \
                             (m_string.find_first_not_of(numbers) == string::npos))
 
-// Check if string has a valid register format.
+// Check if a string has a valid register format.
 #define is_reg_str(m_string) \
     ((m_string[0] == 'x') && (m_string.find_first_not_of(numbers, 1) == string::npos))
 

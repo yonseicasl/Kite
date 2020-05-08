@@ -9,13 +9,13 @@ public:
     pipe_reg_t();
     ~pipe_reg_t();
 
-    inst_t* read() const;           // Read instruction from pipeline register.
-    void write(inst_t *m_inst);     // Write instruction in pipeline register.
-    void clear();                   // Remove instruction from pipeline register.
-    bool is_free();                 // Is pipeline register free?
+    inst_t* read() const;           // Read an instruction from the pipeline register.
+    void write(inst_t *m_inst);     // Write an instruction into the pipeline register.
+    void clear();                   // Remove an instruction from the pipeline register.
+    bool is_free();                 // Is the pipeline register free?
 
 private:
-    inst_t *inst;                   // Instruction currently in pipeline register
+    inst_t *inst;                   // An instruction currently in the pipeline register
 };
 
 #endif

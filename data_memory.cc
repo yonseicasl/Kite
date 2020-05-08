@@ -16,13 +16,13 @@ data_memory_t::data_memory_t(uint64_t *m_ticks, uint64_t m_memory_size, uint64_t
     latency(m_latency),
     resp_ticks(0),
     req_block(0) {
-    // Check if memory size is a multiple of doubleword.
+    // Check if the memory size is a multiple of doubleword.
     if(memory_size & 0b111) {
         cerr << "Error: memory size must be a multiple of doubleword" << endl;
         exit(1);
     }
 
-    // Allocate memory space in unit of doublewords.
+    // Allocate a memory space in unit of doublewords.
     memory = new int64_t[num_dwords]();
     accessed = new bool[num_dwords]();
 
@@ -31,32 +31,32 @@ data_memory_t::data_memory_t(uint64_t *m_ticks, uint64_t m_memory_size, uint64_t
 }
 
 data_memory_t::~data_memory_t() {
-    // Deallocate memory space.
+    // Deallocate the memory space.
     delete [] memory;
     delete [] accessed;
 }
 
-// Connect to upper-level cache.
+// Connect to the upper-level cache.
 void data_memory_t::connect(data_cache_t *m_cache) { cache = m_cache; }
 
-// Run data memory.
+// Run the data memory.
 void data_memory_t::run() {
     if(req_block && (*ticks >= resp_ticks)) {
-        // Invoke upper-level cache for response.
+        // Invoke the upper-level cache to handle a returned response.
         cache->handle_response(req_block);
-        // Clear requested block.
+        // Clear the requested block.
         req_block = 0;
     }
 }
 
-// Load memory block.
+// Load a memory block.
 void data_memory_t::load_block(uint64_t m_addr, uint64_t m_block_size) {
-    // Check doubleword alignment of memory address.
+    // Check the doubleword alignment of memory address.
     if(m_addr & 0b111) {
         cerr << "Error: invalid alignment of memory address " << m_addr << endl;
         exit(1);
     }
-    // Check if requested block size is within memory space.
+    // Check if the requested block size is within memory space.
     if((m_addr+m_block_size) > memory_size) {
         cerr << "Error: memory address " << m_addr << " is out of bounds" << endl;
         exit(1);
@@ -64,15 +64,15 @@ void data_memory_t::load_block(uint64_t m_addr, uint64_t m_block_size) {
 
     // Mark all doublewords in the requested block are accessed.
     for(uint64_t i = 0; i < m_block_size>>3; i++) { accessed[(m_addr>>3)+i] = true; }
-    // Set pointer to requested block.
+    // Set pointer to a requested block.
     req_block = &memory[m_addr>>3];
-    // Set time ticks to respond to cache later.
+    // Set time ticks to respond to the cache later.
     resp_ticks = *ticks + latency;
 }
 
 // Load initial memory state.
 void data_memory_t::load_memory_state() {
-    // Open memory state file.
+    // Open a memory state file.
     fstream file_stream;
     file_stream.open("memory_state", fstream::in);
     if(!file_stream.is_open()) {
@@ -84,7 +84,7 @@ void data_memory_t::load_memory_state() {
     size_t line_num = 0;
     while(getline(file_stream, line)) {
         line_num++;
-        // Crop everything after the comment symbol.
+        // Crop everything after a comment symbol.
         if(line.find_first_of("#") != string::npos) { line.erase(line.find_first_of("#")); }
         // Erase all spaces.
         line.erase(remove(line.begin(), line.end(), ' '), line.end());
@@ -97,7 +97,7 @@ void data_memory_t::load_memory_state() {
         line.erase(0, l+1);
         string data_str = line;
 
-        // Check if memory address and data are valid.
+        // Check if the memory address and data are valid.
         if(!is_num_str(addr_str) || !is_num_str(data_str) ||
            !addr_str.length()    || !data_str.length()) {
             cerr << "Error: invalid memory address and/or data " << addr_str
@@ -106,7 +106,7 @@ void data_memory_t::load_memory_state() {
             exit(1);
         }
 
-        // Convert memory address and data string to numbers.
+        // Convert the memory address and data string to numbers.
         uint64_t memory_addr = get_imm(addr_str); 
         int64_t memory_data = get_imm(data_str);
         // Check the alignment of memory address.
@@ -115,7 +115,7 @@ void data_memory_t::load_memory_state() {
                  << " at line #" << line_num << " of memory_state" << endl;
             exit(1);
         }
-        // Memory address cannot go out of bounds.
+        // The memory address goes out of bounds.
         if((memory_addr+8) > memory_size) {
             cerr << "Error: memory address " << memory_addr << " is out of bounds"
                  << " at line #" << line_num << " of memory_state" << endl;
@@ -129,11 +129,11 @@ void data_memory_t::load_memory_state() {
                  << " of memory_state" << endl;
             exit(1);
         }
-        // Store memory data.
+        // Store the memory data.
         dword = memory_data;
     }
 
-    // Close memory state file.
+    // Close the memory state file.
     file_stream.close();
 }
 

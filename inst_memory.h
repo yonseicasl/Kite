@@ -17,7 +17,7 @@ public:
     size_t num_insts() const;               // Get the total number of instructions in memory.
 
 private:
-    // Load program code.
+    // Load a program code.
     void load_program_code(const char *m_program_code);
     // Parse instruction string, and convert it to Kite instruction.
     void parse_inst_str(std::string m_inst_str, size_t m_line_num);

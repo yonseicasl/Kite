@@ -24,5 +24,5 @@ distclean:
 	rm -rf *.glsdefs *.aux *.bbl *.blg *.log *.out $(PAPER) $(PAPER).zip
 
 clean:
-	make dist; rm -f $(PAPER).pdf
+	make distclean; rm -f $(PAPER).pdf
 

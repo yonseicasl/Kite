@@ -7,7 +7,7 @@
 using namespace std;
 
 reg_file_t::reg_file_t() {
-    // Clear all values in registers and dependency check table.
+    // Clear all values in the registers and dependency check table.
     memset(regs, 0, sizeof(regs));
     memset(dep, 0, sizeof(dep));
 
@@ -18,7 +18,7 @@ reg_file_t::reg_file_t() {
 reg_file_t::~reg_file_t() {
 }
 
-// Read register file.
+// Read the register file.
 int64_t reg_file_t::read(unsigned m_index) const {
     if(m_index >= num_kite_regs) {
         cerr << "Error: cannot read register x" << m_index << endl;
@@ -27,15 +27,15 @@ int64_t reg_file_t::read(unsigned m_index) const {
     return regs[m_index];
 }
    
-// Write register file. 
+// Write in the register file. 
 void reg_file_t::write(inst_t *m_inst, unsigned m_index, int64_t m_value) {
     if(m_index >= num_kite_regs) {
         cerr << "Error: cannot write register x" << m_index << endl;
         exit(1);
     }
     regs[m_index] = m_value;
-    // Clear dependency checker if no subsequent instructions have claimed
-    // the destination register of retiring instruction.
+    // Clear the dependency checker if no subsequent instructions have claimed
+    // the destination register of a retiring instruction.
     if(dep[m_index] == m_inst) { dep[m_index] = 0; }
 }
 
@@ -44,9 +44,9 @@ bool reg_file_t::dep_check(inst_t *m_inst) {
     bool stall = false;
     inst_t *prod_inst = 0;
     if(m_inst->rs1_num > 0) {
-        // Check data hazard for rs1.
+        // Check the data hazard for rs1.
         if((prod_inst = dep[m_inst->rs1_num])) {
-            // Rs1 value is forwarded from producer instruction.
+            // Rs1 value is forwarded from a producer instruction.
             if(prod_inst->rd_ready) { m_inst->rs1_val = prod_inst->rd_val; }
             // Rs1 is not ready yet.
             else { stall = true; }
@@ -55,9 +55,9 @@ bool reg_file_t::dep_check(inst_t *m_inst) {
         else { m_inst->rs1_val = regs[m_inst->rs1_num]; }
     }
     if(m_inst->rs2_num > 0) {
-        // Check data hazard for rs2.
+        // Check the data hazard for rs2.
         if((prod_inst = dep[m_inst->rs2_num])) {
-            // Rs2 value is forwarded from producer instruction.
+            // Rs2 value is forwarded from a producer instruction.
             if(prod_inst->rd_ready) { m_inst->rs2_val = prod_inst->rd_val; }
             // Rs2 is not ready yet.
             else { stall = true; }
@@ -66,20 +66,20 @@ bool reg_file_t::dep_check(inst_t *m_inst) {
         else { m_inst->rs2_val = regs[m_inst->rs2_num]; }
     }
     if(!stall && (m_inst->rd_num > 0)) {
-        // This instruction is the latest producer of rd.
+        // This instruction is the last producer of rd.
         dep[m_inst->rd_num] = m_inst;
     }
     return stall;
 }
 
-// Clear dependency check state.
+// Clear the dependency check state.
 void reg_file_t::flush() {
     memset(dep, 0, sizeof(dep));
 }
 
 // Load initial register file state.
 void reg_file_t::load_reg_state() {
-    // Open register state file.
+    // Open a register state file.
     fstream file_stream;
     file_stream.open("reg_state", fstream::in);
     if(!file_stream.is_open()) {
@@ -94,7 +94,7 @@ void reg_file_t::load_reg_state() {
     size_t line_num = 0;
     while(getline(file_stream, line)) {
         line_num++;
-        // Crop everything after the comment symbol.
+        // Crop everything after a comment symbol.
         if(line.find_first_of("#") != string::npos) { line.erase(line.find_first_of("#")); }
         // Erase all spaces.
         line.erase(remove(line.begin(), line.end(), ' '), line.end());

@@ -36,16 +36,16 @@ proc_t::~proc_t() {
 
 // Processor initialization
 void proc_t::init(const char *m_program_code) {
-    inst_memory = new inst_memory_t(m_program_code);    // Create instruction memory.
-    br_predictor = new br_predictor_t(16);              // Create branch predictor.
-    br_target_buffer = new br_target_buffer_t(16);      // Create branch target buffer.
-    reg_file = new reg_file_t();                        // Create register file.
-    alu = new alu_t(&ticks);                            // Create ALU.
+    inst_memory = new inst_memory_t(m_program_code);    // Create an instruction memory.
+    br_predictor = new br_predictor_t(16);              // Create a branch predictor.
+    br_target_buffer = new br_target_buffer_t(16);      // Create a branch target buffer.
+    reg_file = new reg_file_t();                        // Create a register file.
+    alu = new alu_t(&ticks);                            // Create an ALU.
 
-    data_memory = new data_memory_t(&ticks, 1024, 0);   // Create data memory.
-    data_cache = new data_cache_t(&ticks, 1024, 8, 1);  // Create data cache.
-    data_memory->connect(data_cache);                   // Connect memory to cache.
-    data_cache->connect(data_memory);                   // Connect cache to memory.
+    data_memory = new data_memory_t(&ticks, 1024, 0);   // Create a data memory.
+    data_cache = new data_cache_t(&ticks, 1024, 8, 1);  // Create a data cache.
+    data_memory->connect(data_cache);                   // Connect the memory to cache.
+    data_cache->connect(data_memory);                   // Connect the cache to memory.
 }
 
 // Run the processor pipeline.
@@ -70,21 +70,21 @@ void proc_t::run() {
 
 // Writeback stage
 void proc_t::writeback() {
-    // Read instruction from MEM/WB pipeline register.
+    // Read an instruction from the MEM/WB pipeline register.
     inst_t *inst = mem_wb_preg.read();
     if(inst) {
         // Update the number of executed instructions.
         num_insts++;
-        // Remove instruction from MEM/WB pipeline register.
+        // Remove the instruction from the MEM/WB pipeline register.
         mem_wb_preg.clear();
-        // Write result to register file. x0 is discarded.
+        // Write a result to the register file. Discard the x0 register.
         if(inst->rd_num > 0) {
             reg_file->write(inst, inst->rd_num, inst->rd_val);
         }
 #ifdef DEBUG
         cout << ticks << " : writeback : " << get_inst_str(inst, true) << endl;
 #endif
-        // Update branch predictor and branch target buffer for conditional branches.
+        // Update the branch predictor and branch target buffer for conditional branches.
         if(inst->branch_target) {
 #ifdef BR_PRED
             num_br_predicts++;
@@ -94,23 +94,24 @@ void proc_t::writeback() {
                 br_target_buffer->update(inst->pc, inst->branch_target);
             }
             // Predicted branch target and actual branch target are different.
-            // Flush and restart pipeline.
+            // Flush and restart the pipeline.
             if(inst->pred_target != inst->branch_target) {
-                // Pipeline flushes because of branch mis-prediction.
-                // Another cause is due to wrong BTB address despite correct prediction.
+                // A branch mis-prediction (i.e., direction) or target mis-prediction
+                // (i.e., address) needs to flush the pipeline.
                 num_br_mispredicts += (inst->pred_taken != is_taken);
-                // Flush pipeline, and set correct PC.
+                // Flush the pipeline, and set a correct PC.
                 flush();
                 pc = inst->branch_target;
 #ifdef DEBUG
                 cout << ticks << " : pipeline flush : restart at PC = " << pc << endl;
 #endif
             }
-#else       // No branch prediction is used. The next PC is set here.
+#else       // No branch prediction is used. The next PC of a branch is set here to avoid
+            // speculative executions.
             pc = inst->branch_target;
 #endif
         }
-        // Retire instruction.
+        // Retire the instruction.
         delete inst;
     }
 }
@@ -118,19 +119,19 @@ void proc_t::writeback() {
 // Memory stage
 void proc_t::memory() {
     static inst_t *mem_inst = 0;
-    // Memory stage makes a progress only if MEM/WB pipeline register is free.
+    // Memory stage makes a progress only if the MEM/WB pipeline register is free.
     if(mem_wb_preg.is_free()) {
-        // Instruction is read from EX/MEM pipeline register.
+        // An instruction is read from the EX/MEM pipeline register.
         if(data_cache->is_free() && (mem_inst = ex_mem_preg.read())) {
-            // Remove instruction from EX/MEM pipeline register.
+            // Remove the instruction from the EX/MEM pipeline register.
             ex_mem_preg.clear();
-            // Access data memory for load or store.
+            // Access the data memory for a load or store.
             if(mem_inst->op == op_ld) { data_cache->read(mem_inst); }
             else if(mem_inst->op == op_sd) { data_cache->write(mem_inst); }
         }
-        // Data cache is done with instruction.
+        // Data cache is done with the instruction.
         if(!data_cache->run()) {
-            // Write instruction in MEM/WB pipeline register.
+            // Write the instruction in the MEM/WB pipeline register.
             mem_wb_preg.write(mem_inst); mem_inst = 0;
         }
     }
@@ -145,16 +146,18 @@ void proc_t::memory() {
 // Execute stage
 void proc_t::execute() {
     inst_t *inst = 0;
-    // Execution stage makes a progress only if EX/MEM pipeline register is free.
+    // Execution stage makes a progress only if the EX/MEM pipeline register is free.
     if(ex_mem_preg.is_free()) {
-        // Instruction is read from ID/EX pipeline register, and ALU runs the instruction.
+        // An instruction is read from the ID/EX pipeline register.
         if((inst = id_ex_preg.read()) && alu->is_free()) {
+            // Remove the instruction from the ID/EX pipeline register, and let the ALU
+            // execute the instruction.
             id_ex_preg.clear();
             alu->run(inst);
         }
-        // ALU is done with instruction.
+        // ALU is done with the instruction.
         if((inst = alu->get_output())) {
-            // Write instruction in EX/MEM pipeline register.
+            // Write the instruction in the EX/MEM pipeline register.
             ex_mem_preg.write(inst);
         }
     }
@@ -168,17 +171,17 @@ void proc_t::execute() {
 // Instruction decode stage
 void proc_t::decode() {
     inst_t *inst = 0;
-    // Decode stage makes a progress only if ID/EX pipeline register is free.
+    // Decode stage makes a progress only if the ID/EX pipeline register is free.
     if(id_ex_preg.is_free()) {
-        // Read instruction from IF/ID pipeline register.
+        // Read an instruction from the IF/ID pipeline register.
         if((inst = if_id_preg.read())) {
-            // Check data dependency of instruction.
+            // Check the data dependency of instruction.
             if(!reg_file->dep_check(inst)) {
-                // Remove instruction from IF/ID pipeline register.
+                // Remove the instruction from the IF/ID pipeline register.
                 if_id_preg.clear();
-                // Write instruction in ID/EX pipeline register.
+                // Write the instruction in the ID/EX pipeline register.
                 id_ex_preg.write(inst);
-                // Update PC for unconditional jumps.
+                // Update the PC for an unconditional jump.
                 if(inst->op == op_jalr) { pc = (inst->rs1_val + inst->imm) & -2; }
                 else if(inst->op == op_jal) { pc = inst->pc + (inst->imm<<1); }
             }
@@ -194,24 +197,24 @@ void proc_t::decode() {
 // Instruction fetch stage
 void proc_t::fetch() {
     inst_t *inst = 0;
-    // Fetch stage makes a progress only if IF/ID pipeline register is free.
+    // Fetch stage makes a progress only if the IF/ID pipeline register is free.
     if(if_id_preg.is_free()) {
-        // Read instruction from instruction memory.
+        // Read an instruction from the instruction memory.
         if((inst = inst_memory->read(pc))) {
-            // Update PC.
+            // Update the PC.
             pc += 4;
-            // Write instruction in IF/ID pipeline register.
+            // Write an instruction in the IF/ID pipeline register.
             if_id_preg.write(inst);
-            // Do branch prediction for conditional branches.
+            // Make a branch prediction for a conditional branch.
             if(get_op_type(inst->op) == op_sb_type) {
 #ifdef BR_PRED
-                // Set PC to branch target if predicted to be taken.
+                // Set the PC to a branch target if the branch is predicted to be taken.
                 inst->pred_taken = br_predictor->is_taken(inst->pc);
                 pc = inst->pred_target = inst->pred_taken ?
                                          br_target_buffer->get_target(inst->pc) : pc;
 #else
                 // No branch prediction is used.
-                // Disable instruction fetching until the next PC is resolved.
+                // Instruction fetch is disabled until the next PC is resolved.
                 pc = 0;
 #endif
             }
@@ -228,7 +231,8 @@ void proc_t::fetch() {
 #endif
 }
 
-// Flush pipeline.
+// Flush the pipeline. The pipeline uses a simplest stall-and-drain approach to
+// correct mis-speculative executions.
 void proc_t::flush() {
     inst_t *inst = 0;
     // Clear all pipeline registers.
@@ -238,7 +242,7 @@ void proc_t::flush() {
     if((inst = mem_wb_preg.read())) { delete inst; mem_wb_preg.clear(); }
     // Flush ALU.
     if((inst = alu->flush())) { delete inst; }
-    // Flush dependency check state of register file.
+    // Flush the dependency check state of register file.
     reg_file->flush();
     num_flushes++;
 }

@@ -19,10 +19,10 @@ public:
     std::string label;                  // Label
     uint64_t memory_addr;               // Data memory address
     unsigned alu_latency;               // ALU latency
-    bool rd_ready;                      // Is rd value ready?
+    bool rd_ready;                      // Is the rd value ready?
     uint64_t branch_target;             // Actual branch target
     uint64_t pred_target;               // Predicted branch target
-    bool pred_taken;                    // Is branch predicted to be taken?
+    bool pred_taken;                    // Is a branch predicted to be taken?
 };
 
 // Convert Kite instruction to string format.

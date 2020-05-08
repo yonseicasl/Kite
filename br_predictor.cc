@@ -8,17 +8,17 @@ br_predictor_t::br_predictor_t(uint64_t m_size) :
 }
 
 br_predictor_t::~br_predictor_t() {
-    // Deallocate counter array.
+    // Deallocate the counter array.
     delete [] counters;
 }
 
-// Is branch predicted to be taken?
+// Is a branch predicted to be taken?
 bool br_predictor_t::is_taken(uint64_t m_pc) {
     // Predict always not taken.
     return false;
 }
 
-// Update prediction counter.
+// Update a prediction counter.
 void br_predictor_t::update(uint64_t m_pc, bool m_taken) {
 }
 
@@ -31,17 +31,17 @@ br_target_buffer_t::br_target_buffer_t(uint64_t m_size) :
 }
 
 br_target_buffer_t::~br_target_buffer_t() {
-    // Deallocate target address array.
+    // Deallocate the target address array.
     delete [] buffer;
 }
 
-// Get branch target address.
+// Get a branch target address.
 uint64_t br_target_buffer_t::get_target(uint64_t m_pc) {
-    // Return always PC = 0.
+    // Always return PC = 0.
     return 0;
 }
 
-// Update branch target buffer.
+// Update the branch target buffer.
 void br_target_buffer_t::update(uint64_t m_pc, uint64_t m_target_addr) {
 }
 
