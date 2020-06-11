@@ -31,7 +31,15 @@ data_cache_t::data_cache_t(uint64_t *m_ticks, uint64_t m_cache_size,
     }
     // Check if the block size is a multiple of doubleword.
     if((block_size & 0b111) || (val != 1)) {
-        cerr << "Error: cache block size must be a power of doubleword" << endl;
+        cerr << "Error: cache block size must be a multiple of doubleword" << endl;
+        exit(1);
+    }
+
+    // Check if the number of ways is a power of two.
+    val = num_ways;
+    while(!(val & 0b1)) { val = val >> 1; }
+    if(val != 1) {
+        cerr << "Error: number of ways must be a power of two" << endl;
         exit(1);
     }
 
@@ -51,14 +59,14 @@ data_cache_t::data_cache_t(uint64_t *m_ticks, uint64_t m_cache_size,
         exit(1);
     }
     
-    // Allocate direct-mapped cache blocks.
+    // Allocate cache blocks.
     blocks = new block_t*[num_sets]();
-    for(uint64_t i = 0; i < num_sets; i++) { blocks[i] = new block_t(); }
+    for(uint64_t i = 0; i < num_sets; i++) { blocks[i] = new block_t[num_ways](); }
 }
 
 data_cache_t::~data_cache_t() {
     // Deallocate the cache blocks.
-    for(uint64_t i = 0; i < num_sets; i++) { delete blocks[i]; }
+    for(uint64_t i = 0; i < num_sets; i++) { delete [] blocks[i]; }
     delete [] blocks;
 }
 

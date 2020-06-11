@@ -7,20 +7,22 @@
 // Cache block
 class block_t {
 public:
-    block_t() : valid(false), dirty(false), tag(0), data(0) {}
-    block_t(uint64_t m_tag, int64_t *m_data, bool m_valid = false, bool m_dirty = false) :
-        valid(m_valid), dirty(m_dirty), tag(m_tag), data(m_data) {}
-    block_t(const block_t &b) : valid(b.valid), dirty(b.dirty), tag(b.tag), data(b.data) {}
+    block_t() : tag(0), data(0), valid(false), dirty(false), last_access(0) {}
+    block_t(uint64_t m_tag, int64_t *m_data,
+            bool m_valid = false, bool m_dirty = false, uint64_t m_last_access = 0) :
+        tag(m_tag), data(m_data), valid(m_valid), dirty(m_dirty), last_access(m_last_access) {}
+    block_t(const block_t &b) : tag(b.tag), data(b.data),
+                                valid(b.valid), dirty(b.dirty), last_access(b.last_access) {}
     ~block_t() {}
     
     // Comparison operators
     bool operator==(const block_t &b) { return tag == b.tag; }
     bool operator!=(const block_t &b) { return tag != b.tag; }
     
-    bool valid, dirty;                          // Valid, dirty flags
     uint64_t tag;                               // Block tag
-    uint64_t last_access;                       // Last access cycle
     int64_t *data;                              // Block data 
+    bool valid, dirty;                          // Valid, dirty flags
+    uint64_t last_access;                       // Last access cycle
 };
 
 // Cache

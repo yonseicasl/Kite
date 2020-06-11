@@ -128,4 +128,9 @@ Update history:
       the immediate field of instructions, i.e., 12 bits for I-type and 20 bits
       for U-type instructions. Likewise, PC-relative distances of SB-type and
       UJ-type instructions must fit into the immediate fields.
+    - block_t constructors in data_cache.h are fixed. The constructors did not
+      initialize the "last_access" variable that records the clock cycle that
+      the corresponding block was last accessed in the data cache.
+    - data_cache.cc is fixed for smoother extension to a set-associative cache
+      for future assignments.
 
