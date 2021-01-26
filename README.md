@@ -21,3 +21,10 @@ The latest release of Kite is v1.7 (as of April, 2020). To obtain a copy of Kite
 $ git clone ––branch v1.7 https://github.com/yonsei-icsl/kite
 ```
 
+Try building and executing an example code with the following commands.
+```
+$ cd kite/
+$ make -j
+$ ./kite program_code
+```
+
