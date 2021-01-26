@@ -29,3 +29,17 @@ $ make -j
 $ ./kite program_code
 ```
 
+\
+**Documentation**
+For more detailed information, refer to the documentation available at doc/kite.pdf. Please, use the following to reference our work.i
+```
+@misc{song_kite2019,
+    author       = {W. Song},
+    title        = {{Kite: An Architecture Simulator for RISC-V Instruction Set}},
+    howpublished = {Yonsei University},
+    month        = {May},
+    year         = {2019},
+    note         = {[Online], Available: \url{https://icsl.yonsei.ac.kr/kite}},
+}
+```
+
