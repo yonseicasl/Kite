@@ -30,7 +30,7 @@ $ ./kite program_code
 ```
 
 \
-**Documentation**
+**Documentation:**\
 For more detailed information, refer to the documentation available at doc/kite.pdf. Please, use the following to reference our work.i
 ```
 @misc{song_kite2019,
