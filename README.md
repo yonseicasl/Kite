@@ -12,6 +12,7 @@ Its objective is to have the apprentices of computer architecture experience the
 If students join the computer architecture world for their career (either product development or research), they will certainly have to use some sort of architecture simulators for their work or research.
 The majority of architecture simulators are written in C/C++ since this programming language is the most suitable one to interface between computer hardware and software.
 
+\
 **Prerequisite, Download, and Build:**\
 The simple implementation of Kite makes it really easy to install.
 It requires only g++ compiler to build, and it does not depend on any other libraries or external tools to run.
