@@ -268,10 +268,7 @@ void proc_t::print_stats() {
     // Print data cache stats.
     data_cache->print_stats();
     // Print register file state.
-    cout << endl << "Register state:" << endl;
-    for(unsigned i = 0; i < num_kite_regs; i++) {
-        cout << "x" << i << " = " << reg_file->read(i) << endl;
-    }
+    reg_file->print_state();
     // Print data memory state.
     data_memory->print_state();
     cout << endl << "======== [End of Pipeline Stats] =========" << endl;

@@ -23,8 +23,12 @@ data_memory_t::data_memory_t(uint64_t *m_ticks, uint64_t m_memory_size, uint64_t
     }
 
     // Allocate a memory space in unit of doublewords.
-    memory = new int64_t[num_dwords]();
-    accessed = new bool[num_dwords]();
+    memory = new int64_t[num_dwords];
+    accessed = new bool[num_dwords];
+
+    // Zero the memory space.
+    memset(memory,   0, num_dwords * sizeof(int64_t));
+    memset(accessed, 0, num_dwords * sizeof(bool));
 
     // Load initial memory state.
     load_memory_state();
@@ -139,7 +143,7 @@ void data_memory_t::load_memory_state() {
 
 // Print memory state.
 void data_memory_t::print_state() const {
-    cout << endl << "Memory state (all accessed addresses):" << endl;
+    cout << endl << "Memory state (only accessed addresses):" << endl;
     for(uint64_t i = 0; i < num_dwords; i++) {
         if(accessed[i]) { cout << "(" << (i<<3) << ") = " << memory[i] << endl; }
     }

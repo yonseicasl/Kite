@@ -133,4 +133,10 @@ Update history:
       the corresponding block was last accessed in the data cache.
     - data_cache.cc is fixed for smoother extension to a set-associative cache
       for future assignments.
-
+    - print_state() function is added to reg_file_t. It was previously directly
+      printed in proc.cc. This change removes the need for the read() function
+      of reg_file_t.
+    - is_num_str() macro in defs.h is split into is_pos/neg_num_str() to 
+      differentiate checking for a positive or negative integer.
+    - In the constructor of data_memory_t, memory and accessed and zeroed out
+      for initialization.

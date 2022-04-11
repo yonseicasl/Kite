@@ -18,15 +18,6 @@ reg_file_t::reg_file_t() {
 reg_file_t::~reg_file_t() {
 }
 
-// Read the register file.
-int64_t reg_file_t::read(unsigned m_index) const {
-    if(m_index >= num_kite_regs) {
-        cerr << "Error: cannot read register x" << m_index << endl;
-        exit(1);
-    }
-    return regs[m_index];
-}
-   
 // Write in the register file. 
 void reg_file_t::write(inst_t *m_inst, unsigned m_index, int64_t m_value) {
     if(m_index >= num_kite_regs) {
@@ -143,5 +134,12 @@ void reg_file_t::load_reg_state() {
 
     // Close register state file.
     file_stream.close();
+}
+
+void reg_file_t::print_state() const {
+    cout << endl << "Register state:" << endl;
+    for(unsigned i = 0; i < num_kite_regs; i++) {
+        cout << "x" << i << " = " << regs[i] << endl;
+    }
 }
 
