@@ -116,7 +116,7 @@ Update history:
       memory address or value on the left or right side of an equal sign.
     - Documentation is updated by proofreading and structurally reorganizing.
 
-* Minor updates for a future release (May 1, 2020)
+* Version 1.8 (Apr 25, 2022)
     - A typo in the documentation is fixed, i.e., sd instruction format in the
       supported instruction table.
     - RISC-V specification defines that a jalr instruction resets the LSB of
