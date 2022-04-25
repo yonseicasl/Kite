@@ -140,3 +140,5 @@ Update history:
       differentiate checking for a positive or negative integer.
     - In the constructor of data_memory_t, memory and accessed and zeroed out
       for initialization.
+    - #include <cstring> is added to data_memory.cc because of the compiler
+      error of "memset was not declared in this scope."
