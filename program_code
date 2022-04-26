@@ -20,9 +20,128 @@
 #      UJ-type: jal
 #      No-type: nop
 
-loop:   beq  x11, x0,  exit
-        remu x5,  x10, x11
-        add  x10, x11, x0
-        add  x11, x5,  x0
-        beq  x0,  x0,  loop
-exit:   sd   x10, 2000(x0)
+
+MAIN:
+    # MAIN stack
+    addi  x2,  x2, -64
+    sd    x8,   0(x2)
+    addi  x8,  x2,  64
+    sd    x1,  -8(x8)
+    sd   x10, -16(x8)
+    sd   x11, -24(x8)
+    sd   x12, -32(x8)
+    sd   x13, -40(x8)
+    sd   x14, -48(x8)
+    sd   x15, -56(x8)
+
+    # Address of matrix A = 200
+    # Address of matrix B = 400
+    # Address of matrix C = 600
+    addi x10,  x0, 600
+    addi x11,  x0, 200
+    addi x12,  x0, 400
+
+    # Matrix A = M (rows) * N (cols)
+    # Matrix B = N (rows) * K (cols)
+    # Matrix C = M (rows) * K (cols)
+    # M = 3, N = 4, K = 5
+    addi x13,  x0,   3
+    addi x14,  x0,   4
+    addi x15,  x0,   5
+
+    # Call subroutine MMA(C, A, B, M, N, K)
+    # C += A * B
+    jal   x1, MMA
+
+    # Clear MAIN stack
+    ld    x1,  -8(x8)
+    ld   x10, -16(x8)
+    ld   x11, -24(x8)
+    ld   x12, -32(x8)
+    ld   x13, -40(x8)
+    ld   x14, -48(x8)
+    ld   x15, -56(x8)
+    ld    x8,   0(x2)
+    addi  x2,  x2,  64
+
+    # End of the program (x1 == 0)
+    jalr  x0, 0(x1)
+
+
+MMA:
+    addi  x2,  x2, -80      
+    sd    x8,   0(x2)
+    addi  x8,  x2,  80
+
+    sd   x18,  -8(x8)
+    sd   x19, -16(x8)
+    sd   x20, -24(x8)
+    sd   x21, -32(x8)
+    sd   x22, -40(x8)
+    sd   x23, -48(x8)
+    sd   x24, -56(x8)
+    sd   x25, -64(x8)
+    sd   x26, -72(x8)
+
+    add  x18,  x0,  x0      # x18 = m
+L1:
+    bge  x18, x13, L1_EXIT
+    add  x19,  x0,  x0      # x19 = k
+L2:
+    bge  x19, x15, L2_EXIT
+    add  x20,  x0,  x0      # x20 = n
+L3:
+    bge  x20, x14, L3_EXIT
+
+    # Matrix A
+    mul  x21, x18, x14
+    add  x21, x21, x20
+    slli x21, x21, 3
+    add  x21, x11, x21
+    ld   x22,   0(x21)
+
+    # Matrix B
+    mul  x23, x20, x15
+    add  x23, x23, x19
+    slli x23, x23, 3
+    add  x23, x12, x23
+    ld   x24,   0(x23)
+   
+    # Matrix C
+    mul  x25, x18, x15
+    add  x25, x25, x19
+    slli x25, x25, 3
+    add  x25, x10, x25
+    ld   x26,   0(x25)
+
+    # C = A * B
+    mul  x24, x22, x24 
+    add  x26, x26, x24
+    sd   x26,   0(x25)
+
+    addi x20, x20,   1      # n++
+    jal   x0, L3
+
+L3_EXIT:
+    addi x19, x19,   1      # k++
+    jal   x0, L2
+
+L2_EXIT:
+    addi x18, x18,   1      # m++
+    jal   x0, L1
+
+L1_EXIT:
+
+    ld   x18,  -8(x8)
+    ld   x19, -16(x8)
+    ld   x20, -24(x8)
+    ld   x21, -32(x8)
+    ld   x22, -40(x8)
+    ld   x23, -48(x8)
+    ld   x24, -56(x8)
+    ld   x25, -64(x8)
+    ld   x26, -72(x8)
+    ld    x8,   0(x2)
+    addi  x2,  x2,  80
+    jalr x0, 0(x1)
+

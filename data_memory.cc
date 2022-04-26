@@ -70,6 +70,10 @@ void data_memory_t::load_block(uint64_t m_addr, uint64_t m_block_size) {
         cerr << "Error: memory address " << m_addr << " is out of bounds" << endl;
         exit(1);
     }
+    else if(m_addr < code_segment_size) {
+        cerr << "Error: memory address " << m_addr << " is in the code segment" << endl;
+        exit(1);
+    }
 
     // Mark all doublewords in the requested block are accessed.
     for(uint64_t i = 0; i < m_block_size>>3; i++) { accessed[(m_addr>>3)+i] = true; }
