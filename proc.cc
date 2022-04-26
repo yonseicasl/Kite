@@ -42,7 +42,7 @@ void proc_t::init(const char *m_program_code) {
     reg_file = new reg_file_t();                        // Create a register file.
     alu = new alu_t(&ticks);                            // Create an ALU.
 
-    data_memory = new data_memory_t(&ticks, 1024, 0);   // Create a data memory.
+    data_memory = new data_memory_t(&ticks, 4096, 0);   // Create a data memory.
     data_cache = new data_cache_t(&ticks, 1024, 8, 1);  // Create a data cache.
     data_memory->connect(data_cache);                   // Connect the memory to cache.
     data_cache->connect(data_memory);                   // Connect the cache to memory.

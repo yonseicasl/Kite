@@ -16,6 +16,7 @@
 #      I-type: addi, andi, jalr, slli, srai, srli, ld, ori, xori
 #      S-type: sd
 #      SB-type: beq, bge, blt, bne
+#      U-type: lui
 #      UJ-type: jal
 #      No-type: nop
 
@@ -24,5 +25,4 @@ loop:   beq  x11, x0,  exit
         add  x10, x11, x0
         add  x11, x5,  x0
         beq  x0,  x0,  loop
-exit:   sd   x10, 400(x0)
-
+exit:   sd   x10, 2000(x0)

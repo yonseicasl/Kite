@@ -117,6 +117,11 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
     inst_t inst;
     // Set the PC of instruction.
     inst.pc = memory.size() << 2;
+    if(inst.pc >= code_segment_size) {
+        cerr << "Error: program size goes out of the code segment." << endl;
+        exit(1);
+    }
+
     // Get the opcode of instruction.
     inst.op = get_opcode(args[0]);
     if(inst.op >= num_kite_opcodes) {

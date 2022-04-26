@@ -142,3 +142,7 @@ Update history:
       for initialization.
     - #include <cstring> is added to data_memory.cc because of the compiler
       error of "memset was not declared in this scope."
+    - The default size of memory is increased from 1KB to 4KB. The first 1KB is
+      assumed to be reserved for the code segment and thus inaccessible by load
+      or store instructions. Addresses in the code segment are used as PCs of
+      instructions.

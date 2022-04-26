@@ -255,6 +255,12 @@ static std::string kite_reg_str[num_kite_regs] __attribute__((unused)) = {
 // Numbers
 static std::string numbers = "0123456789";
 
+// Code segment size
+#define code_segment_size 1024
+
+// Minimum memory size
+#define min_memory_size   2048
+
 // Convert a string to kite_opcode
 #define get_opcode(m_string) \
     (kite_opcode)distance(&kite_opcode_str[0], find(&kite_opcode_str[0], &kite_opcode_str[num_kite_opcodes], m_string.c_str()))

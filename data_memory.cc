@@ -22,6 +22,10 @@ data_memory_t::data_memory_t(uint64_t *m_ticks, uint64_t m_memory_size, uint64_t
         cerr << "Error: memory size must be a multiple of doubleword" << endl;
         exit(1);
     }
+    if(memory_size < min_memory_size) {
+        cerr << "Error: memory size has to be at least 2KB" << endl;
+        exit(1);
+    }
 
     // Allocate a memory space in unit of doublewords.
     memory = new int64_t[num_dwords];
@@ -124,6 +128,11 @@ void data_memory_t::load_memory_state() {
         if((memory_addr+8) > memory_size) {
             cerr << "Error: memory address " << memory_addr << " is out of bounds"
                  << " at line #" << line_num << " of memory_state" << endl;
+            exit(1);
+        }
+        else if(memory_addr < code_segment_size) {
+            cerr << "Error: memory address below " << code_segment_size
+                 << " is reserved for the code segment" << endl;
             exit(1);
         }
         // Check if multiple different values are defined at the same memory address.
