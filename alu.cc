@@ -23,7 +23,7 @@ inst_t* alu_t::get_output() {
         // Mark the rd value of instruction is ready for forwarding.
         // The rd value of ld instruction becomes ready in the memory stage.
 #ifdef DATA_FWD
-        if(inst && (inst->rd_num > 0) && (inst->op != op_ld)) {
+        if(inst && (inst->rd_num > 0) && !is_op_load(inst->op)) {
             inst->rd_ready = true;
         }
 #endif
@@ -76,8 +76,17 @@ void alu_t::run(inst_t *m_inst) {
         case op_srli: { m_inst->rd_val = uint64_t(m_inst->rs1_val) >> m_inst->imm; break; }
         case op_ori:  { m_inst->rd_val = m_inst->rs1_val | m_inst->imm; break; }
         case op_xori: { m_inst->rd_val = m_inst->rs1_val ^ m_inst->imm; break; }
+        case op_lb:
+        case op_lbu:
         case op_ld:  
-        case op_sd:   { m_inst->memory_addr  = m_inst->rs1_val + m_inst->imm; break; }
+        case op_lh:
+        case op_lhu:
+        case op_lw:
+        case op_lwu:
+        case op_sb:
+        case op_sd:
+        case op_sh:
+        case op_sw:   { m_inst->memory_addr  = m_inst->rs1_val + m_inst->imm; break; }
         case op_beq:  { m_inst->branch_target = (m_inst->rs1_val == m_inst->rs2_val) ? 
                                                 (m_inst->pc + (m_inst->imm << 1)) :
                                                 (m_inst->pc + 4); break; }

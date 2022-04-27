@@ -80,7 +80,22 @@ bool data_cache_t::is_free() const { return !missed_inst; }
 void data_cache_t::read(inst_t *m_inst) {
     // Check the memory address alignment.
     uint64_t addr = m_inst->memory_addr;
-    if(addr & 0b111) {
+    uint64_t data_size = 0, data_mask = -1;
+    bool sign_ext = 1;
+    switch(m_inst->op) {
+        case op_ld:  { data_size = 8; data_mask = -1;         break; }
+        case op_lwu: { sign_ext = 0; }
+        case op_lw:  { data_size = 4; data_mask = 0xffffffff; break;}
+        case op_lhu: { sign_ext = 0; }
+        case op_lh:  { data_size = 2; data_mask = 0xffff;     break; } 
+        case op_lbu: { sign_ext = 0; }
+        case op_lb:  { data_size = 1; data_mask = 0xf;        break; }
+        default:     { break; }
+    }
+    // Check if the first and last byte of the memory access belongs to
+    // the same cache block. Load across cache blocks is prohibited.
+    if(((addr & set_mask) >> block_offset) != 
+      (((addr + data_size - 1) & set_mask) >> block_offset)) {
         cerr << "Error: invalid alignment of memory address " << addr << endl;
         exit(1);
     }
@@ -96,8 +111,12 @@ void data_cache_t::read(inst_t *m_inst) {
     if(block) { // Cache hit
         // Update the last access time.
         block->last_access = *ticks;
-        // Read a doubleword in the block.
-        m_inst->rd_val = *(block->data + ((addr & block_mask) >> 3));
+        // Read the right-sized data out of the cache block.
+        int64_t data = 0;
+        memcpy(&data, ((uint8_t*)block->data) + (addr & block_mask), data_size);
+        // Do sign extension if necessary.
+        data |= (sign_ext && (data >> ((data_size << 3) - 1))) ? ~data_mask : 0;
+        m_inst->rd_val = data;
 #ifdef DATA_FWD
         m_inst->rd_ready = true;
 #endif
@@ -119,7 +138,18 @@ void data_cache_t::read(inst_t *m_inst) {
 void data_cache_t::write(inst_t *m_inst) {
     // Check the memory address alignment.
     uint64_t addr = m_inst->memory_addr;
-    if(addr & 0b111) {
+    uint64_t data_size = 0;
+    switch(m_inst->op) {
+        case op_sd:  { data_size = 8; break; }
+        case op_sw:  { data_size = 4; break;}
+        case op_sh:  { data_size = 2; break; } 
+        case op_sb:  { data_size = 1; break; }
+        default:     { break; }
+    }
+    // Check if the first and last byte of the memory access belongs to
+    // the same cache block. Store across cache blocks is prohibited.
+    if(((addr & set_mask) >> block_offset) != 
+      (((addr + data_size - 1) & set_mask) >> block_offset)) {
         cerr << "Error: invalid alignment of memory address " << addr << endl;
         exit(1);
     }
@@ -137,7 +167,7 @@ void data_cache_t::write(inst_t *m_inst) {
         block->last_access = *ticks;
         block->dirty = true;
         // Write a doubleword in the block.
-        *(block->data + ((addr & block_mask) >> 3)) = m_inst->rs2_val;
+        memcpy(((uint8_t*)block->data) + (addr & block_mask), &(m_inst->rs2_val), data_size);
         num_accesses++;
         num_stores++;
     }
@@ -172,7 +202,7 @@ void data_cache_t::handle_response(int64_t *m_data) {
     *allocator = block_t(tag, m_data, /* valid */ true);
 
     // Replay the cache access.
-    if(missed_inst->op == op_ld) { read(missed_inst); }
+    if(is_op_load(missed_inst->op)) { read(missed_inst); }
     else { write(missed_inst); }
     // Clear the missed instruction so that the cache becomes free.
     missed_inst = 0;

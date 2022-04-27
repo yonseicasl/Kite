@@ -146,3 +146,11 @@ Update history:
       assumed to be reserved for the code segment and thus inaccessible by load
       or store instructions. Addresses in the code segment are used as PCs of
       instructions.
+
+* Update for future release
+    - Support for non-doubleword memory instructions (i.e., lb, lbu, lh, lhu,
+      lw, lwu, sb, sh, sw) is added to data_cache.cc. Restriction on
+      doubleword-granualr address alignment is loosened such that any memory
+      address can be accessed as far as the an access is made within a cache
+      block. If a memory reference spans across multiple cache blocks, Kite
+      throws an error message and terminates the simulation.

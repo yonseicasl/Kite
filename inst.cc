@@ -73,7 +73,7 @@ string get_inst_str(inst_t *inst, bool details) {
             break;
         }
         case op_i_type: {
-            if((inst->op == op_jalr) || (inst->op == op_ld)) {
+            if((inst->op == op_jalr) || is_op_load(inst->op)) {
                 // jalr or ld format: op rd, imm(rs1)
                 ss << kite_opcode_str[inst->op]     << " "
                    << kite_reg_str[inst->rd_num]    << ", " 

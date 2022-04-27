@@ -158,8 +158,8 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
                      << " at line #" << m_line_num << endl;
                 exit(1);
             }
-            if((inst.op == op_jalr) || (inst.op == op_ld)) {
-                // jalr and ld format: op rd, imm(rs1)
+            if((inst.op == op_jalr) || is_op_load(inst.op)) {
+                // jalr and l* format: op rd, imm(rs1)
                 if(!is_reg_str(args[1]) || !is_num_str(args[2]) || !is_reg_str(args[3])) {
                     cerr << "Error: invalid instruction format: " << m_inst_str
                          << " at line #" << m_line_num << endl;

@@ -126,8 +126,8 @@ void proc_t::memory() {
             // Remove the instruction from the EX/MEM pipeline register.
             ex_mem_preg.clear();
             // Access the data memory for a load or store.
-            if(mem_inst->op == op_ld) { data_cache->read(mem_inst); }
-            else if(mem_inst->op == op_sd) { data_cache->write(mem_inst); }
+            if(is_op_load(mem_inst->op)) { data_cache->read(mem_inst); }
+            else if(is_op_store(mem_inst->op)) { data_cache->write(mem_inst); }
         }
         // Data cache is done with the instruction.
         if(!data_cache->run()) {
