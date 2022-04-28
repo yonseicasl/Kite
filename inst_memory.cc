@@ -150,6 +150,13 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
             inst.rd_num  = get_regnum(args[1]);
             inst.rs1_num = get_regnum(args[2]);
             inst.rs2_num = get_regnum(args[3]);
+            // Check the range of register #.
+            if((inst.rd_num  >= num_kite_regs) ||
+               (inst.rs1_num >= num_kite_regs) || (inst.rs2_num >= num_kite_regs)) {
+                cerr << "Error: invalid registers: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
             break;
         }
         case op_i_type: {
@@ -186,6 +193,12 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
                      << " at line #" << m_line_num << endl;
                 exit(1);
             }
+            // Check the range of register #.
+            if((inst.rd_num  >= num_kite_regs) || (inst.rs1_num >= num_kite_regs)) {
+                cerr << "Error: invalid registers: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
             break;
         }
         case op_s_type: {
@@ -209,6 +222,12 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
                 exit(1);
             }
             inst.rs1_num = get_regnum(args[3]);
+            // Check the range of register #.
+            if((inst.rs1_num >= num_kite_regs) || (inst.rs2_num >= num_kite_regs)) {
+                cerr << "Error: invalid registers: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
             break;
         }
         case op_sb_type: {
@@ -226,6 +245,12 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
             inst.rs1_num = get_regnum(args[1]);
             inst.rs2_num = get_regnum(args[2]);
             inst.label   = args[3];
+            // Check the range of register #.
+            if((inst.rs1_num >= num_kite_regs) || (inst.rs2_num >= num_kite_regs)) {
+                cerr << "Error: invalid registers: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
             break;
         }
         case op_u_type: {
@@ -248,6 +273,12 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
                      << " at line #" << m_line_num << endl;
                 exit(1);
             }
+            // Check the range of register #.
+            if(inst.rd_num  >= num_kite_regs) {
+                cerr << "Error: invalid registers: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
             break;
         }
         case op_uj_type: {
@@ -264,6 +295,12 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
             }
             inst.rd_num  = get_regnum(args[1]);
             inst.label   = args[2];
+            // Check the range of register #.
+            if(inst.rd_num  >= num_kite_regs) {
+                cerr << "Error: invalid registers: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
             break;
         }
         default: { break; } // Nothing to do

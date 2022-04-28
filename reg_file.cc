@@ -20,10 +20,6 @@ reg_file_t::~reg_file_t() {
 
 // Write in the register file. 
 void reg_file_t::write(inst_t *m_inst, unsigned m_index, int64_t m_value) {
-    if(m_index >= num_kite_regs) {
-        cerr << "Error: cannot write register x" << m_index << endl;
-        exit(1);
-    }
     regs[m_index] = m_value;
     // Clear the dependency checker if no subsequent instructions have claimed
     // the destination register of a retiring instruction.

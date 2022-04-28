@@ -154,3 +154,5 @@ Update history:
       address can be accessed as far as the an access is made within a cache
       block. If a memory reference spans across multiple cache blocks, Kite
       throws an error message and terminates the simulation.
+    - Error checking for the validity of register number is added to
+      inst_memory.cc when loading a program code.
