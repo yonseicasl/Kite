@@ -31,18 +31,18 @@ enum kite_opcode {
     op_srli,
     op_lb,
     op_lbu,
-    op_ld,
     op_lh,
     op_lhu,
     op_lw,
     op_lwu,
+    op_ld,
     op_ori,
     op_xori,
     /* S-type */
     op_sb,
-    op_sd,
     op_sh,
     op_sw,
+    op_sd,
     /* SB-type */
     op_beq,
     op_bge,
@@ -131,18 +131,18 @@ static kite_opcode_type kite_op_type[num_kite_opcodes] __attribute__((unused)) =
     op_i_type,  // op_srli
     op_i_type,  // op_lb
     op_i_type,  // op_lbu
-    op_i_type,  // op_ld
     op_i_type,  // op_lh
     op_i_type,  // op_lhu
     op_i_type,  // op_lw
     op_i_type,  // op_lwu
+    op_i_type,  // op_ld
     op_i_type,  // op_ori
     op_i_type,  // op_xori
     /* S-type */
     op_s_type,  // op_sb
-    op_s_type,  // op_sd
     op_s_type,  // op_sh
     op_s_type,  // op_sw
+    op_s_type,  // op_sd
     /* SB-type */
     op_sb_type, // op_beq
     op_sb_type, // op_bge
@@ -180,18 +180,18 @@ static unsigned kite_op_latency[num_kite_opcodes] __attribute__((unused)) = {
     1,  // op_srli
     1,  // op_lb
     1,  // op_lbu
-    1,  // op_ld
     1,  // op_lh
     1,  // op_lhu
     1,  // op_lw
     1,  // op_lwu
+    1,  // op_ld
     1,  // op_ori
     1,  // op_xori
     /* S-type */
     1,  // op_sb
-    1,  // op_sd
     1,  // op_sh
     1,  // op_sw
+    1,  // op_sd
     /* SB-type */
     1,  // op_beq
     1,  // op_bge
@@ -229,18 +229,18 @@ static std::string kite_opcode_str[num_kite_opcodes] __attribute__((unused)) = {
     "srli",
     "lb",
     "lbu",
-    "ld",
     "lh",
     "lhu",
     "lw",
     "lwu",
+    "ld",
     "ori",
     "xori",
     /* S-type */
     "sb",
-    "sd",
     "sh",
     "sw",
+    "sd",
     /* SB-type */
     "beq",
     "bge",
@@ -307,12 +307,11 @@ static std::string numbers = "0123456789";
 
 // Check if kite_opcode_type is a load
 #define is_op_load(m_op) \
-    ((m_op == op_lb) || (m_op == op_lbu) || (m_op == op_ld) || \
-     (m_op == op_lh) || (m_op == op_lhu) || (m_op == op_lw) || (m_op == op_lwu))
+    ((m_op >= op_lb) && (m_op <= op_ld))
 
 // Check if kite_opcode_type is a store
 #define is_op_store(m_op) \
-    ((m_op == op_sb) || (m_op == op_sd) || (m_op == op_sh) || (m_op == op_sw))
+    ((m_op >= op_sb) && (m_op <= op_sd))
 
 // Get the execution latency of m_op
 #define get_op_latency(m_op) \

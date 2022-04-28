@@ -19,5 +19,3 @@ $(EXE): $(OBJ)
 
 clean:
 	rm -f $(OBJ) $(EXE)
-	cd doc; make clean
-

@@ -89,7 +89,7 @@ void data_cache_t::read(inst_t *m_inst) {
         case op_lhu: { sign_ext = 0; }
         case op_lh:  { data_size = 2; data_mask = 0xffff;     break; } 
         case op_lbu: { sign_ext = 0; }
-        case op_lb:  { data_size = 1; data_mask = 0xf;        break; }
+        case op_lb:  { data_size = 1; data_mask = 0xff;       break; }
         default:     { break; }
     }
     // Check if the first and last byte of the memory access belongs to
@@ -166,7 +166,7 @@ void data_cache_t::write(inst_t *m_inst) {
         // Update the last access time and dirty flag.
         block->last_access = *ticks;
         block->dirty = true;
-        // Write a doubleword in the block.
+        // Write the right-sized data in the cache block.
         memcpy(((uint8_t*)block->data) + (addr & block_mask), &(m_inst->rs2_val), data_size);
         num_accesses++;
         num_stores++;
