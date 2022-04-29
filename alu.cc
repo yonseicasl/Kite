@@ -101,6 +101,10 @@ void alu_t::run(inst_t *m_inst) {
                                                 (m_inst->pc + 4); break; }
         case op_lui:  { m_inst->rd_val = m_inst->imm << 20; break; }
         case op_jal:  { m_inst->rd_val = m_inst->pc + 4; break; }
+        case op_faddd:{ m_inst->frd_val = m_inst->frs1_val + m_inst->frs2_val; break; }
+        case op_fdivd:{ m_inst->frd_val = m_inst->frs1_val / m_inst->frs2_val; break; }
+        case op_fmuld:{ m_inst->frd_val = m_inst->frs1_val * m_inst->frs2_val; break; }
+        case op_fsubd:{ m_inst->frd_val = m_inst->frs1_val - m_inst->frs2_val; break; }
         default:      { break; } // Nothing to do
     }
 #ifdef DEBUG

@@ -52,6 +52,11 @@ enum kite_opcode {
     op_lui,
     /* UJ-type */
     op_jal,
+    /* RFP-type */
+    op_faddd,
+    op_fdivd,
+    op_fmuld,
+    op_fsubd,
 
     num_kite_opcodes,
 };
@@ -65,7 +70,8 @@ enum kite_opcode_type {
     op_sb_type,
     op_u_type,
     op_uj_type,
-    op_opcode_types,
+    op_rfp_type,
+    num_kite_opcode_types,
 };
 
 // Kite registers
@@ -102,6 +108,38 @@ enum kite_reg {
     reg_x29,
     reg_x30,
     reg_x31,
+    reg_f0,
+    reg_f1,
+    reg_f2,
+    reg_f3,
+    reg_f4,
+    reg_f5,
+    reg_f6,
+    reg_f7,
+    reg_f8,
+    reg_f9,
+    reg_f10,
+    reg_f11,
+    reg_f12,
+    reg_f13,
+    reg_f14,
+    reg_f15,
+    reg_f16,
+    reg_f17,
+    reg_f18,
+    reg_f19,
+    reg_f20,
+    reg_f21,
+    reg_f22,
+    reg_f23,
+    reg_f24,
+    reg_f25,
+    reg_f26,
+    reg_f27,
+    reg_f28,
+    reg_f29,
+    reg_f30,
+    reg_f31,
     num_kite_regs,
 };
 
@@ -152,6 +190,11 @@ static kite_opcode_type kite_op_type[num_kite_opcodes] __attribute__((unused)) =
     op_u_type,  // op_lui
     /* UJ-type */
     op_uj_type, // op_jal
+    /* RFP-type */
+    op_rfp_type,// op_faddd
+    op_rfp_type,// op_fdivd
+    op_rfp_type,// op_fmuld
+    op_rfp_type,// op_fsubd
 };
 
 // Kite instruction ALU latencies aligned with the instructions list
@@ -201,6 +244,11 @@ static unsigned kite_op_latency[num_kite_opcodes] __attribute__((unused)) = {
     1,  // op_lui
     /* UJ-type */
     1,  // op_jal
+    /* RFP-type */
+    1,  // op_faddd
+    2,  // op_fdivd
+    2,  // op_fmuld
+    1,  // op_fsubd
 };
 
 // Kite instruction strings aligned with the instructions list
@@ -250,6 +298,11 @@ static std::string kite_opcode_str[num_kite_opcodes] __attribute__((unused)) = {
     "lui",
     /* UJ-type */
     "jal",
+    /* RFP-type */
+    "fadd.d",
+    "fdiv.d",
+    "fmul.d",
+    "fsub.d",
 };
 
 // Kite register strings aligned with the registers list
@@ -286,6 +339,38 @@ static std::string kite_reg_str[num_kite_regs] __attribute__((unused)) = {
     "x29",
     "x30",
     "x31",
+    "f0",
+    "f1",
+    "f2",
+    "f3",
+    "f4",
+    "f5",
+    "f6",
+    "f7",
+    "f8",
+    "f9",
+    "f10",
+    "f11",
+    "f12",
+    "f13",
+    "f14",
+    "f15",
+    "f16",
+    "f17",
+    "f18",
+    "f19",
+    "f20",
+    "f21",
+    "f22",
+    "f23",
+    "f24",
+    "f25",
+    "f26",
+    "f27",
+    "f28",
+    "f29",
+    "f30",
+    "f31",
 };
 
 // Numbers
@@ -317,13 +402,38 @@ static std::string numbers = "0123456789";
 #define get_op_latency(m_op) \
     kite_op_latency[m_op]
 
+// Number of int registers
+#define num_kite_int_regs (reg_x31 - reg_x0 + 1)
+
+// Number of fp registers
+#define num_kite_fp_regs  (reg_f31 - reg_x0 + 1)
+
 // Convert a string to kite_reg
 #define get_regnum(m_string) \
     (kite_reg)distance(&kite_reg_str[0], find(&kite_reg_str[0], &kite_reg_str[num_kite_regs], m_string.c_str()))
 
+// Convert a string to kite_reg for int registers
+#define get_int_regnum(m_string) \
+    (kite_reg)distance(&kite_reg_str[reg_x0], find(&kite_reg_str[reg_x0], &kite_reg_str[reg_x31+1], m_string.c_str()))
+
+// Convert a string to kite_reg for fp registers
+#define get_fp_regnum(m_string) \
+    (kite_reg)distance(&kite_reg_str[reg_f0], find(&kite_reg_str[reg_f0], &kite_reg_str[reg_f31+1], m_string.c_str()))
+
+// Check if a string is int register
+#define is_int_reg(m_regnum) \
+    ((m_regnum >= reg_x0) && (m_regnum <= reg_x31))
+
+// Check if a string is fp register
+#define is_fp_reg(m_regnum) \
+    ((m_regnum >= reg_f0) && (m_regnum <= reg_f31))
+
 // Convert a string to 64-bit integer.
 #define get_imm(m_string) \
     (int64_t)strtoll(m_string.c_str(), 0, 10)
+
+#define get_double(m_string) \
+    (double)stod(m_string)
 
 // Check if a string is a positive integer.
 #define is_pos_num_str(m_string) \
@@ -341,7 +451,8 @@ static std::string numbers = "0123456789";
 
 // Check if a string has a valid register format.
 #define is_reg_str(m_string) \
-    ((m_string[0] == 'x') && (m_string.find_first_not_of(numbers, 1) == string::npos))
+    (((m_string[0] == 'x') || (m_string[0] == 'f')) && \
+    (m_string.find_first_not_of(numbers, 1) == string::npos))
 
 #endif
 

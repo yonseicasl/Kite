@@ -156,3 +156,6 @@ Update history:
       throws an error message and terminates the simulation.
     - Error checking for the validity of register number is added to
       inst_memory.cc when loading a program code.
+    - Double-precision arithmetic instructions (i.e., fadd.d, fdiv.d, fmul.d,
+      fsub.d) are added to the list of supported instructions. Supporting
+      these instructions required changes to defs.h and reg_file.h/cc files.

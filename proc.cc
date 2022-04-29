@@ -79,7 +79,7 @@ void proc_t::writeback() {
         mem_wb_preg.clear();
         // Write a result to the register file. Discard the x0 register.
         if(inst->rd_num > 0) {
-            reg_file->write(inst, inst->rd_num, inst->rd_val);
+            reg_file->write(inst, inst->rd_num);
         }
 #ifdef DEBUG
         cout << ticks << " : writeback : " << get_inst_str(inst, true) << endl;

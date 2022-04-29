@@ -151,8 +151,8 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
             inst.rs1_num = get_regnum(args[2]);
             inst.rs2_num = get_regnum(args[3]);
             // Check the range of register #.
-            if((inst.rd_num  >= num_kite_regs) ||
-               (inst.rs1_num >= num_kite_regs) || (inst.rs2_num >= num_kite_regs)) {
+            if(!is_int_reg(inst.rd_num)  ||
+               !is_int_reg(inst.rs1_num) || !is_int_reg(inst.rs2_num)) {
                 cerr << "Error: invalid registers: " << m_inst_str
                      << " at line #" << m_line_num << endl;
                 exit(1);
@@ -194,7 +194,7 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
                 exit(1);
             }
             // Check the range of register #.
-            if((inst.rd_num  >= num_kite_regs) || (inst.rs1_num >= num_kite_regs)) {
+            if(!is_int_reg(inst.rd_num)  || !is_int_reg(inst.rs1_num)) {
                 cerr << "Error: invalid registers: " << m_inst_str
                      << " at line #" << m_line_num << endl;
                 exit(1);
@@ -223,7 +223,7 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
             }
             inst.rs1_num = get_regnum(args[3]);
             // Check the range of register #.
-            if((inst.rs1_num >= num_kite_regs) || (inst.rs2_num >= num_kite_regs)) {
+            if(!is_int_reg(inst.rs1_num) || !is_int_reg(inst.rs2_num)) {
                 cerr << "Error: invalid registers: " << m_inst_str
                      << " at line #" << m_line_num << endl;
                 exit(1);
@@ -246,7 +246,7 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
             inst.rs2_num = get_regnum(args[2]);
             inst.label   = args[3];
             // Check the range of register #.
-            if((inst.rs1_num >= num_kite_regs) || (inst.rs2_num >= num_kite_regs)) {
+            if(!is_int_reg(inst.rs1_num) || !is_int_reg(inst.rs2_num)) {
                 cerr << "Error: invalid registers: " << m_inst_str
                      << " at line #" << m_line_num << endl;
                 exit(1);
@@ -274,7 +274,7 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
                 exit(1);
             }
             // Check the range of register #.
-            if(inst.rd_num  >= num_kite_regs) {
+            if(!is_int_reg(inst.rd_num)) {
                 cerr << "Error: invalid registers: " << m_inst_str
                      << " at line #" << m_line_num << endl;
                 exit(1);
@@ -296,7 +296,31 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
             inst.rd_num  = get_regnum(args[1]);
             inst.label   = args[2];
             // Check the range of register #.
-            if(inst.rd_num  >= num_kite_regs) {
+            if(!is_int_reg(inst.rd_num)) {
+                cerr << "Error: invalid registers: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
+            break;
+        }
+        case op_rfp_type: {
+            // RFP-type format: op frd, frs1, frs2
+            if(args.size() != 4) {
+                cerr << "Error: incomplete instruction: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
+            if(!is_reg_str(args[1]) || !is_reg_str(args[2]) || !is_reg_str(args[3])) {
+                cerr << "Error: invalid instruction format: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
+            inst.rd_num  = get_regnum(args[1]);
+            inst.rs1_num = get_regnum(args[2]);
+            inst.rs2_num = get_regnum(args[3]);
+            // Check the range of register #.
+            if(!is_fp_reg(inst.rd_num)  ||
+               !is_fp_reg(inst.rs1_num) || !is_fp_reg(inst.rs2_num)) {
                 cerr << "Error: invalid registers: " << m_inst_str
                      << " at line #" << m_line_num << endl;
                 exit(1);
