@@ -453,6 +453,11 @@ static std::string numbers = "0123456789";
 #define is_num_str(m_string) \
     (is_pos_num_str(m_string) || is_neg_num_str(m_string))
 
+// Check if a string is a fp number.
+#define is_fp_str(m_string) \
+    (is_num_str(m_string.substr(0, m_string.find('.'))) && \
+     is_pos_num_str(m_string.substr(m_string.find('.')+1)))
+
 // Check if a string has a valid register format.
 #define is_reg_str(m_string) \
     (((m_string[0] == 'x') || (m_string[0] == 'f')) && \
