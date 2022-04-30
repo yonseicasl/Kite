@@ -139,7 +139,7 @@ void reg_file_t::print_state() const {
         cout << "x" << (i - reg_x0) << " = " << regs[i] << endl;
     }
     for(unsigned i = reg_f0; i <= reg_f31; i++) {
-        cout << "f" << (i - reg_f0) << " = " << double(fp_reg(regs[i])) << endl;
+        cout << "f" << (i - reg_f0) << " = " << fp_reg(regs[i]) << endl;
     }
 }
 
