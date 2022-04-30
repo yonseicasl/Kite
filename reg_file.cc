@@ -2,7 +2,6 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
-#include <utility>
 #include "reg_file.h"
 
 using namespace std;

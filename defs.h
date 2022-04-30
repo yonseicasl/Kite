@@ -419,23 +419,9 @@ static std::string numbers = "0123456789";
 #define get_op_latency(m_op) \
     kite_op_latency[m_op]
 
-// Number of int registers
-#define num_kite_int_regs (reg_x31 - reg_x0 + 1)
-
-// Number of fp registers
-#define num_kite_fp_regs  (reg_f31 - reg_x0 + 1)
-
 // Convert a string to kite_reg
 #define get_regnum(m_string) \
     (kite_reg)distance(&kite_reg_str[0], find(&kite_reg_str[0], &kite_reg_str[num_kite_regs], m_string.c_str()))
-
-// Convert a string to kite_reg for int registers
-#define get_int_regnum(m_string) \
-    (kite_reg)distance(&kite_reg_str[reg_x0], find(&kite_reg_str[reg_x0], &kite_reg_str[reg_x31+1], m_string.c_str()))
-
-// Convert a string to kite_reg for fp registers
-#define get_fp_regnum(m_string) \
-    (kite_reg)distance(&kite_reg_str[reg_f0], find(&kite_reg_str[reg_f0], &kite_reg_str[reg_f31+1], m_string.c_str()))
 
 // Check if a string is int register
 #define is_int_reg(m_regnum) \
