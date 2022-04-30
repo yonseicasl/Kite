@@ -2,6 +2,7 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <utility>
 #include "reg_file.h"
 
 using namespace std;
@@ -20,8 +21,7 @@ reg_file_t::~reg_file_t() {
 
 // Write in the register file. 
 void reg_file_t::write(inst_t *m_inst, unsigned m_regnum) {
-    if(is_int_reg(m_regnum)) { regs[m_regnum - reg_x0] = m_inst->rd_val; }
-    else { fregs[m_regnum - reg_f0] = m_inst->frd_val; }
+    regs[m_regnum] = m_inst->rd_val;
     // Clear the dependency checker if no subsequent instructions have claimed
     // the destination register of a retiring instruction.
     if(dep[m_regnum] == m_inst) { dep[m_regnum] = 0; }
@@ -35,35 +35,23 @@ bool reg_file_t::dep_check(inst_t *m_inst) {
         // Check the data hazard for rs1.
         if((prod_inst = dep[m_inst->rs1_num])) {
             // Rs1 value is forwarded from a producer instruction.
-            if(prod_inst->rd_ready) {
-                if(is_int_reg(m_inst->rs1_num)) { m_inst->rs1_val = prod_inst->rd_val; }
-                else { m_inst->frs1_val = prod_inst->frd_val; }
-            }
+            if(prod_inst->rd_ready) { m_inst->rs1_val = prod_inst->rd_val; }
             // Rs1 is not ready yet.
             else { stall = true; }
         }
         // Rs1 is clear to go.
-        else {
-            if(is_int_reg(m_inst->rs1_num)) { m_inst->rs1_val = regs[m_inst->rs1_num-reg_x0]; }
-            else { m_inst->frs1_val = fregs[m_inst->rs1_num-reg_f0]; }
-        }
+        else { m_inst->rs1_val = regs[m_inst->rs1_num]; }
     }
     if(m_inst->rs2_num > 0) {
         // Check the data hazard for rs2.
         if((prod_inst = dep[m_inst->rs2_num])) {
             // Rs2 value is forwarded from a producer instruction.
-            if(prod_inst->rd_ready) {
-                if(is_int_reg(m_inst->rs2_num)) { m_inst->rs2_val = prod_inst->rd_val; }
-                else { m_inst->frs2_val = prod_inst->frd_val; }
-            }
+            if(prod_inst->rd_ready) { m_inst->rs2_val = prod_inst->rd_val; }
             // Rs2 is not ready yet.
             else { stall = true; }
         }
         // Rs2 is clear to go.
-        else {
-            if(is_int_reg(m_inst->rs2_num)) { m_inst->rs2_val = regs[m_inst->rs2_num-reg_x0]; }
-            else { m_inst->frs2_val = fregs[m_inst->rs2_num-reg_f0]; }
-        }
+        else { m_inst->rs2_val = regs[m_inst->rs2_num]; }
     }
     if(!stall && (m_inst->rd_num > 0)) {
         // This instruction is the last producer of rd.
@@ -119,9 +107,7 @@ void reg_file_t::load_reg_state() {
                  << " at line #" << line_num << " of reg_state" << endl;
             exit(1);
         }
-
-        if(is_int_reg(reg_num)) { regs[reg_num - reg_x0] = get_imm(line); }
-        else { fregs[reg_num - reg_f0] = get_double(line); }
+        regs[reg_num] = is_int_reg(reg_num) ? get_imm(line) : int_reg(get_fp(line));
         
         // Mark that the register state has been loaded.
         if((loaded >> reg_num) & 0b1) {
@@ -150,10 +136,10 @@ void reg_file_t::load_reg_state() {
 void reg_file_t::print_state() const {
     cout << endl << "Register state:" << endl;
     for(unsigned i = reg_x0; i <= reg_x31; i++) {
-        cout << "x" << (i - reg_x0) << " = " << regs[i - reg_x0] << endl;
+        cout << "x" << (i - reg_x0) << " = " << regs[i] << endl;
     }
     for(unsigned i = reg_f0; i <= reg_f31; i++) {
-        cout << "f" << (i - reg_f0) << " = " << fregs[i - reg_f0] << endl;
+        cout << "f" << (i - reg_f0) << " = " << double(fp_reg(regs[i])) << endl;
     }
 }
 

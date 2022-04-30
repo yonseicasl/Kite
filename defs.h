@@ -52,12 +52,15 @@ enum kite_opcode {
     op_lui,
     /* UJ-type */
     op_jal,
-    /* RFP-type */
+    /* FR-type */
     op_faddd,
     op_fdivd,
     op_fmuld,
     op_fsubd,
-
+    /* FI-type */
+    op_fld,
+    /* FS-type */
+    op_fsd,
     num_kite_opcodes,
 };
 
@@ -70,7 +73,9 @@ enum kite_opcode_type {
     op_sb_type,
     op_u_type,
     op_uj_type,
-    op_rfp_type,
+    op_fr_type,
+    op_fi_type,
+    op_fs_type,
     num_kite_opcode_types,
 };
 
@@ -190,11 +195,15 @@ static kite_opcode_type kite_op_type[num_kite_opcodes] __attribute__((unused)) =
     op_u_type,  // op_lui
     /* UJ-type */
     op_uj_type, // op_jal
-    /* RFP-type */
-    op_rfp_type,// op_faddd
-    op_rfp_type,// op_fdivd
-    op_rfp_type,// op_fmuld
-    op_rfp_type,// op_fsubd
+    /* FR-type */
+    op_fr_type, // op_faddd
+    op_fr_type, // op_fdivd
+    op_fr_type, // op_fmuld
+    op_fr_type, // op_fsubd
+    /* FI-type */
+    op_fi_type, // op_fld
+    /* FS-type */
+    op_fs_type, // op_fsd
 };
 
 // Kite instruction ALU latencies aligned with the instructions list
@@ -244,11 +253,15 @@ static unsigned kite_op_latency[num_kite_opcodes] __attribute__((unused)) = {
     1,  // op_lui
     /* UJ-type */
     1,  // op_jal
-    /* RFP-type */
+    /* FR-type */
     1,  // op_faddd
     2,  // op_fdivd
     2,  // op_fmuld
     1,  // op_fsubd
+    /* FI-type */
+    1,  // op_fld
+    /* FS-type */
+    1,  // op_fsd
 };
 
 // Kite instruction strings aligned with the instructions list
@@ -298,11 +311,15 @@ static std::string kite_opcode_str[num_kite_opcodes] __attribute__((unused)) = {
     "lui",
     /* UJ-type */
     "jal",
-    /* RFP-type */
+    /* FR-type */
     "fadd.d",
     "fdiv.d",
     "fmul.d",
     "fsub.d",
+    /* FI-type */
+    "fld",
+    /* FS-type */
+    "fsd",
 };
 
 // Kite register strings aligned with the registers list
@@ -392,11 +409,11 @@ static std::string numbers = "0123456789";
 
 // Check if kite_opcode_type is a load
 #define is_op_load(m_op) \
-    ((m_op >= op_lb) && (m_op <= op_ld))
+    (((m_op >= op_lb) && (m_op <= op_ld)) || (m_op == op_fld))
 
 // Check if kite_opcode_type is a store
 #define is_op_store(m_op) \
-    ((m_op >= op_sb) && (m_op <= op_sd))
+    (((m_op >= op_sb) && (m_op <= op_sd)) || (m_op == op_fsd))
 
 // Get the execution latency of m_op
 #define get_op_latency(m_op) \
@@ -432,7 +449,8 @@ static std::string numbers = "0123456789";
 #define get_imm(m_string) \
     (int64_t)strtoll(m_string.c_str(), 0, 10)
 
-#define get_double(m_string) \
+// Convert a string to double-precision fp.
+#define get_fp(m_string) \
     (double)stod(m_string)
 
 // Check if a string is a positive integer.
@@ -453,6 +471,12 @@ static std::string numbers = "0123456789";
 #define is_reg_str(m_string) \
     (((m_string[0] == 'x') || (m_string[0] == 'f')) && \
     (m_string.find_first_not_of(numbers, 1) == string::npos))
+
+// Read a register as int.
+template <typename T> int64_t int_reg(T m_reg) { return *((int64_t*)&m_reg); }
+
+// Read a register as fp.
+template <typename T> double fp_reg(T m_reg) { return *((double*)&m_reg); }
 
 #endif
 

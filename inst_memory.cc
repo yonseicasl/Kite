@@ -194,7 +194,7 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
                 exit(1);
             }
             // Check the range of register #.
-            if(!is_int_reg(inst.rd_num)  || !is_int_reg(inst.rs1_num)) {
+            if(!is_int_reg(inst.rd_num) || !is_int_reg(inst.rs1_num)) {
                 cerr << "Error: invalid registers: " << m_inst_str
                      << " at line #" << m_line_num << endl;
                 exit(1);
@@ -303,8 +303,8 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
             }
             break;
         }
-        case op_rfp_type: {
-            // RFP-type format: op frd, frs1, frs2
+        case op_fr_type: {
+            // FR-type format: op rd, rs1, rs2
             if(args.size() != 4) {
                 cerr << "Error: incomplete instruction: " << m_inst_str
                      << " at line #" << m_line_num << endl;
@@ -321,6 +321,64 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
             // Check the range of register #.
             if(!is_fp_reg(inst.rd_num)  ||
                !is_fp_reg(inst.rs1_num) || !is_fp_reg(inst.rs2_num)) {
+                cerr << "Error: invalid registers: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
+            break;
+        }
+        case op_fi_type: {
+            // FI-type format: op rd, imm(rs1) 
+            if(args.size() != 4) {
+                cerr << "Error: incomplete instruction: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
+            if(!is_reg_str(args[1]) || !is_num_str(args[2]) || !is_reg_str(args[3])) {
+                cerr << "Error: invalid instruction format: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
+            inst.rd_num  = get_regnum(args[1]);
+            inst.imm     = get_imm(args[2]);
+            // Check if the immediate value fits into 12 bits.
+            if(inst.imm >= 0 ? inst.imm >> 11 : (inst.imm >> 11) != -1) {
+                cerr << "Error: invalid immediate value: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
+            inst.rs1_num = get_regnum(args[3]);
+            // Check the range of register #.
+            if(!is_fp_reg(inst.rd_num) || !is_int_reg(inst.rs1_num)) {
+                cerr << "Error: invalid registers: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
+            break;
+        }
+        case op_fs_type: {
+            // FS-type format: op rs2, imm(rs1)
+            if(args.size() != 4) {
+                cerr << "Error: incomplete instruction: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
+            if(!is_reg_str(args[1]) || !is_num_str(args[2]) || !is_reg_str(args[3])) {
+                cerr << "Error: invalid instruction format: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
+            inst.rs2_num = get_regnum(args[1]);
+            inst.imm     = get_imm(args[2]);
+            // Check if the immediate value fits into 12 bits.
+            if(inst.imm >= 0 ? inst.imm >> 11 : (inst.imm >> 11) != -1) {
+                cerr << "Error: invalid immediate value: " << m_inst_str
+                     << " at line #" << m_line_num << endl;
+                exit(1);
+            }
+            inst.rs1_num = get_regnum(args[3]);
+            // Check the range of register #.
+            if(!is_int_reg(inst.rs1_num) || !is_fp_reg(inst.rs2_num)) {
                 cerr << "Error: invalid registers: " << m_inst_str
                      << " at line #" << m_line_num << endl;
                 exit(1);

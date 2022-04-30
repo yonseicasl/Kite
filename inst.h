@@ -15,7 +15,6 @@ public:
     kite_opcode op;                     // Instruction operation
     int rd_num, rs1_num, rs2_num;       // Register operand indices
     int64_t rd_val, rs1_val, rs2_val;   // Register operand values
-    double frd_val, frs1_val, frs2_val; // FP register operand values
     int64_t imm;                        // Immediate
     std::string label;                  // Label
     uint64_t memory_addr;               // Data memory address

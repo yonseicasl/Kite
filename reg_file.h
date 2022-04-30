@@ -17,8 +17,7 @@ public:
     void print_state() const;                       // Print register state.
 
 private:
-    int64_t regs[num_kite_int_regs];                // Array of 64-bit int registers
-    double fregs[num_kite_fp_regs];                 // Array of 64-bit FP registers
+    int64_t regs[num_kite_regs];                    // Array of registers
     inst_t *dep[num_kite_regs];                     // Dependency check table
 };
 

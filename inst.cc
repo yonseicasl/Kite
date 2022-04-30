@@ -175,6 +175,40 @@ string get_inst_str(inst_t *inst, bool details) {
             }
             break;
         }
+        case op_fr_type: {
+            // FR-type format: op rd, rs1, rs2
+            ss << kite_opcode_str[inst->op]     << " "
+               << kite_reg_str[inst->rd_num]    << ", "
+               << kite_reg_str[inst->rs1_num]   << ", "
+               << kite_reg_str[inst->rs2_num];
+            // Show register values.
+            if(details) {
+                ss << " ["
+                   << kite_opcode_str[inst->op]     << " "
+                   << fp_reg(inst->rd_val)          << ", "
+                   << fp_reg(inst->rs1_val)         << ", "
+                   << fp_reg(inst->rs2_val)
+                   << "]";
+            }
+            break;
+        }
+        case op_fi_type: {
+            // jalr or ld format: op rd, imm(rs1)
+            ss << kite_opcode_str[inst->op]     << " "
+               << kite_reg_str[inst->rd_num]    << ", " 
+               << inst->imm                     << "("
+               << kite_reg_str[inst->rs1_num]   << ")";
+            // Show register values.
+            if(details) {
+                ss << " ["
+                   << kite_opcode_str[inst->op] << " "
+                   << fp_reg(inst->rd_val)      << ", "
+                   << inst->imm                 << "("
+                   << inst->rs1_val             << ")"
+                   << "]";
+            }
+            break;
+        }
         default: {
             // Nop: op
             ss << kite_opcode_str[inst->op];
