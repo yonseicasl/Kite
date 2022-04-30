@@ -151,12 +151,16 @@ Update history:
     - Support for non-doubleword memory instructions (i.e., lb, lbu, lh, lhu,
       lw, lwu, sb, sh, sw) is added to data_cache.cc. Restriction on
       doubleword-granualr address alignment is loosened such that a memory
-      address can be any multiple of a given data size (e.g., word-granular
-      address for lw, lwu, and sw).
-    - Error checking for the validity of register number is added to
+      address can be any multiple of the accessed data size
+      (e.g., word-granular address for lw, lwu, and sw).
+    - Error checking for the validity of register numbers is added to
       inst_memory.cc when loading a program code.
     - Double-precision arithmetic instructions (i.e., fadd.d, fdiv.d, fmul.d,
-      fsub.d) are added to the list of supported instructions. Supporting
-      these instructions required changes to defs.h and reg_file.h/cc files.
+      fsub.d) are added to the list of supported instructions. Double-precision
+      numbers are stored as int64_t type but type-cast when they are read.
+      Similarly, double-precision numbers are type-cast when they are stored
+      in registers or memory addresses.
     - Double-precision memory instructions (i.e., fld, fsd) are added to the
       list of supported instructions.
+    - Values in the memory_state file can be put as double-precision numbers in
+      the form of "(sign)int.fraction" such as -1234.5678.

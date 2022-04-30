@@ -101,14 +101,14 @@ void alu_t::run(inst_t *m_inst) {
                                                 (m_inst->pc + 4); break; }
         case op_lui:  { m_inst->rd_val = m_inst->imm << 20; break; }
         case op_jal:  { m_inst->rd_val = m_inst->pc + 4; break; }
-        case op_faddd:{ m_inst->rd_val = int_reg(fp_reg(m_inst->rs1_val) +
-                                                 fp_reg(m_inst->rs2_val)); break; }
-        case op_fsubd:{ m_inst->rd_val = int_reg(fp_reg(m_inst->rs1_val) -
-                                                 fp_reg(m_inst->rs2_val)); break; }
-        case op_fmuld:{ m_inst->rd_val = int_reg(fp_reg(m_inst->rs1_val) *
-                                                 fp_reg(m_inst->rs2_val)); break; }
-        case op_fdivd:{ m_inst->rd_val = int_reg(fp_reg(m_inst->rs1_val) /
-                                                 fp_reg(m_inst->rs2_val)); break; }
+        case op_faddd:{ m_inst->rd_val = read_int(read_fp(m_inst->rs1_val) +
+                                                  read_fp(m_inst->rs2_val)); break; }
+        case op_fsubd:{ m_inst->rd_val = read_int(read_fp(m_inst->rs1_val) -
+                                                  read_fp(m_inst->rs2_val)); break; }
+        case op_fmuld:{ m_inst->rd_val = read_int(read_fp(m_inst->rs1_val) *
+                                                  read_fp(m_inst->rs2_val)); break; }
+        case op_fdivd:{ m_inst->rd_val = read_int(read_fp(m_inst->rs1_val) /
+                                                  read_fp(m_inst->rs2_val)); break; }
         case op_fld:  
         case op_fsd:  { m_inst->memory_addr = m_inst->rs1_val + m_inst->imm; break; }
         default:      { break; } // Nothing to do

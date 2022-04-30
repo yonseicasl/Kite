@@ -185,9 +185,9 @@ string get_inst_str(inst_t *inst, bool details) {
             if(details) {
                 ss << " ["
                    << kite_opcode_str[inst->op]     << " "
-                   << fp_reg(inst->rd_val)          << ", "
-                   << fp_reg(inst->rs1_val)         << ", "
-                   << fp_reg(inst->rs2_val)
+                   << read_fp(inst->rd_val)         << ", "
+                   << read_fp(inst->rs1_val)        << ", "
+                   << read_fp(inst->rs2_val)
                    << "]";
             }
             break;
@@ -202,7 +202,7 @@ string get_inst_str(inst_t *inst, bool details) {
             if(details) {
                 ss << " ["
                    << kite_opcode_str[inst->op] << " "
-                   << fp_reg(inst->rd_val)      << ", "
+                   << read_fp(inst->rd_val)     << ", "
                    << inst->imm                 << "("
                    << inst->rs1_val             << ")"
                    << "]";

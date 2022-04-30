@@ -106,7 +106,7 @@ void reg_file_t::load_reg_state() {
                  << " at line #" << line_num << " of reg_state" << endl;
             exit(1);
         }
-        regs[reg_num] = is_int_reg(reg_num) ? get_imm(line) : int_reg(get_fp(line));
+        regs[reg_num] = is_int_reg(reg_num) ? get_imm(line) : read_int(get_fp(line));
         
         // Mark that the register state has been loaded.
         if((loaded >> reg_num) & 0b1) {
@@ -138,7 +138,7 @@ void reg_file_t::print_state() const {
         cout << "x" << (i - reg_x0) << " = " << regs[i] << endl;
     }
     for(unsigned i = reg_f0; i <= reg_f31; i++) {
-        cout << "f" << (i - reg_f0) << " = " << fp_reg(regs[i]) << endl;
+        cout << "f" << (i - reg_f0) << " = " << read_fp(regs[i]) << endl;
     }
 }
 

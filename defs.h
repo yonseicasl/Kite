@@ -464,10 +464,10 @@ static std::string numbers = "0123456789";
     (m_string.find_first_not_of(numbers, 1) == string::npos))
 
 // Read a register as int.
-template <typename T> int64_t int_reg(T m_reg) { return *((int64_t*)&m_reg); }
+template <typename T> int64_t read_int(T m_reg) { return *((int64_t*)&m_reg); }
 
 // Read a register as fp.
-template <typename T> double fp_reg(T m_reg) { return *((double*)&m_reg); }
+template <typename T> double read_fp(T m_reg) { return *((double*)&m_reg); }
 
 #endif
 
