@@ -391,7 +391,7 @@ static std::string kite_reg_str[num_kite_regs] __attribute__((unused)) = {
 };
 
 // Numbers
-static std::string numbers = "0123456789";
+static std::string numbers_str = "0123456789";
 
 // Code segment size
 #define code_segment_size 1024
@@ -442,7 +442,7 @@ static std::string numbers = "0123456789";
 // Check if a string is a positive integer.
 #define is_pos_num_str(m_string) \
     (m_string.size() && \
-    (m_string.find_first_not_of(numbers) == string::npos))
+    (m_string.find_first_not_of(numbers_str) == string::npos))
 
 // Check if a string is a negative integer.
 #define is_neg_num_str(m_string) \
@@ -461,7 +461,7 @@ static std::string numbers = "0123456789";
 // Check if a string has a valid register format.
 #define is_reg_str(m_string) \
     (((m_string[0] == 'x') || (m_string[0] == 'f')) && \
-    (m_string.find_first_not_of(numbers, 1) == string::npos))
+    (m_string.find_first_not_of(numbers_str, 1) == string::npos))
 
 // Read a register as int.
 template <typename T> int64_t read_int(T m_reg) { return *((int64_t*)&m_reg); }
