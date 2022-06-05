@@ -14,7 +14,7 @@ public:
 
 private:
     uint64_t num_entries;                               // Number of counters
-    int *counters;                                      // Counter array
+    unsigned *counters;                                 // Counter array
 };
 
 // Branch target buffer

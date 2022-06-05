@@ -3,8 +3,8 @@
 
 // Branch predictor
 br_predictor_t::br_predictor_t(uint64_t m_size) :
+    num_entries(m_size),
     counters(0) {
-    num_entries = m_size;
 }
 
 br_predictor_t::~br_predictor_t() {
@@ -26,8 +26,8 @@ void br_predictor_t::update(uint64_t m_pc, bool m_taken) {
 
 // Branch target buffer
 br_target_buffer_t::br_target_buffer_t(uint64_t m_size) :
+    num_entries(m_size),
     buffer(0) {
-    num_entries = m_size;
 }
 
 br_target_buffer_t::~br_target_buffer_t() {
