@@ -93,8 +93,8 @@ void data_cache_t::read(inst_t *m_inst) {
         case op_lb:  { data_size = 1; data_mask = 0xff;       addr_mask = 0;     break; }
         default:     { break; }
     }
-    // Check if the first and last byte of the memory access belongs to
-    // the same cache block. Load across cache blocks is prohibited.
+    // Check if the address is aligned with the data size.
+    // Misaligned accesses are prohibited.
     if(addr & addr_mask) {
         cerr << "Error: invalid alignment of memory address " << addr << endl;
         exit(1);
@@ -148,8 +148,8 @@ void data_cache_t::write(inst_t *m_inst) {
         case op_sb:  { data_size = 1; addr_mask = 0;     break; }
         default:     { break; }
     }
-    // Check if the first and last byte of the memory access belongs to
-    // the same cache block. Store across cache blocks is prohibited.
+    // Check if the address is aligned with the data size.
+    // Misaligned accesses are prohibited.
     if(addr & addr_mask) {
         cerr << "Error: invalid alignment of memory address " << addr << endl;
         exit(1);
