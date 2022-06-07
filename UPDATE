@@ -3,7 +3,7 @@
 # pipeline modeling of RISC-V instruction set         #
 # Developed by William J. Song                        #
 # School of Electrical Engineering, Yonsei University #
-# Version: 1.8                                        #
+# Version: 1.9                                        #
 #######################################################
 
 Update history:
@@ -147,7 +147,7 @@ Update history:
       or store instructions. Addresses in the code segment are used as PCs of
       instructions.
 
-* Update for future release
+* Version 1.9 (June 6, 2022)
     - Support for non-doubleword memory instructions (i.e., lb, lbu, lh, lhu,
       lw, lwu, sb, sh, sw) is added to data_cache.cc. Restriction on
       doubleword-granualr address alignment is loosened such that a memory

@@ -5,6 +5,7 @@
 \usepackage{fancyvrb}
 \usepackage{indentfirst}
 \usepackage[hidelinks]{hyperref}
+\usepackage{longtable}
 \usepackage{multirow}
 \usepackage{multicol}
 \usepackage{secdot}
@@ -20,7 +21,7 @@
 \author{William J. Song\\
         School of Electrical Engineering, Yonsei University\\
         \href{mailto:wjhsong@yonsei.ac.kr}{wjhsong@yonsei.ac.kr}}
-\date{Apr. 2022 (Version 1.8)}
+\date{June, 2022 (Version 1.9)}
 \maketitle
 
 
@@ -46,12 +47,12 @@ If you are not familiar with C++ programming in Linux, this will be a perfect ch
 The simple implementation of Kite makes it really easy to install.
 It requires only g++ compiler to build, and it does not depend on any other libraries or external tools to run.
 It has been validated in Ubuntu 16.04 (Xenial), 18.04 (Bionic Beaver), 20.04 (Focal Fossa), and Mac OS 10.14 (Majave), 10.15 (Catalina), 11 (Big Sur), 12 (Monterey).
-The latest release of Kite is v1.8.
-To obtain a copy of Kite v1.8, use the following {\tt git} command in terminal.
+The latest release of Kite is v1.9.
+To obtain a copy of Kite v1.9, use the following {\tt git} command in terminal.
 Then, enter the {\tt kite/} directory and build the simulator using a {\tt make} command.
 
-\begin{Verbatim}[frame=single,fontsize=\small]
-$ git clone --branch v1.8 https://github.com/yonsei-icsl/kite
+\begin{Verbatim}[frame=single]
+$ git clone --branch v1.9 https://github.com/yonsei-icsl/kite
 $ cd kite/
 $ make -j
 \end{Verbatim}
@@ -63,14 +64,14 @@ A program code refers to a plain text file containing RISC-V assembly instructio
 In the main directory of Kite (i.e., {\tt kite/}), you should find a file named {\tt program\char`_code} that contains the following RISC-V instructions after some comment lines.
 \pagebreak
 
-\begin{Verbatim}[frame=single,fontsize=\small]
+\begin{Verbatim}[frame=single]
 # Kite program code
 loop:   beq  x11, x0,  exit
         remu x5,  x10, x11
         add  x10, x11, x0
         add  x11, x5,  x0
         beq  x0,  x0,  loop
-exit:   sd   x10, 400(x0)
+exit:   sd   x10, 2000(x0)
 \end{Verbatim}
 
 In the program code, a {\tt \#} symbol is reserved to indicate the beginning of comment.
@@ -89,47 +90,66 @@ It means that {\tt beq}, {\tt Beq}, {\tt BEQ} are all identical in the program c
 The current version of Kite supports the following list of RISC-V basic instructions.
 Instructions in the table are listed in the alphabetical order in each category.
 Pseudo instructions (e.g., {\tt mv}, {\tt not}) and ABI register names (e.g., {\tt sp}, {\tt a0}) are not supported.
- 
-\begin{table}[!ht]
-    \centering
-    \begin{tabular}{>{\centering\arraybackslash} m{0.60in}|
-                    >{\centering\arraybackslash} m{1.65in}|
-                    >{\centering\arraybackslash} m{3.70in}
-                   }
-    \hline
-    Types                   & RISC-V instructions       & Operations in C/C++   \\ \hline \hline
-    \multirow{13}{*}{R type}& {\tt add  rd, rs1, rs2}   & {\tt rd = rs1 + rs2}  \\
-                            & {\tt and  rd, rs1, rs2}   & {\tt rd = rs1 \& rs2} \\
-                            & {\tt div  rd, rs1, rs2}   & {\tt rd = rs1 / rs2}  \\
-                            & {\tt divu rd, rs1, rs2}   & {\tt rd = (uint64\char`_t)rs1 / (uint64\char`_t)rs2} \\
-                            & {\tt mul  rd, rs1, rs2}   & {\tt rd = rs1 * rs2}  \\
-                            & {\tt or   rd, rs1, rs2}   & {\tt rd = rs1 | rs2}  \\
-                            & {\tt rem  rd, rs1, rs2}   & {\tt rd = rs1 \% rs2} \\
-                            & {\tt remu rd, rs1, rs2}   & {\tt rd = (uint64\char`_t)rs1 \% (uint64\char`_t)rs2} \\
-                            & {\tt sll  rd, rs1, rs2}   & {\tt rd = rs1 << rs2} \\
-                            & {\tt sra  rd, rs1, rs2}   & {\tt rd = rs1 >> rs2} \\
-                            & {\tt srl  rd, rs1, rs2}   & {\tt rd = (uint64\char`_t)rs1 >> rs2} \\
-                            & {\tt sub  rd, rs1, rs2}   & {\tt rd = rs1 - rs2}  \\
-                            & {\tt xor  rd, rs1, rs2}   & {\tt rd = rs1 \string^ rs2} \\ \hline
-    \multirow{9}{*}{I type} & {\tt addi rd, rs1, imm}   & {\tt rd = rs1 + imm}  \\
-                            & {\tt andi rd, rs1, imm}   & {\tt rd = rs1 \& imm} \\
-                            & {\tt jalr rd, imm(rs1)}   & {\tt rd = pc + 4, pc = (rs1 + imm) \& -2} \\
-                            & {\tt slli rd, rs1, imm}   & {\tt rd = rs1 << imm} \\
-                            & {\tt srai rd, rs1, imm}   & {\tt rd = rs1 >> imm} \\
-                            & {\tt srli rd, rs1, imm}   & {\tt rd = (uint64\char`_t)rs1 << imm} \\
-                            & {\tt ld   rd, imm(rs1)}   & {\tt rd = memory[rs1 + imm]} \\
-                            & {\tt ori  rd, rs1, imm}   & {\tt rd = rs1 | imm}  \\
-                            & {\tt xori rd, rs1, imm}   & {\tt rd = rs1 \string^ imm} \\ \hline
-    S type                  & {\tt sd   rs2, imm(rs1)}  & {\tt memory[rs1 + imm] = rs2} \\ \hline
-    \multirow{4}{*}{SB type}& {\tt beq  rs1, rs2, imm}  & {\tt pc = (rs1 == rs2 ? pc + imm<<1 : pc + 4) } \\
-                            & {\tt bge  rs1, rs2, imm}  & {\tt pc = (rs1 >= rs2 ? pc + imm<<1 : pc + 4)} \\
-                            & {\tt blt  rs1, rs2, imm}  & {\tt pc = (rs1 < rs2 ? pc + imm<<1 : pc + 4)} \\
-                            & {\tt bne  rs1, rs2, imm}  & {\tt pc = (rs1 != rs2 ? pc + imm<<1 : pc + 4)} \\ \hline
-    U type                  & {\tt lui  rd, imm}        & {\tt rd = imm << 20; } \\ \hline
-    UJ type                 & {\tt jal  rd, imm}        & {\tt rd = pc + 4, pc = pc + imm<<1} \\ \hline
-    No type                 & {\tt nop}                 & No operation          \\ \hline
-    \end{tabular}
-\end{table}
+
+\begin{longtable}{>{\centering\arraybackslash} m{0.60in}|
+                  >{\centering\arraybackslash} m{1.65in}|
+                  >{\centering\arraybackslash} m{3.70in}
+                 }
+\hline
+Types                   & RISC-V instructions       & Operations in C/C++   \\ \hline \hline
+\multirow{13}{*}{R type}& {\tt add  rd, rs1, rs2}   & {\tt rd = rs1 + rs2}  \\
+                        & {\tt and  rd, rs1, rs2}   & {\tt rd = rs1 \& rs2} \\
+                        & {\tt div  rd, rs1, rs2}   & {\tt rd = rs1 / rs2}  \\
+                        & {\tt divu rd, rs1, rs2}   & {\tt rd = (uint64\char`_t)rs1 / (uint64\char`_t)rs2} \\
+                        & {\tt mul  rd, rs1, rs2}   & {\tt rd = rs1 * rs2}  \\
+                        & {\tt or   rd, rs1, rs2}   & {\tt rd = rs1 | rs2}  \\
+                        & {\tt rem  rd, rs1, rs2}   & {\tt rd = rs1 \% rs2} \\
+                        & {\tt remu rd, rs1, rs2}   & {\tt rd = (uint64\char`_t)rs1 \% (uint64\char`_t)rs2} \\
+                        & {\tt sll  rd, rs1, rs2}   & {\tt rd = rs1 << rs2} \\
+                        & {\tt sra  rd, rs1, rs2}   & {\tt rd = rs1 >> rs2} \\
+                        & {\tt srl  rd, rs1, rs2}   & {\tt rd = (uint64\char`_t)rs1 >> rs2} \\
+                        & {\tt sub  rd, rs1, rs2}   & {\tt rd = rs1 - rs2}  \\
+                        & {\tt xor  rd, rs1, rs2}   & {\tt rd = rs1 \string^ rs2} \\ \hline
+\multirow{8}{*}{I type} & {\tt addi rd, rs1, imm}   & {\tt rd = rs1 + imm}  \\
+                        & {\tt andi rd, rs1, imm}   & {\tt rd = rs1 \& imm} \\
+                        & {\tt jalr rd, imm(rs1)}   & {\tt rd = pc + 4, pc = (rs1 + imm) \& -2} \\
+                        & {\tt slli rd, rs1, imm}   & {\tt rd = rs1 << imm} \\
+                        & {\tt srai rd, rs1, imm}   & {\tt rd = rs1 >> imm} \\
+                        & {\tt srli rd, rs1, imm}   & {\tt rd = (uint64\char`_t)rs1 << imm} \\
+                        & {\tt ori  rd, rs1, imm}   & {\tt rd = rs1 | imm}  \\
+                        & {\tt xori rd, rs1, imm}   & {\tt rd = rs1 \string^ imm} \\ \hline
+\multirow{7}{*}{I type} & {\tt lb   rd, imm(rs1)}   & {\tt rd =   (int8\char`_t)memory[rs1 + imm]} \\
+                        & {\tt lbu  rd, imm(rs1)}   & {\tt rd =  (uint8\char`_t)memory[rs1 + imm]} \\
+                        & {\tt lh   rd, imm(rs1)}   & {\tt rd =  (int16\char`_t)memory[rs1 + imm]} \\
+                        & {\tt lhu  rd, imm(rs1)}   & {\tt rd = (uint16\char`_t)memory[rs1 + imm]} \\
+                        & {\tt lw   rd, imm(rs1)}   & {\tt rd =  (int32\char`_t)memory[rs1 + imm]} \\
+                        & {\tt lwu  rd, imm(rs1)}   & {\tt rd = (uint32\char`_t)memory[rs1 + imm]} \\
+                        & {\tt ld   rd, imm(rs1)}   & {\tt rd = memory[rs1 + imm]} \\ \hline
+\multirow{4}{*}{S type} & {\tt sb   rs2, imm(rs1)}  & {\tt memory[rs1 + imm] =  (uint8\char`_t)rs2} \\
+                        & {\tt sh   rs2, imm(rs1)}  & {\tt memory[rs1 + imm] = (uint16\char`_t)rs2} \\
+                        & {\tt sw   rs2, imm(rs1)}  & {\tt memory[rs1 + imm] = (uint32\char`_t)rs2} \\
+                        & {\tt sd   rs2, imm(rs1)}  & {\tt memory[rs1 + imm] = rs2} \\ \hline
+\multirow{4}{*}{SB type}& {\tt beq  rs1, rs2, imm}  & {\tt pc = (rs1 == rs2 ? pc + imm<<1 : pc + 4) } \\
+                        & {\tt bge  rs1, rs2, imm}  & {\tt pc = (rs1 >= rs2 ? pc + imm<<1 : pc + 4)} \\
+                        & {\tt blt  rs1, rs2, imm}  & {\tt pc = (rs1 < rs2 ? pc + imm<<1 : pc + 4)} \\
+                        & {\tt bne  rs1, rs2, imm}  & {\tt pc = (rs1 != rs2 ? pc + imm<<1 : pc + 4)} \\ \hline
+U type                  & {\tt lui  rd, imm}        & {\tt rd = imm << 20; } \\ \hline
+    UJ type             & {\tt jal  rd, imm}        & {\tt rd = pc + 4, pc = pc + imm<<1} \\ \hline
+\multirow{4}{*}{FR type}& {\tt fadd.d  rd, rs1, rs2}& {\tt rd = (double)rs1 + (double)rs2}  \\
+                        & {\tt fdiv.d  rd, rs1, rs2}& {\tt rd = (double)rs1 / (double)rs2}  \\
+                        & {\tt fmul.d  rd, rs1, rs2}& {\tt rd = (double)rs1 * (double)rs2}  \\
+                        & {\tt fsub.d  rd, rs1, rs2}& {\tt rd = (double)rs1 - (double)rs2}  \\ \hline
+FI type                 & {\tt fld  rd, imm(rs1)}   & {\tt rd = (double)memory[rs1 + imm]} \\ \hline
+FS type                 & {\tt fsd  rs2, imm(rs1)}  & {\tt memory[rs1 + imm] = (double)rs2}\\ \hline
+No type                 & {\tt nop}                 & No operation          \\ \hline
+\end{longtable}
+
+Supports for non-doubleword memory accesses such as {\tt lb}, {\tt lhu}, {\tt sw} have been added to Kite, as shown in the table above.
+There are two pairs of load instructions (i.e., signed, unsigned) for each of byte, halfword, and word-granular loads.
+Unlike load instructions, store instructions do not specify signs but only data lengths.
+Several basic floating-point instructions also have been added to the list of supported instructions including {\tt fadd.d}, {\tt fdiv.d}, {\tt fmul.d}, and {\tt fsub.d}, where the tailing {\tt .d} indicates that the instructions are double-precision.
+Memory instructions for double-precision data (i.e., {\tt fld}, {\tt fsd}) are supported as well.
+Supports of other floating-point instructions including single-precision data type (e.g., {\tt fadd.s}, {\tt flw}) remain as a future work.
 
 The exemplary program code shown in the previous page implements Euclid's algorithm that finds a greatest common divisor (GCD) of two unsigned integer numbers in {\tt x10} and {\tt x11}.
 The equivalent program code in C/C++ is shown below.
@@ -141,8 +161,8 @@ In the third iteration, {\tt x5 = 0}, {\tt x10 = 3}, and {\tt x11 = 0}.
 The loop reaches the end for {\tt x11 == 0}.
 The last line of code stores the {\tt x10} value containing the GCD of {\tt 21} and {\tt 15} in data memory at the address {\tt 2000} (or at index {\tt 250} if the data memory is viewed as a doubleword array).
 
-\begin{Verbatim}[frame=single,fontsize=\small]
-# Equivalent program code in C/C++
+\begin{Verbatim}[frame=single]
+/* Equivalent program code in C/C++ */
 while(x11 != 0) {       // loop: beq  x11, x0,  exit
     x5 = x10 % x11;     //       remu x5,  x10, x11
     x10 = x11;          //       add  x10, x11, x0
@@ -152,11 +172,13 @@ memory[250] = x10;      // exit: sd   x10, 2000(x0)
 \end{Verbatim}
 
 Register state refers to the {\tt reg\char`_state} file that contains the state (i.e., values) of 32 integer registers of RISC-V.
+For newly added supports of double-precision floating-point instructions, the {\tt reg\char`_state} file should list 32 floating-point registers as well (i.e., {\tt f0} - {\tt f31}).
 The register state is loaded when a simulation starts and used for initializing the registers of processor pipeline.
 You may find the following after comment lines in the register state file.
 
-\begin{Verbatim}[frame=single,fontsize=\small]
+\begin{Verbatim}[frame=single]
 # Kite register state
+# 64-bit integer registers
 x0 = 0
 x1 = 0
 x2 = 8
@@ -169,7 +191,16 @@ x11 = 15
 
 ...
 
+x30 = 0
 x31 = 0
+
+# Double-precision floating-point registers
+f0 = 0.0
+f1 = 0.0
+f2 = 2.71828
+f3 = 3.14159265359
+
+...
 \end{Verbatim}
 
 The register state file must list all 32 integer registers from {\tt x0} to {\tt x31}.
@@ -180,10 +211,12 @@ A program code will initiate instruction executions based on the defined registe
 Since the {\tt x0} register in RISC-V is hard-wired to zero \cite{patterson_morgan2017}, assigning non-zero values to it is automatically discarded.
 
 Memory state refers to the {\tt memory\char`_state} file that contains initial values of data memory at discrete memory addresses.
+Every address in the memory state file must be a multiple of 8 for 64-bit granular data alignment.
+If a value is given in a floating-point format such as {\tt 1.23} or {\tt 3.4e5}, it will saved in the memory address as the double-precision data format.
 Similar to the register state, the memory state is used for initializing the contents of data memory.
 The following shows an example of memory state file.
 
-\begin{Verbatim}[frame=single,fontsize=\small]
+\begin{Verbatim}[frame=single]
 # Kite memory state
 1024 = 5
 1032 = -8
@@ -212,7 +245,7 @@ Running a Kite simulation invokes a program code associated with register and me
 After the program execution is done, Kite prints out simulation results including pipeline statistics (e.g., total clock cycles, number of instructions), cache statistics (e.g., number of load and stores), and the final states of registers and data memory.
 The following shows an example of Kite simulation executing {\tt program\char`_code}.
 
-\begin{Verbatim}[frame=single,fontsize=\small]
+\begin{Verbatim}[frame=single]
 $ ./kite program_code
 
 *******************************************************
@@ -220,7 +253,7 @@ $ ./kite program_code
 * pipeline modeling of RISC-V instruction set         *
 * Developed by William J. Song                        *
 * School of Electrical Engineering, Yonsei University *
-* Version: 1.8                                        *
+* Version: 1.9                                        *
 *******************************************************
 
 Start running ...
@@ -285,7 +318,7 @@ Kite offers branch prediction and data forwarding as optional features.
 These options can be enabled by re-compiling Kite with {\tt OPT="-DBR\char`_PRED} {\tt -DDATA\char`_FWD"} flags, where {\tt -DBR\char`_PRED} enables branch prediction, and {\tt -DDATA\char`_FWD} enables data forwarding, respectively.
 When both features are enabled, noticeable performance improvements (i.e., cycles per instruction) should be observed as follows.
 
-\begin{Verbatim}[frame=single,fontsize=\small]
+\begin{Verbatim}[frame=single]
 $ make clean
 $ make -j OPT="-DBR_PRED -DDATA_FWD"
 $ ./kite program_code
@@ -295,7 +328,7 @@ $ ./kite program_code
 * pipeline modeling of RISC-V instruction set         *
 * Developed by William J. Song                        *
 * School of Electrical Engineering, Yonsei University *
-* Version: 1.8                                        *
+* Version: 1.9                                        *
 *******************************************************
 
 Start running ...
@@ -328,7 +361,7 @@ x3 = 0
 Kite provides a debugging option that prints out the detailed progresses of instructions at every pipeline stage and at every clock cycle.
 To enable the debugging option, Kit has to be compiled with a {\tt -DDEBUG} flag as follows.
 
-\begin{Verbatim}[frame=single,fontsize=\small]
+\begin{Verbatim}[frame=single]
 $ make clean
 $ make -j OPT="-DDEBUG" 
 $ ./kite program_code
@@ -338,7 +371,7 @@ $ ./kite program_code
 * pipeline modeling of RISC-V instruction set         *
 * Developed by William J. Song                        *
 * School of Electrical Engineering, Yonsei University *
-* Version: 1.8                                        *
+* Version: 1.9                                        *
 *******************************************************
 
 Start running ...
@@ -385,7 +418,7 @@ This section describes more advanced contents about the implementations of Kite 
 Kite is comprised of the following files in the {\tt kite/} directory.
 They are explained in an order to better describe them rather than in the alphabetical order.
 
-\begin{Verbatim}[frame=single,fontsize=\small]
+\begin{Verbatim}[frame=single]
 $ ls | grep ".h\|.cc"
 
 alu.cc            data_cache.cc    defs.h           inst_memory.h   proc.cc

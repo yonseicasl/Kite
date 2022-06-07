@@ -9,7 +9,7 @@ static string banner = "\
 * pipeline modeling of RISC-V instruction set         *\n\
 * Developed by William J. Song                        *\n\
 * School of Electrical Engineering, Yonsei University *\n\
-* Version: 1.8                                        *\n\
+* Version: 1.9                                        *\n\
 *******************************************************\n\
 ";
 
