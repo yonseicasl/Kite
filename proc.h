@@ -32,6 +32,7 @@ private:
 #ifdef BR_PRED
     uint64_t num_br_predicts;               // Number of branch predictions
     uint64_t num_br_mispredicts;            // Number of branch mis-predictions
+    uint64_t num_br_t_mispredicts;          // Number of branch target mis-predictions
 #endif
     uint64_t num_flushes;                   // Number of pipeline flushes
     uint64_t ticks;                         // Clock ticks (cycles)

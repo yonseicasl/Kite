@@ -10,6 +10,7 @@ proc_t::proc_t() :
 #ifdef BR_PRED
     num_br_predicts(0),
     num_br_mispredicts(0),
+    num_br_t_mispredicts(0),
 #endif
     num_flushes(0),
     ticks(0),
@@ -98,7 +99,8 @@ void proc_t::writeback() {
             if(inst->pred_target != inst->branch_target) {
                 // A branch mis-prediction (i.e., direction) or target mis-prediction
                 // (i.e., address) needs to flush the pipeline.
-                num_br_mispredicts += (inst->pred_taken != is_taken);
+                num_br_mispredicts   += (inst->pred_taken != is_taken);
+                num_br_t_mispredicts += (inst->pred_taken == is_taken);
                 // Flush the pipeline, and set a correct PC.
                 flush();
                 pc = inst->branch_target;
@@ -258,11 +260,13 @@ void proc_t::print_stats() {
          << double(ticks) / double(num_insts) << endl;
 #ifdef BR_PRED
     cout << "Number of pipeline flushes = " << num_flushes << endl;
+    cout << "Number of branch mispredictions = " << num_br_mispredicts << endl;
+    cout << "Number of branch target mispredictions = " << num_br_t_mispredicts << endl;
     cout << "Branch prediction accuracy = " << fixed
          << (num_br_predicts ?
              double(num_br_predicts-num_br_mispredicts) / double(num_br_predicts) : 0)
-         << " (" << num_br_predicts-num_br_mispredicts << "/" << num_br_predicts
-         << ")" << endl;
+         << " (" << num_br_predicts-num_br_mispredicts-num_br_t_mispredicts
+         << "/" << num_br_predicts << ")" << endl;
 #endif
     cout.precision(-1);
     // Print data cache stats.

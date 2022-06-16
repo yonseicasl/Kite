@@ -147,7 +147,7 @@ Update history:
       or store instructions. Addresses in the code segment are used as PCs of
       instructions.
 
-* Version 1.9 (June 6, 2022)
+* Version 1.9 (June 16, 2022)
     - Support for non-doubleword memory instructions (i.e., lb, lbu, lh, lhu,
       lw, lwu, sb, sh, sw) is added to data_cache.cc. Restriction on
       doubleword-granualr address alignment is loosened such that a memory
@@ -164,3 +164,9 @@ Update history:
       list of supported instructions.
     - Values in the memory_state file can be put as double-precision numbers in
       the form of "(sign)int.fraction" such as -1234.5678.
+    - is_fp_str() macro in defs.h is fixed to double-check if the string
+      contains a decimal point.
+    - Branch prediction accuracy was previously calculated only for the branch
+      predictor itself, and it did not include branch target mispredictions.
+      After the fix, the pipeline stats print both branch mispredictions and
+      branch target mispredictions.
