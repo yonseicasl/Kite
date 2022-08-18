@@ -1,10 +1,10 @@
-#######################################################
-# Kite: An architecture simulator for five-stage      #
-# pipeline modeling of RISC-V instruction set         #
-# Developed by William J. Song                        #
-# School of Electrical Engineering, Yonsei University #
-# Version: 1.9                                        #
-#######################################################
+###########################################################
+# Kite: Architecture Simulator for RISC-V Instruction Set #
+# Developed by William J. Song                            #
+# Intelligent Computing Systems Lab, Yonsei University    #
+# Version: 1.9                                            #
+###########################################################
+
 
 Update history:
 * Version 1.0 (May 21, 2019)
