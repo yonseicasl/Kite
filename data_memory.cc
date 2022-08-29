@@ -8,15 +8,15 @@
 using namespace std;
 
 data_memory_t::data_memory_t(uint64_t *m_ticks, uint64_t m_memory_size, uint64_t m_latency) :
-    cache(0),
+    cache(nullptr),
     ticks(m_ticks),
-    memory(0),
-    accessed(0),
+    memory(nullptr),
+    accessed(nullptr),
     memory_size(m_memory_size),
     num_dwords(m_memory_size>>3),
     latency(m_latency),
     resp_ticks(0),
-    req_block(0) {
+    req_block(nullptr) {
     // Check if the memory size is a multiple of doubleword.
     if(memory_size & 0b111) {
         cerr << "Error: memory size must be a multiple of doubleword" << endl;
@@ -54,7 +54,7 @@ void data_memory_t::run() {
         // Invoke the upper-level cache to handle a returned response.
         cache->handle_response(req_block);
         // Clear the requested block.
-        req_block = 0;
+        req_block = nullptr;
     }
 }
 
@@ -98,13 +98,13 @@ void data_memory_t::load_memory_state() {
     while(getline(file_stream, line)) {
         line_num++;
         // Crop everything after a comment symbol.
-        if(line.find_first_of("#") != string::npos) { line.erase(line.find_first_of("#")); }
+        if(line.find_first_of('#') != string::npos) { line.erase(line.find_first_of('#')); }
         // Erase all spaces.
         line.erase(remove(line.begin(), line.end(), ' '), line.end());
         // Skip blank lines.
-        if(!line.size()) { continue; }
+        if(line.empty()) { continue; }
         // Store memory state.
-        size_t l = line.find_first_of("=");
+        size_t l = line.find_first_of('=');
         string addr_str = line.substr(0, l);
         // Trim the line.
         line.erase(0, l+1);

@@ -1,0 +1,6 @@
+# clion exclusion
+.idea/
+# cmake related exclusions
+build/
+cmake-build-*/
+*.o
