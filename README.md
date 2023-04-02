@@ -1,22 +1,22 @@
 ## Kite: Architecture Simulator for RISC-V Instruction Set
 *Kite* is an architecture simulator that models a five-stage pipeline of the RISC-V instruction set.
-The initial version of Kite was developed in 2019 primarily for educational purposes as a part of EEE3530 Computer Architecture.
+The initial version of Kite was developed in 2019 for educational purposes as a part of EEE3530 Computer Architecture.
 Kite implements the five-stage pipeline model described in *Computer Organization and Design, RISC-V Edition: The Hardware and Software Interface by D. Patterson and J. Hennessey* ([Link to Amazon](https://www.amazon.com/Computer-Organization-Design-RISC-V-Architecture/dp/0128122757)).
-The objective of Kite is to provide students with an easy-to-use simulation framework and precise timing model as described in the book.
+The objective of Kite is to provide students with an easy-to-use simulation framework and the precise timing model as described in the book.
 It supports most of the basic instructions introduced in the book, such as `add`, `slli`, `ld`, `sd`, and `beq` instructions.
 Students can easily compose RISC-V assembly programs and execute them through the pipeline model for entry-level architecture studies.
-Kite implements several basic functionalities in the pipeline mode, including instruction dependency check (i.e., data hazards), pipeline stalls, data forwarding or bypassing (optional), branch predictions (optional), data cache structures, etc.
+Kite implements several basic functionalities in the pipeline mode, including instruction dependency check (i.e., data hazards), pipeline stalls, data forwarding (optional), branch predictions (optional), data cache structures, etc.
 
 Kite implements the five-stage pipeline model in C++.
-Since most computer architecture simulators are written in C/C++, it will provide students with hands-on experiences in computer architecture simulations using a simple, easy-to-use framework.
+Since most computer architecture simulators are written in C/C++, it gives students with hands-on experiences in computer architecture simulations using a simple, easy-to-use framework.
 
 \
 **Prerequisite, Download, and Build:**\
 The simple implementation of Kite is easy to install.
-It requires only a g++ compiler to build and does not depend on other libraries or external tools to run.
+It requires only a g++ compiler to build and does not depend on other libraries or external tools.
 It was validated in Ubuntu 16.04 (Xenial), 18.04 (Bionic Beaver), 20.04 (Focal Fossa), and Mac OS 10.14 (Mojave), 10.15 (Catalina), 11 (Big Sur), 12 (Monterey).
 The latest release of Kite is v1.10 (as of April 2023).
-To obtain a copy of Kite v1.10, use the following command in a terminal.
+To obtain a copy of Kite v1.10, use the following command in the terminal.
 ```
 $ git clone ––branch v1.10 https://github.com/yonsei-icsl/kite
 ```
@@ -30,7 +30,7 @@ $ ./kite program_code
 
 \
 **Documentation:**\
-For more detailed information, refer to the documentation, doc/kite.pdf. Please, use the following to reference this work.
+For more detailed information, refer to the documentation in doc/kite.pdf. Please, use the following to reference this work.
 ```
 @misc{song_kite2019,
     author       = {W. Song},

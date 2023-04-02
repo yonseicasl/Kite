@@ -256,7 +256,7 @@ static std::string kite_reg_str[num_kite_regs] __attribute__((unused)) = {
 static std::string numbers = "0123456789";
 
 // Minimum memory size
-#define min_memory_size   2048
+#define min_memory_size 4096
 
 // Convert a string to kite_opcode
 #define get_opcode(m_string) \

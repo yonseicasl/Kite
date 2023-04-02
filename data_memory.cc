@@ -136,11 +136,6 @@ void data_memory_t::load_memory_state() {
                  << " at line #" << line_num << " of memory_state" << endl;
             exit(1);
         }
-        else if(memory_addr < code_segment_size) {
-            cerr << "Error: memory address below " << code_segment_size
-                 << " is reserved for the code segment" << endl;
-            exit(1);
-        }
         // Check if multiple different values are defined at the same memory address.
         int64_t &dword = memory[memory_addr>>3];
         if(dword && (dword != memory_data)) {
