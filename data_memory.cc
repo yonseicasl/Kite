@@ -7,12 +7,14 @@
 
 using namespace std;
 
-data_memory_t::data_memory_t(uint64_t *m_ticks, uint64_t m_memory_size, uint64_t m_latency) :
+data_memory_t::data_memory_t(uint64_t *m_ticks, uint64_t m_memory_size,
+                             uint64_t m_code_segment_size, uint64_t m_latency) :
     cache(0),
     ticks(m_ticks),
     memory(0),
     accessed(0),
     memory_size(m_memory_size),
+    code_segment_size(m_code_segment_size),
     num_dwords(m_memory_size>>3),
     latency(m_latency),
     resp_ticks(0),
@@ -111,7 +113,7 @@ void data_memory_t::load_memory_state() {
         string data_str = line;
 
         // Check if the memory address and data are valid.
-        if(!is_num_str(addr_str) || (!is_num_str(data_str) && !is_fp_str(data_str)) ||
+        if(!is_num_str(addr_str) || !is_num_str(data_str) ||
            !addr_str.length()    || !data_str.length()) {
             cerr << "Error: invalid memory address and/or data " << addr_str
                  << " = " << data_str << " at line #" << line_num
@@ -121,8 +123,7 @@ void data_memory_t::load_memory_state() {
 
         // Convert the memory address and data string to numbers.
         uint64_t memory_addr = get_imm(addr_str); 
-        int64_t memory_data = is_fp_str(data_str) ?
-                              read_int(get_fp(data_str)) : get_imm(data_str);
+        int64_t memory_data = get_imm(data_str);
         // Check the alignment of memory address.
         if(memory_addr & 0b111) {
             cerr << "Error: invalid alignment of memory address " << memory_addr
@@ -160,12 +161,7 @@ void data_memory_t::load_memory_state() {
 void data_memory_t::print_state() const {
     cout << endl << "Memory state (only accessed addresses):" << endl;
     for(uint64_t i = 0; i < num_dwords; i++) {
-        if(accessed[i]) {
-            cout << "(" << (i<<3) << ") = ";
-            // If exponent field bits are non-zero, it is assumed to be fp.
-            if(memory[i] & (uint64_t(0x7ff) << 52)) { cout << read_fp(memory[i]) << endl; }
-            else { cout << memory[i] << endl; }
-        }
+        if(accessed[i]) { cout << "(" << (i<<3) << ") = " << memory[i] << endl; }
     }
 }
 

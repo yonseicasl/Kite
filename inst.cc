@@ -73,7 +73,7 @@ string get_inst_str(inst_t *inst, bool details) {
             break;
         }
         case op_i_type: {
-            if((inst->op == op_jalr) || is_op_load(inst->op)) {
+            if((inst->op == op_jalr) || (inst->op == op_ld)) {
                 // jalr or ld format: op rd, imm(rs1)
                 ss << kite_opcode_str[inst->op]     << " "
                    << kite_reg_str[inst->rd_num]    << ", " 
@@ -171,40 +171,6 @@ string get_inst_str(inst_t *inst, bool details) {
                    << inst->rd_val              << ", "
                    << inst->imm                 << "("
                    << inst->label               << ")"
-                   << "]";
-            }
-            break;
-        }
-        case op_fr_type: {
-            // FR-type format: op rd, rs1, rs2
-            ss << kite_opcode_str[inst->op]     << " "
-               << kite_reg_str[inst->rd_num]    << ", "
-               << kite_reg_str[inst->rs1_num]   << ", "
-               << kite_reg_str[inst->rs2_num];
-            // Show register values.
-            if(details) {
-                ss << " ["
-                   << kite_opcode_str[inst->op]     << " "
-                   << read_fp(inst->rd_val)         << ", "
-                   << read_fp(inst->rs1_val)        << ", "
-                   << read_fp(inst->rs2_val)
-                   << "]";
-            }
-            break;
-        }
-        case op_fi_type: {
-            // jalr or ld format: op rd, imm(rs1)
-            ss << kite_opcode_str[inst->op]     << " "
-               << kite_reg_str[inst->rd_num]    << ", " 
-               << inst->imm                     << "("
-               << kite_reg_str[inst->rs1_num]   << ")";
-            // Show register values.
-            if(details) {
-                ss << " ["
-                   << kite_opcode_str[inst->op] << " "
-                   << read_fp(inst->rd_val)     << ", "
-                   << inst->imm                 << "("
-                   << inst->rs1_val             << ")"
                    << "]";
             }
             break;

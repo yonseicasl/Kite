@@ -2,7 +2,7 @@
 # Kite: Architecture Simulator for RISC-V Instruction Set #
 # Developed by William J. Song                            #
 # Intelligent Computing Systems Lab, Yonsei University    #
-# Version: 1.9                                            #
+# Version: 1.10                                           #
 ###########################################################
 
 
@@ -170,3 +170,15 @@ Update history:
       predictor itself, and it did not include branch target mispredictions.
       After the fix, the pipeline stats print both branch mispredictions and
       branch target mispredictions.
+
+* Version 1.0 (April, 2023)
+    - Supports for non-double word memory instructions and floating-point
+      operations are removed. This version rolls back to version 1.8, except
+      for a few essential fixes.
+    - The validity of a register number is checked by a macro, is_reg_str(),
+      in defs.h when a program code is loaded.
+    - The code segment size is no longer fixed to 1KB. When a program code is
+      loaded, the number of instructions dynamically defines the code segment
+      size. When a data memory access is made, accessing the code segment
+      region throws an error.
+

@@ -8,7 +8,8 @@ class data_cache_t;
 // Memory
 class data_memory_t {
 public:
-    data_memory_t(uint64_t *m_ticks, uint64_t m_memory_size, uint64_t m_latency = 0);
+    data_memory_t(uint64_t *m_ticks, uint64_t m_memory_size,
+                  uint64_t m_code_segment_size, uint64_t m_latency = 0);
     ~data_memory_t();
 
     void connect(data_cache_t *m_cache);                    // Connect to the upper-level cache.
@@ -25,6 +26,7 @@ private:
     int64_t *memory;                                        // Memory space
     bool *accessed;                                         // Access history map
     uint64_t memory_size;                                   // Memory size
+    uint64_t code_segment_size;                             // Code segment size
     uint64_t num_dwords;                                    // Number of doublewords
 
     uint64_t latency;                                       // Memory latency

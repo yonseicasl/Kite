@@ -117,10 +117,6 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
     inst_t inst;
     // Set the PC of instruction.
     inst.pc = memory.size() << 2;
-    if(inst.pc >= code_segment_size) {
-        cerr << "Error: program size goes out of the code segment." << endl;
-        exit(1);
-    }
 
     // Get the opcode of instruction.
     inst.op = get_opcode(args[0]);
@@ -150,13 +146,6 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
             inst.rd_num  = get_regnum(args[1]);
             inst.rs1_num = get_regnum(args[2]);
             inst.rs2_num = get_regnum(args[3]);
-            // Check the range of register #.
-            if(!is_int_reg(inst.rd_num)  ||
-               !is_int_reg(inst.rs1_num) || !is_int_reg(inst.rs2_num)) {
-                cerr << "Error: invalid registers: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
             break;
         }
         case op_i_type: {
@@ -165,8 +154,8 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
                      << " at line #" << m_line_num << endl;
                 exit(1);
             }
-            if((inst.op == op_jalr) || is_op_load(inst.op)) {
-                // jalr and l* format: op rd, imm(rs1)
+            if((inst.op == op_jalr) || (inst.op == op_ld)) {
+                // jalr and ld format: op rd, imm(rs1)
                 if(!is_reg_str(args[1]) || !is_num_str(args[2]) || !is_reg_str(args[3])) {
                     cerr << "Error: invalid instruction format: " << m_inst_str
                          << " at line #" << m_line_num << endl;
@@ -193,12 +182,6 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
                      << " at line #" << m_line_num << endl;
                 exit(1);
             }
-            // Check the range of register #.
-            if(!is_int_reg(inst.rd_num) || !is_int_reg(inst.rs1_num)) {
-                cerr << "Error: invalid registers: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
             break;
         }
         case op_s_type: {
@@ -222,12 +205,6 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
                 exit(1);
             }
             inst.rs1_num = get_regnum(args[3]);
-            // Check the range of register #.
-            if(!is_int_reg(inst.rs1_num) || !is_int_reg(inst.rs2_num)) {
-                cerr << "Error: invalid registers: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
             break;
         }
         case op_sb_type: {
@@ -245,12 +222,6 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
             inst.rs1_num = get_regnum(args[1]);
             inst.rs2_num = get_regnum(args[2]);
             inst.label   = args[3];
-            // Check the range of register #.
-            if(!is_int_reg(inst.rs1_num) || !is_int_reg(inst.rs2_num)) {
-                cerr << "Error: invalid registers: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
             break;
         }
         case op_u_type: {
@@ -273,12 +244,6 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
                      << " at line #" << m_line_num << endl;
                 exit(1);
             }
-            // Check the range of register #.
-            if(!is_int_reg(inst.rd_num)) {
-                cerr << "Error: invalid registers: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
             break;
         }
         case op_uj_type: {
@@ -295,94 +260,6 @@ void inst_memory_t::parse_inst_str(std::string m_inst_str, size_t m_line_num) {
             }
             inst.rd_num  = get_regnum(args[1]);
             inst.label   = args[2];
-            // Check the range of register #.
-            if(!is_int_reg(inst.rd_num)) {
-                cerr << "Error: invalid registers: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
-            break;
-        }
-        case op_fr_type: {
-            // FR-type format: op rd, rs1, rs2
-            if(args.size() != 4) {
-                cerr << "Error: incomplete instruction: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
-            if(!is_reg_str(args[1]) || !is_reg_str(args[2]) || !is_reg_str(args[3])) {
-                cerr << "Error: invalid instruction format: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
-            inst.rd_num  = get_regnum(args[1]);
-            inst.rs1_num = get_regnum(args[2]);
-            inst.rs2_num = get_regnum(args[3]);
-            // Check the range of register #.
-            if(!is_fp_reg(inst.rd_num)  ||
-               !is_fp_reg(inst.rs1_num) || !is_fp_reg(inst.rs2_num)) {
-                cerr << "Error: invalid registers: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
-            break;
-        }
-        case op_fi_type: {
-            // FI-type format: op rd, imm(rs1) 
-            if(args.size() != 4) {
-                cerr << "Error: incomplete instruction: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
-            if(!is_reg_str(args[1]) || !is_num_str(args[2]) || !is_reg_str(args[3])) {
-                cerr << "Error: invalid instruction format: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
-            inst.rd_num  = get_regnum(args[1]);
-            inst.imm     = get_imm(args[2]);
-            // Check if the immediate value fits into 12 bits.
-            if(inst.imm >= 0 ? inst.imm >> 11 : (inst.imm >> 11) != -1) {
-                cerr << "Error: invalid immediate value: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
-            inst.rs1_num = get_regnum(args[3]);
-            // Check the range of register #.
-            if(!is_fp_reg(inst.rd_num) || !is_int_reg(inst.rs1_num)) {
-                cerr << "Error: invalid registers: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
-            break;
-        }
-        case op_fs_type: {
-            // FS-type format: op rs2, imm(rs1)
-            if(args.size() != 4) {
-                cerr << "Error: incomplete instruction: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
-            if(!is_reg_str(args[1]) || !is_num_str(args[2]) || !is_reg_str(args[3])) {
-                cerr << "Error: invalid instruction format: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
-            inst.rs2_num = get_regnum(args[1]);
-            inst.imm     = get_imm(args[2]);
-            // Check if the immediate value fits into 12 bits.
-            if(inst.imm >= 0 ? inst.imm >> 11 : (inst.imm >> 11) != -1) {
-                cerr << "Error: invalid immediate value: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
-            inst.rs1_num = get_regnum(args[3]);
-            // Check the range of register #.
-            if(!is_int_reg(inst.rs1_num) || !is_fp_reg(inst.rs2_num)) {
-                cerr << "Error: invalid registers: " << m_inst_str
-                     << " at line #" << m_line_num << endl;
-                exit(1);
-            }
             break;
         }
         default: { break; } // Nothing to do

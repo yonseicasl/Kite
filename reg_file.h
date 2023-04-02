@@ -10,7 +10,7 @@ public:
     reg_file_t();
     ~reg_file_t();
 
-    void write(inst_t *m_inst, unsigned m_regnum);  // Write register file.
+    void write(inst_t *m_inst, unsigned m_regnum, int64_t m_value);  // Write register file.
     bool dep_check(inst_t *m_inst);                 // Data dependency check
     void flush();                                   // Clear the dependency check state.
     void load_reg_state();                          // Load initial register file state.

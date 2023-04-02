@@ -43,7 +43,8 @@ void proc_t::init(const char *m_program_code) {
     reg_file = new reg_file_t();                        // Create a register file.
     alu = new alu_t(&ticks);                            // Create an ALU.
 
-    data_memory = new data_memory_t(&ticks, 4096, 0);   // Create a data memory.
+    data_memory = new data_memory_t(&ticks, 4096,
+                      inst_memory->num_insts()<<2, 0);  // Create a data memory.
     data_cache = new data_cache_t(&ticks, 1024, 8, 1);  // Create a data cache.
     data_memory->connect(data_cache);                   // Connect the memory to cache.
     data_cache->connect(data_memory);                   // Connect the cache to memory.
@@ -80,7 +81,7 @@ void proc_t::writeback() {
         mem_wb_preg.clear();
         // Write a result to the register file. Discard the x0 register.
         if(inst->rd_num > 0) {
-            reg_file->write(inst, inst->rd_num);
+            reg_file->write(inst, inst->rd_num, inst->rd_val);
         }
 #ifdef DEBUG
         cout << ticks << " : writeback : " << get_inst_str(inst, true) << endl;
@@ -128,8 +129,8 @@ void proc_t::memory() {
             // Remove the instruction from the EX/MEM pipeline register.
             ex_mem_preg.clear();
             // Access the data memory for a load or store.
-            if(is_op_load(mem_inst->op)) { data_cache->read(mem_inst); }
-            else if(is_op_store(mem_inst->op)) { data_cache->write(mem_inst); }
+            if(mem_inst->op == op_ld) { data_cache->read(mem_inst); }
+            else if(mem_inst->op == op_sd) { data_cache->write(mem_inst); }
         }
         // Data cache is done with the instruction.
         if(!data_cache->run()) {

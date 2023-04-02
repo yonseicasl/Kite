@@ -2,7 +2,7 @@
 # Kite: Architecture Simulator for RISC-V Instruction Set #
 # Developed by William J. Song                            #
 # Intelligent Computing Systems Lab, Yonsei University    #
-# Version: 1.9                                            #
+# Version: 1.10                                           #
 ###########################################################
 
 # Kite program code
@@ -12,15 +12,11 @@
 #   4. The program code supports only the following list of instructions
 #      (sorted by alphabetical order in each type).
 #      R-type: add, and, div, divu, mul, or, rem, remu, sll, sra, srl, sub, xor
-#      I-type: addi, andi, jalr, slli, srai, srli, ori, xori
-#      I-type: lb, lbu, lh, lhu, lw, lwu, ld
-#      S-type: sb, sh, sw, sd
+#      I-type: addi, andi, jalr, slli, srai, srli, ld, ori, xori
+#      S-type: sd
 #      SB-type: beq, bge, blt, bne
 #      U-type: lui
 #      UJ-type: jal
-#      FR-type: fadd.d, fdiv.d, fmul.d, fsub.d
-#      FI-type: fld
-#      FS-type: fsd
 #      No-type: nop
 
 loop:   beq  x11, x0,  exit

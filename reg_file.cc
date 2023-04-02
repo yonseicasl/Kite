@@ -19,8 +19,8 @@ reg_file_t::~reg_file_t() {
 }
 
 // Write in the register file. 
-void reg_file_t::write(inst_t *m_inst, unsigned m_regnum) {
-    regs[m_regnum] = m_inst->rd_val;
+void reg_file_t::write(inst_t *m_inst, unsigned m_regnum, int64_t m_value) {
+    regs[m_regnum] = m_value;
     // Clear the dependency checker if no subsequent instructions have claimed
     // the destination register of a retiring instruction.
     if(dep[m_regnum] == m_inst) { dep[m_regnum] = 0; }
@@ -75,7 +75,7 @@ void reg_file_t::load_reg_state() {
     }
 
     // A bit vector to check if all registers are initialized.
-    uint64_t loaded = 0;
+    unsigned loaded = 0;
 
     string line;
     size_t line_num = 0;
@@ -106,22 +106,22 @@ void reg_file_t::load_reg_state() {
                  << " at line #" << line_num << " of reg_state" << endl;
             exit(1);
         }
-        regs[reg_num] = is_int_reg(reg_num) ? get_imm(line) : read_int(get_fp(line));
-        
+        regs[reg_num] = get_imm(line);
+
         // Mark that the register state has been loaded.
         if((loaded >> reg_num) & 0b1) {
             cerr << "Error: redefinition of register state for " << reg_name
                  << " at line #" << line_num << " of reg_state" << endl;
             exit(1);
         }
-        loaded |= (uint64_t(0b1) << reg_num);
+        loaded |= (0b1 << reg_num);
     }
 
     // x0 is hard-wired to zero.
     regs[reg_x0] = 0;
 
     // Check if all register states are initialized.
-    if(loaded != uint64_t(-1)) {
+    if(loaded != unsigned(-1)) {
         unsigned reg_num = 0;
         while(loaded & 0b1) { loaded = loaded >> 1; reg_num++; }
         cerr << "Error: register state of x" << reg_num << " is undefined" << endl;
@@ -134,11 +134,8 @@ void reg_file_t::load_reg_state() {
 
 void reg_file_t::print_state() const {
     cout << endl << "Register state:" << endl;
-    for(unsigned i = reg_x0; i <= reg_x31; i++) {
-        cout << "x" << (i - reg_x0) << " = " << regs[i] << endl;
-    }
-    for(unsigned i = reg_f0; i <= reg_f31; i++) {
-        cout << "f" << (i - reg_f0) << " = " << read_fp(regs[i]) << endl;
+    for(unsigned i = reg_x0; i < num_kite_regs; i++) {
+        cout << "x" << i << " = " << regs[i] << endl;
     }
 }
 

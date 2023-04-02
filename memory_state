@@ -2,15 +2,14 @@
 # Kite: Architecture Simulator for RISC-V Instruction Set #
 # Developed by William J. Song                            #
 # Intelligent Computing Systems Lab, Yonsei University    #
-# Version: 1.9                                            #
+# Version: 1.10                                           #
 ###########################################################
 
 # Kite memory state
 #   1. Each line of state file defines "memory address = data value".
-#   2. A data value to be stored in a floating-point format must be
-#      explicitly shown with a decimal point, such as 1024 = 1.0.
-#   3. Memory addresses in this file must be multiples of 8 for 64-bit
-#      granular alignment.
+#   2. Data values have to be integers and cannot be floating-point.
+#   3. Memory addresses and data defined in this file are sequentially
+#      stored in the data memory.
 #   4. Not all memory addresses have to be listed in this file. Undefined
 #      memory addresses will zeros by default.
 
