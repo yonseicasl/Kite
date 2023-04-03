@@ -12,7 +12,7 @@
 #   4. The program code supports only the following list of instructions
 #      (sorted by alphabetical order in each type).
 #      R-type: add, and, div, divu, mul, or, rem, remu, sll, sra, srl, sub, xor
-#      I-type: addi, andi, jalr, slli, srai, srli, ld, ori, xori
+#      I-type: addi, andi, jalr, ld, slli, srai, srli, ori, xori
 #      S-type: sd
 #      SB-type: beq, bge, blt, bne
 #      U-type: lui
