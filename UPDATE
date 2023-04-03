@@ -171,7 +171,7 @@ Update history:
       After the fix, the pipeline stats print both branch mispredictions and
       branch target mispredictions.
 
-* Version 1.0 (April, 2023)
+* Version 1.0 (April 3, 2023)
     - Supports for non-double word memory instructions and floating-point
       operations are removed. This version rolls back to version 1.8, except
       for a few essential fixes.
