@@ -34,7 +34,7 @@ void inst_memory_t::load_program_code(const char *m_program_code) {
     fstream file_stream;
     file_stream.open(m_program_code, fstream::in);
     if(!file_stream.is_open()) {
-        cerr << "Error: failed to open program_code" << endl;
+        cerr << "Error: failed to open " << m_program_code << endl;
         exit(1);
     }
 
