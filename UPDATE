@@ -171,7 +171,7 @@ Update history:
       After the fix, the pipeline stats print both branch mispredictions and
       branch target mispredictions.
 
-* Version 1.0 (April 3, 2023)
+* Version 1.10 (April 3, 2023)
     - Supports for non-double word memory instructions and floating-point
       operations are removed. This version rolls back to version 1.8, except
       for a few essential fixes.
@@ -181,4 +181,9 @@ Update history:
       loaded, the number of instructions dynamically defines the code segment
       size. When a data memory access is made, accessing the code segment
       region throws an error.
+
+* Version 1.11 (April 24, 2023)
+    - The lui instruction mistakenly loaded the immediate value to the 20th-
+      bit position of the destination register. The error was fixed to load
+      the value to the 12th-bit position.
 
