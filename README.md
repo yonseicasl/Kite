@@ -15,10 +15,10 @@ Since most computer architecture simulators are written in C/C++, it gives stude
 The simple implementation of Kite is easy to install.
 It requires only a g++ compiler to build and does not depend on other libraries or external tools.
 It was validated in Ubuntu 16.04 (Xenial), 18.04 (Bionic Beaver), 20.04 (Focal Fossa), and Mac OS 10.14 (Mojave), 10.15 (Catalina), 11 (Big Sur), 12 (Monterey).
-The latest release of Kite is v1.10 (as of April 2023).
-To obtain a copy of Kite v1.10, use the following command in the terminal.
+The latest release of Kite is v1.11 (as of April 2023).
+To obtain a copy of Kite v1.11, use the following command in the terminal.
 ```
-$ git clone ––branch v1.10 https://github.com/yonsei-icsl/kite
+$ git clone ––branch v1.11 https://github.com/yonsei-icsl/kite
 ```
 
 The following executes an example RISC-V assembly code, `program_code`.

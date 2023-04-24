@@ -8,7 +8,7 @@ static string banner = "\
 * Kite: Architecture Simulator for RISC-V Instruction Set *\n\
 * Developed by William J. Song                            *\n\
 * Intelligent Computing Systems Lab, Yonsei University    *\n\
-* Version: 1.10                                           *\n\
+* Version: 1.11                                           *\n\
 ***********************************************************\n\
 ";
 
