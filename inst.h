@@ -22,6 +22,7 @@ public:
     bool rd_ready;                      // Is the rd value ready?
     uint64_t branch_target;             // Actual branch target
     uint64_t pred_target;               // Predicted branch target
+    bool branch_taken;                  // Is a branch actually taken?
     bool pred_taken;                    // Is a branch predicted to be taken?
 };
 

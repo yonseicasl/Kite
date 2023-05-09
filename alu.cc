@@ -78,18 +78,18 @@ void alu_t::run(inst_t *m_inst) {
         case op_xori: { m_inst->rd_val = m_inst->rs1_val ^ m_inst->imm; break; }
         case op_ld:  
         case op_sd:   { m_inst->memory_addr = m_inst->rs1_val + m_inst->imm; break; }
-        case op_beq:  { m_inst->branch_target = (m_inst->rs1_val == m_inst->rs2_val) ? 
-                                                (m_inst->pc + (m_inst->imm << 1)) :
-                                                (m_inst->pc + 4); break; }
-        case op_bge:  { m_inst->branch_target = (m_inst->rs1_val >= m_inst->rs2_val) ? 
-                                                (m_inst->pc + (m_inst->imm << 1)) :
-                                                (m_inst->pc + 4); break; }
-        case op_blt:  { m_inst->branch_target = (m_inst->rs1_val < m_inst->rs2_val) ? 
-                                                (m_inst->pc + (m_inst->imm << 1)) :
-                                                (m_inst->pc + 4); break; }
-        case op_bne:  { m_inst->branch_target = (m_inst->rs1_val != m_inst->rs2_val) ? 
-                                                (m_inst->pc + (m_inst->imm << 1)) :
-                                                (m_inst->pc + 4); break; }
+        case op_beq:  { m_inst->branch_target = 
+                       (m_inst->branch_taken = m_inst->rs1_val == m_inst->rs2_val) ?
+                       (m_inst->pc + (m_inst->imm << 1)) : (m_inst->pc + 4); break; }
+        case op_bge:  { m_inst->branch_target =
+                       (m_inst->branch_taken = m_inst->rs1_val >= m_inst->rs2_val) ?
+                       (m_inst->pc + (m_inst->imm << 1)) : (m_inst->pc + 4); break; }
+        case op_blt:  { m_inst->branch_target =
+                       (m_inst->branch_taken = m_inst->rs1_val <  m_inst->rs2_val) ? 
+                       (m_inst->pc + (m_inst->imm << 1)) : (m_inst->pc + 4); break; }
+        case op_bne:  { m_inst->branch_target = 
+                       (m_inst->branch_taken = m_inst->rs1_val != m_inst->rs2_val) ? 
+                       (m_inst->pc + (m_inst->imm << 1)) : (m_inst->pc + 4); break; }
         case op_lui:  { m_inst->rd_val = m_inst->imm << 12; break; }
         case op_jal:  { m_inst->rd_val = m_inst->pc + 4; break; }
         default:      { break; } // Nothing to do

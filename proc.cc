@@ -10,7 +10,7 @@ proc_t::proc_t() :
 #ifdef BR_PRED
     num_br_predicts(0),
     num_br_mispredicts(0),
-    num_br_t_mispredicts(0),
+    num_br_tgt_mispredicts(0),
 #endif
     num_flushes(0),
     ticks(0),
@@ -38,7 +38,7 @@ proc_t::~proc_t() {
 // Processor initialization
 void proc_t::init(const char *m_program_code) {
     inst_memory = new inst_memory_t(m_program_code);    // Create an instruction memory.
-    br_predictor = new br_predictor_t(16);              // Create a branch predictor.
+    br_predictor = new br_predictor_t(0,4,0);           // Create a branch predictor.
     br_target_buffer = new br_target_buffer_t(16);      // Create a branch target buffer.
     reg_file = new reg_file_t();                        // Create a register file.
     alu = new alu_t(&ticks);                            // Create an ALU.
@@ -90,9 +90,8 @@ void proc_t::writeback() {
         if(inst->branch_target) {
 #ifdef BR_PRED
             num_br_predicts++;
-            bool is_taken = (inst->branch_target != (inst->pc+4));
-            br_predictor->update(inst->pc, is_taken);
-            if(is_taken) {
+            br_predictor->update(inst->pc, inst->branch_taken);
+            if(inst->branch_taken) {
                 br_target_buffer->update(inst->pc, inst->branch_target);
             }
             // Predicted branch target and actual branch target are different.
@@ -100,9 +99,9 @@ void proc_t::writeback() {
             if(inst->pred_target != inst->branch_target) {
                 // A branch mis-prediction (i.e., direction) or target mis-prediction
                 // (i.e., address) needs to flush the pipeline.
-                num_br_mispredicts   += (inst->pred_taken != is_taken);
-                num_br_t_mispredicts += (inst->pred_taken == is_taken);
-                // Flush the pipeline, and set a correct PC.
+                inst->pred_taken != inst->branch_taken ? num_br_mispredicts++ :
+                                                         num_br_tgt_mispredicts++;
+                // Flush the pipeline, and set the correct PC.
                 flush();
                 pc = inst->branch_target;
 #ifdef DEBUG
@@ -252,22 +251,23 @@ void proc_t::flush() {
 
 // Print pipeline stats.
 void proc_t::print_stats() {
-    cout << endl << "======== [Kite Pipeline Stats] =========" << endl;
-    cout << "Total number of clock cycles = " << ticks << endl;
-    cout << "Total number of stalled cycles = " << stalls << endl;
+    cout << endl << "======== [Kite Pipeline Stats] ========="      << endl;
+    cout << "Total number of clock cycles = "          << ticks     << endl;
+    cout << "Total number of stalled cycles = "        << stalls    << endl;
     cout << "Total number of executed instructions = " << num_insts << endl;
     cout.precision(3);
-    cout << "Cycles per instruction = " << fixed
+    cout << "Cycles per instruction = "       << fixed
          << double(ticks) / double(num_insts) << endl;
 #ifdef BR_PRED
-    cout << "Number of pipeline flushes = " << num_flushes << endl;
-    cout << "Number of branch mispredictions = " << num_br_mispredicts << endl;
-    cout << "Number of branch target mispredictions = " << num_br_t_mispredicts << endl;
-    cout << "Branch prediction accuracy = " << fixed
+    cout << "Number of pipeline flushes = "             << num_flushes            << endl;
+    cout << "Number of branch mispredictions = "        << num_br_mispredicts     << endl;
+    cout << "Number of branch target mispredictions = " << num_br_tgt_mispredicts << endl;
+    cout << "Branch prediction accuracy = "             << fixed
          << (num_br_predicts ?
-             double(num_br_predicts-num_br_mispredicts) / double(num_br_predicts) : 0)
-         << " (" << num_br_predicts-num_br_mispredicts-num_br_t_mispredicts
-         << "/" << num_br_predicts << ")" << endl;
+               double(num_br_predicts-num_br_mispredicts-num_br_tgt_mispredicts)
+             / double(num_br_predicts) : 0)
+         << " (" <<   num_br_predicts-num_br_mispredicts-num_br_tgt_mispredicts
+         << "/"  <<   num_br_predicts << ")" << endl;
 #endif
     cout.precision(-1);
     // Print data cache stats.

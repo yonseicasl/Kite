@@ -182,8 +182,15 @@ Update history:
       size. When a data memory access is made, accessing the code segment
       region throws an error.
 
-* Version 1.11 (April 24, 2023)
+* Version 1.11 (May 9, 2023)
     - The lui instruction mistakenly loaded the immediate value to the 20th-
       bit position of the destination register. The error was fixed to load
       the value to the 12th-bit position.
+    - branch_taken state is added to inst_t to print branch taken/not-taken
+      states in the debugging messages.
+    - Branch stat is fixed to count branch target mispredictions in the
+      prediction accuracy.
+    - The branch predictor is formatted as a two-level predictor (b, p, h)
+      with b-bit branch history table (BHT) indexing, p-bit pattern history
+      table (PHT) indexing, and h-bit branch history per BHT entry.
 

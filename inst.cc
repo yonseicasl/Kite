@@ -21,6 +21,7 @@ inst_t::inst_t() :
     rd_ready(false),
     branch_target(0),
     pred_target(0),
+    branch_taken(false),
     pred_taken(false) {
 }
 
@@ -40,6 +41,7 @@ inst_t::inst_t(const inst_t &m_inst) :
     rd_ready(m_inst.rd_ready),
     branch_target(m_inst.branch_target),
     pred_target(m_inst.pred_target),
+    branch_taken(m_inst.branch_taken),
     pred_taken(m_inst.pred_taken) {
 }
 
@@ -139,7 +141,14 @@ string get_inst_str(inst_t *inst, bool details) {
                    << inst->rs2_val             << ", "
                    << inst->imm                 << "("
                    << inst->label               << ")"
-                   << "]";
+                   << "] ("
+#ifdef BR_PRED
+                   << "predicted "
+                   << (inst->pred_taken   ? "T" : "NT")
+                   << " / "
+#endif
+                   << (inst->branch_taken ? "T" : "NT")
+                   << ")";
             }
             break;
         }
