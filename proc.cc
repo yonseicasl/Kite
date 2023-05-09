@@ -38,7 +38,7 @@ proc_t::~proc_t() {
 // Processor initialization
 void proc_t::init(const char *m_program_code) {
     inst_memory = new inst_memory_t(m_program_code);    // Create an instruction memory.
-    br_predictor = new br_predictor_t(0,4,0);           // Create a branch predictor.
+    br_predictor = new br_predictor_t(0, 4, 0);         // Create a branch predictor.
     br_target_buffer = new br_target_buffer_t(16);      // Create a branch target buffer.
     reg_file = new reg_file_t();                        // Create a register file.
     alu = new alu_t(&ticks);                            // Create an ALU.
