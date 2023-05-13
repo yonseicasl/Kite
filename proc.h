@@ -1,7 +1,7 @@
 #ifndef __KITE_PROC_H__
 #define __KITE_PROC_H__
 
-#include <stdint.h>
+#include <cstdint>
 #include "alu.h"
 #include "br_predictor.h"
 #include "data_cache.h"

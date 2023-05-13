@@ -1,7 +1,7 @@
 #ifndef __KITE_INST_H__
 #define __KITE_INST_H__
 
-#include <stdint.h>
+#include <cstdint>
 #include "defs.h"
 
 // Kite instruction

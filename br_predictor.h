@@ -1,7 +1,7 @@
 #ifndef __BR_PRED_H__
 #define __BR_PRED_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 // Branch predictor
 class br_predictor_t {

@@ -1,7 +1,7 @@
 #ifndef __KITE_DATA_MEMORY_H__
 #define __KITE_DATA_MEMORY_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 class data_cache_t;
 

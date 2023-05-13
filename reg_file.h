@@ -1,7 +1,7 @@
 #ifndef __KITE_REG_FILE_H__
 #define __KITE_REG_FILE_H__
 
-#include <stdint.h>
+#include <cstdint>
 #include "inst.h"
 
 // Register file

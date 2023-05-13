@@ -1,7 +1,7 @@
 #ifndef __KITE_ALU_H__
 #define __KITE_ALU_H__
 
-#include <stdint.h>
+#include <cstdint>
 #include "inst.h"
 
 // Arithmetic-logical unit (ALU)
