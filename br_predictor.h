@@ -14,7 +14,7 @@ public:
 
 private:
     unsigned *bht;                                      // Branch history table (BHT)
-    char     *pht;                                      // Pattern history table (PHT)
+    uint8_t  *pht;                                      // Pattern history table (PHT)
     unsigned  b;                                        // b bits for BHT indexing
     unsigned  p;                                        // p bits for PHT indexing
     unsigned  h;                                        // h-bit branch history per BHT entry

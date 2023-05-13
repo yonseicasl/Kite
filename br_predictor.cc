@@ -10,7 +10,7 @@ br_predictor_t::br_predictor_t(unsigned m_bht_bits, unsigned m_pht_bits, unsigne
     h(m_hist_len) {
     // Create branch history table (BHT) and pattern history table (PHT).
     bht = new unsigned[1 << b];
-    pht = new char[(1 << p) * (1 << h)];
+    pht = new uint8_t[(1 << p) * (1 << h)];
 }
 
 br_predictor_t::~br_predictor_t() {
