@@ -28,10 +28,10 @@ public:
     ~br_target_buffer_t();
 
     uint64_t get_target(uint64_t m_pc);                 // Get a branch target address.
-    void update(uint64_t m_pc, uint64_t m_target_addr); // Update the branch target buffer.
+    void update(uint64_t m_pc, uint64_t m_target_addr); // Update the BTB.
 
 private:
-    uint64_t num_entries;                               // Number of target addresses
+    uint64_t num_entries;                               // Number of BTB entries
     uint64_t *buffer;                                   // Target address array
 };
 
