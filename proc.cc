@@ -90,7 +90,7 @@ void proc_t::writeback() {
         if(inst->branch_target) {
 #ifdef BR_PRED
             num_br_predicts++;
-            br_predictor->update(inst->pc, inst->branch_taken);
+            br_predictor->update(inst);
             if(inst->branch_taken) {
                 br_target_buffer->update(inst->pc, inst->branch_target);
             }
@@ -211,7 +211,7 @@ void proc_t::fetch() {
             if(get_op_type(inst->op) == op_sb_type) {
 #ifdef BR_PRED
                 // Set the PC to a branch target if the branch is predicted to be taken.
-                inst->pred_taken = br_predictor->is_taken(inst->pc);
+                inst->pred_taken = br_predictor->is_taken(inst);
                 pc = inst->pred_target = inst->pred_taken ?
                                          br_target_buffer->get_target(inst->pc) : pc;
 #else

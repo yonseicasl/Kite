@@ -20,13 +20,13 @@ br_predictor_t::~br_predictor_t() {
 }
 
 // Is a branch predicted to be taken?
-bool br_predictor_t::is_taken(uint64_t m_pc) {
+bool br_predictor_t::is_taken(inst_t *m_inst) {
     // Predict always not taken.
     return false;
 }
 
 // Update a prediction counter.
-void br_predictor_t::update(uint64_t m_pc, bool m_taken) {
+void br_predictor_t::update(inst_t *m_inst) {
 }
 
 

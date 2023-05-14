@@ -2,6 +2,7 @@
 #define __BR_PRED_H__
 
 #include <cstdint>
+#include "inst.h"
 
 // Branch predictor
 class br_predictor_t {
@@ -9,8 +10,8 @@ public:
     br_predictor_t(unsigned m_bht_bits, unsigned m_pht_bits, unsigned m_hist_len);
     ~br_predictor_t();
 
-    bool is_taken(uint64_t m_pc);                       // Is a branch predicted to be taken?
-    void update(uint64_t m_pc, bool m_taken);           // Update a prediction counter.
+    bool is_taken(inst_t *m_inst);                      // Is a branch predicted to be taken?
+    void update(inst_t *m_inst);                        // Update a prediction counter.
 
 private:
     unsigned *bht;                                      // Branch history table (BHT)
