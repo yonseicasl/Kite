@@ -141,14 +141,22 @@ string get_inst_str(inst_t *inst, bool details) {
                    << inst->rs2_val             << ", "
                    << inst->imm                 << "("
                    << inst->label               << ")"
-                   << "] ("
+                   << "]";
 #ifdef BR_PRED
-                   << "predicted "
-                   << (inst->pred_taken   ? "T" : "NT")
-                   << " / "
+                ss << " (pred "
+                   << (inst->pred_taken ? "T" : "NT");
+                if(inst->branch_target) {
+                    ss << " / "
+                       << (inst->branch_taken ? "T" : "NT");
+                }
+                ss << ")";
+#else
+                if(inst->branch_target) {
+                    ss << " ("
+                       << (inst->branch_taken ? "T" : "NT")
+                       << ")";
+                }
 #endif
-                   << (inst->branch_taken ? "T" : "NT")
-                   << ")";
             }
             break;
         }
