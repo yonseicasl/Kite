@@ -21,7 +21,7 @@
 \author{William J. Song\\
         School of Electrical Engineering, Yonsei University\\
         \href{mailto:wjhsong@yonsei.ac.kr}{wjhsong@yonsei.ac.kr}}
-\date{April 2023 (Version 1.11)}
+\date{March 2024 (Version 1.12)}
 \maketitle
 
 
@@ -30,7 +30,7 @@
 The initial version of Kite was developed in 2019 for educational purposes as a part of EEE3530 Computer Architecture.
 Kite implements the five-stage pipeline model described in \emph{Computer Organization and Design, RISC-V Edition: The Hardware and Software Interface} by D. Patterson and J. Hennessey \cite{patterson_morgan2017}.
 The objective of Kite is to provide students with an easy-to-use simulation framework and the precise timing model described in the book.
-It supports most of the basic instructions introduced in the book, such as {\tt add}, {\tt slli}, {\tt ld}, {\tt sd}, and {\tt beq} instructions.
+It supports most of the basic instructions introduced in the book, such as {\tt\small add}, {\tt\small slli}, {\tt\small ld}, {\tt\small sd}, and {\tt\small beq} instructions.
 Users can easily compose RISC-V assembly programs and execute them through the pipeline model for entry-level architecture studies.
 Kite implements several basic functionalities, including instruction dependency checks (i.e., data hazards), pipeline stalls, data forwarding (optional), branch predictions (optional), data cache structures, etc.
 The remainder of this document describes the Kite implementation and its usage.
@@ -41,24 +41,24 @@ Kite implements the five-stage pipeline model in C++.
 Since most computer architecture simulators are written in C/C++, it gives students hands-on experiences in computer architecture simulations using a simple, easy-to-use framework.
 The simple implementation of Kite is easy to install.
 It requires only a g++ compiler to build and does not depend on other libraries or external tools.
-It was validated in Ubuntu 16.04 (Xenial), 18.04 (Bionic Beaver), 20.04 (Focal Fossa), and Mac OS 10.14 (Majave), 10.15 (Catalina), 11 (Big Sur), 12 (Monterey).
-The latest release of Kite is v1.11.
-To obtain a copy of Kite v1.11, use the following {\tt git} command in the terminal.
-Then, enter the {\tt kite/} directory and build the simulator using a {\tt make} command.
+It was validated in Ubuntu 16.04 (Xenial), 18.04 (Bionic Beaver), 20.04 (Focal Fossa), 22.04 (Jammy Jellyfish) and Mac OS 10.14 (Majave), 10.15 (Catalina), 11 (Big Sur), 12 (Monterey), 13 (Ventura), 14 (Sonoma).
+The latest release of Kite is v1.12.
+To obtain a copy of Kite v1.12, use the following {\tt\small git} command in the terminal.
+Then, enter the {\tt\small kite/} directory and build the simulator using a {\tt\small make} command.
 
-\begin{Verbatim}[frame=single]
-$ git clone --branch v1.11 https://github.com/yonsei-icsl/kite
+\begin{Verbatim}[frame=single,fontsize=\small]
+$ git clone --branch v1.12 https://github.com/yonsei-icsl/kite
 $ cd kite/
 $ make -j
 \end{Verbatim}
 
 
 \section{Program Code, Register and Memory States} \label{sec:inputs}
-Kite takes three input files to run, i) program code, ii) register state, and iii) data memory state.
+Kite takes three input files to run: i) program code, ii) register state, and iii) data memory state.
 A program code is a text file containing RISC-V assembly instructions.
-In the main directory of Kite (i.e., {\tt kite/}), you can find an example code named {\tt program\char`_code} that has the following RISC-V instructions.
+In the main directory of Kite (i.e., {\tt\small kite/}), you can find an example code named {\tt\small program\char`_code} that has the following RISC-V instructions.
 
-\begin{Verbatim}[frame=single]
+\begin{Verbatim}[frame=single,fontsize=\small]
 # Kite program code
 loop:   beq  x11, x0,  exit
         remu x5,  x10, x11
@@ -68,11 +68,11 @@ loop:   beq  x11, x0,  exit
 exit:   sd   x10, 2000(x0)
 \end{Verbatim}
 
-A {\tt \#} symbol is reserved for comment in the program code.
-Everything after the {\tt \#} sign until the end of the line is regarded as a comment and not read.
+A {\tt\small \#} symbol is reserved for comment in the program code.
+Everything after the {\tt\small \#} sign until the end of the line is regarded as a comment and not read.
 Each instruction in the program code is sequentially stored in the memory, starting from PC = 4.
-For example, {\tt beq} is the first instruction in the example code above, given the PC value of 4.
-The next instruction, {\tt remu}, has PC = 8 because every RISC-V instruction is 4 bytes long \cite{waterman_riscv2019}.
+For example, {\tt\small beq} is the first instruction in the example code above, given the PC value of 4.
+The next instruction, {\tt\small remu}, has PC = 8 because every RISC-V instruction is 4 bytes long \cite{waterman_riscv2019}.
 The code size is 24 bytes for six instructions, spanning the lowest-address memory region from 4 to 28.
 Data access to the code segment is forbidden and will throw an error.
 
@@ -80,10 +80,10 @@ Instructions in the program code are sequentially executed from the top unless a
 The program ends when the next PC naturally goes out of the code segment where there exists no valid instruction or when the next PC is set to zero (i.e., PC = 0).
 The PC value of zero is reserved as an invalid address.
 Labels, instructions, and register operands are case-insensitive.
-It means that {\tt beq}, {\tt Beq}, {\tt BEQ} are all treated identically.
+It means that {\tt\small beq}, {\tt\small Beq}, {\tt\small BEQ} are all treated identically.
 The current version of Kite supports the following RISC-V instructions.
 Instructions in the table are listed in alphabetical order in each category.
-Pseudo instructions (e.g., {\tt mv}, {\tt not}) and ABI register names (e.g., {\tt sp}, {\tt a0}) are not supported.
+Pseudo instructions (e.g., {\tt\small mv}, {\tt\small not}) and ABI register names (e.g., {\tt\small sp}, {\tt\small a0}) are not supported.
 
 \begin{longtable}{>{\centering\arraybackslash} m{0.60in}|
                   >{\centering\arraybackslash} m{1.65in}|
@@ -91,49 +91,49 @@ Pseudo instructions (e.g., {\tt mv}, {\tt not}) and ABI register names (e.g., {\
                  }
 \hline
 Types                   & RISC-V instructions       & Operations in C/C++   \\ \hline \hline
-\multirow{13}{*}{R type}& {\tt add  rd, rs1, rs2}   & {\tt rd = rs1 + rs2}  \\
-                        & {\tt and  rd, rs1, rs2}   & {\tt rd = rs1 \& rs2} \\
-                        & {\tt div  rd, rs1, rs2}   & {\tt rd = rs1 / rs2}  \\
-                        & {\tt divu rd, rs1, rs2}   & {\tt rd = (uint64\char`_t)rs1 / (uint64\char`_t)rs2} \\
-                        & {\tt mul  rd, rs1, rs2}   & {\tt rd = rs1 * rs2}  \\
-                        & {\tt or   rd, rs1, rs2}   & {\tt rd = rs1 | rs2}  \\
-                        & {\tt rem  rd, rs1, rs2}   & {\tt rd = rs1 \% rs2} \\
-                        & {\tt remu rd, rs1, rs2}   & {\tt rd = (uint64\char`_t)rs1 \% (uint64\char`_t)rs2} \\
-                        & {\tt sll  rd, rs1, rs2}   & {\tt rd = rs1 << rs2} \\
-                        & {\tt sra  rd, rs1, rs2}   & {\tt rd = rs1 >> rs2} \\
-                        & {\tt srl  rd, rs1, rs2}   & {\tt rd = (uint64\char`_t)rs1 >> rs2} \\
-                        & {\tt sub  rd, rs1, rs2}   & {\tt rd = rs1 - rs2}  \\
-                        & {\tt xor  rd, rs1, rs2}   & {\tt rd = rs1 \string^ rs2} \\ \hline
-\multirow{9}{*}{I type} & {\tt addi rd, rs1, imm}   & {\tt rd = rs1 + imm}  \\
-                        & {\tt andi rd, rs1, imm}   & {\tt rd = rs1 \& imm} \\
-                        & {\tt jalr rd, imm(rs1)}   & {\tt rd = pc + 4, pc = (rs1 + imm) \& -2} \\
-                        & {\tt ld   rd, imm(rs1)}   & {\tt rd = memory[rs1 + imm]} \\
-                        & {\tt slli rd, rs1, imm}   & {\tt rd = rs1 << imm} \\
-                        & {\tt srai rd, rs1, imm}   & {\tt rd = rs1 >> imm} \\
-                        & {\tt srli rd, rs1, imm}   & {\tt rd = (uint64\char`_t)rs1 << imm} \\
-                        & {\tt ori  rd, rs1, imm}   & {\tt rd = rs1 | imm}  \\
-                        & {\tt xori rd, rs1, imm}   & {\tt rd = rs1 \string^ imm} \\ \hline
-S type                  & {\tt sd   rs2, imm(rs1)}  & {\tt memory[rs1 + imm] = rs2} \\ \hline
-\multirow{4}{*}{SB type}& {\tt beq  rs1, rs2, imm}  & {\tt pc = (rs1 == rs2 ? pc + imm<<1 : pc + 4) } \\
-                        & {\tt bge  rs1, rs2, imm}  & {\tt pc = (rs1 >= rs2 ? pc + imm<<1 : pc + 4)} \\
-                        & {\tt blt  rs1, rs2, imm}  & {\tt pc = (rs1 < rs2 ? pc + imm<<1 : pc + 4)} \\
-                        & {\tt bne  rs1, rs2, imm}  & {\tt pc = (rs1 != rs2 ? pc + imm<<1 : pc + 4)} \\ \hline
-U type                  & {\tt lui  rd, imm}        & {\tt rd = imm << 12; } \\ \hline
-UJ type                 & {\tt jal  rd, imm}        & {\tt rd = pc + 4, pc = pc + imm<<1} \\ \hline
-No type                 & {\tt nop}                 & No operation          \\ \hline
+\multirow{13}{*}{R type}& {\tt\small add  rd, rs1, rs2}   & {\tt\small rd = rs1 + rs2}  \\
+                        & {\tt\small and  rd, rs1, rs2}   & {\tt\small rd = rs1 \& rs2} \\
+                        & {\tt\small div  rd, rs1, rs2}   & {\tt\small rd = rs1 / rs2}  \\
+                        & {\tt\small divu rd, rs1, rs2}   & {\tt\small rd = (uint64\char`_t)rs1 / (uint64\char`_t)rs2} \\
+                        & {\tt\small mul  rd, rs1, rs2}   & {\tt\small rd = rs1 * rs2}  \\
+                        & {\tt\small or   rd, rs1, rs2}   & {\tt\small rd = rs1 | rs2}  \\
+                        & {\tt\small rem  rd, rs1, rs2}   & {\tt\small rd = rs1 \% rs2} \\
+                        & {\tt\small remu rd, rs1, rs2}   & {\tt\small rd = (uint64\char`_t)rs1 \% (uint64\char`_t)rs2} \\
+                        & {\tt\small sll  rd, rs1, rs2}   & {\tt\small rd = rs1 << rs2} \\
+                        & {\tt\small sra  rd, rs1, rs2}   & {\tt\small rd = rs1 >> rs2} \\
+                        & {\tt\small srl  rd, rs1, rs2}   & {\tt\small rd = (uint64\char`_t)rs1 >> rs2} \\
+                        & {\tt\small sub  rd, rs1, rs2}   & {\tt\small rd = rs1 - rs2}  \\
+                        & {\tt\small xor  rd, rs1, rs2}   & {\tt\small rd = rs1 \string^ rs2} \\ \hline
+\multirow{9}{*}{I type} & {\tt\small addi rd, rs1, imm}   & {\tt\small rd = rs1 + imm}  \\
+                        & {\tt\small andi rd, rs1, imm}   & {\tt\small rd = rs1 \& imm} \\
+                        & {\tt\small jalr rd, imm(rs1)}   & {\tt\small rd = pc + 4, pc = (rs1 + imm) \& -2} \\
+                        & {\tt\small ld   rd, imm(rs1)}   & {\tt\small rd = memory[rs1 + imm]} \\
+                        & {\tt\small slli rd, rs1, imm}   & {\tt\small rd = rs1 << imm} \\
+                        & {\tt\small srai rd, rs1, imm}   & {\tt\small rd = rs1 >> imm} \\
+                        & {\tt\small srli rd, rs1, imm}   & {\tt\small rd = (uint64\char`_t)rs1 << imm} \\
+                        & {\tt\small ori  rd, rs1, imm}   & {\tt\small rd = rs1 | imm}  \\
+                        & {\tt\small xori rd, rs1, imm}   & {\tt\small rd = rs1 \string^ imm} \\ \hline
+S type                  & {\tt\small sd   rs2, imm(rs1)}  & {\tt\small memory[rs1 + imm] = rs2} \\ \hline
+\multirow{4}{*}{SB type}& {\tt\small beq  rs1, rs2, imm}  & {\tt\small pc = (rs1 == rs2 ? pc + imm<<1 : pc + 4) } \\
+                        & {\tt\small bge  rs1, rs2, imm}  & {\tt\small pc = (rs1 >= rs2 ? pc + imm<<1 : pc + 4)} \\
+                        & {\tt\small blt  rs1, rs2, imm}  & {\tt\small pc = (rs1 < rs2 ? pc + imm<<1 : pc + 4)} \\
+                        & {\tt\small bne  rs1, rs2, imm}  & {\tt\small pc = (rs1 != rs2 ? pc + imm<<1 : pc + 4)} \\ \hline
+U type                  & {\tt\small lui  rd, imm}        & {\tt\small rd = imm << 12; } \\ \hline
+UJ type                 & {\tt\small jal  rd, imm}        & {\tt\small rd = pc + 4, pc = pc + imm<<1} \\ \hline
+No type                 & {\tt\small nop}                 & No operation          \\ \hline
 \end{longtable}
 
-The program code shown in the previous page implements Euclid's algorithm that finds the greatest common divisor (GCD) of two unsigned integer numbers in {\tt x10} and {\tt x11}.
+The program code shown in the previous page implements Euclid's algorithm that finds the greatest common divisor (GCD) of two unsigned integer numbers in {\tt\small x10} and {\tt\small x11}.
 The equivalent program code in C/C++ is shown below.
-For instance, suppose that {\tt x10 = 21} and {\tt x11 = 15}.
-In the first iteration, the remainder of {\tt x10 / x11} (i.e., modulo operation) is stored in the {\tt x5} register, which is {\tt x5 = 6}.
-Then, {\tt x11} and {\tt x5} are copied to {\tt x10} and {\tt x11}, respectively.
-The second iteration makes {\tt x5 = 3} by taking the remainder of {\tt 15 / 6}, and {\tt x10 = 6} and {\tt x11 = 3}.
-In the third iteration, {\tt x5 = 0}, {\tt x10 = 3}, and {\tt x11 = 0}.
-The loop reaches the end when {\tt x11 == 0}.
-The last code line stores the {\tt x10} value in the data memory at address {\tt 2000} (or at index {\tt 250} if the memory is viewed as a doubleword array).
+For instance, suppose that {\tt\small x10 = 21} and {\tt\small x11 = 15}.
+In the first iteration, the remainder of {\tt\small x10 / x11} (i.e., modulo operation) is stored in the {\tt\small x5} register, which is {\tt\small x5 = 6}.
+Then, {\tt\small x11} and {\tt\small x5} are copied to {\tt\small x10} and {\tt\small x11}, respectively.
+The second iteration makes {\tt\small x5 = 3} by taking the remainder of {\tt\small 15 / 6}, and {\tt\small x10 = 6} and {\tt\small x11 = 3}.
+In the third iteration, {\tt\small x5 = 0}, {\tt\small x10 = 3}, and {\tt\small x11 = 0}.
+The loop reaches the end when {\tt\small x11 == 0}.
+The last code line stores the {\tt\small x10} value in the data memory at address {\tt\small 2000} (or at index {\tt\small 250} if the memory is viewed as a doubleword array).
 
-\begin{Verbatim}[frame=single]
+\begin{Verbatim}[frame=single,fontsize=\small]
 /* Equivalent program code in C/C++ */
 while(x11 != 0) {       // loop: beq  x11, x0,  exit
     x5 = x10 % x11;     //       remu x5,  x10, x11
@@ -143,11 +143,11 @@ while(x11 != 0) {       // loop: beq  x11, x0,  exit
 memory[250] = x10;      // exit: sd   x10, 2000(x0)
 \end{Verbatim}
 
-Register state refers to the {\tt reg\char`_state} file that contains the initial values of 32 integer registers.
+Register state refers to the {\tt\small reg\char`_state} file that contains the initial values of 32 integer registers.
 The register state is loaded when a simulation starts.
 The following shows a part of the register state file after the comment lines.
 
-\begin{Verbatim}[frame=single]
+\begin{Verbatim}[frame=single,fontsize=\small]
 # Kite register state
 x0 = 0
 x1 = 0
@@ -165,18 +165,18 @@ x30 = 0
 x31 = 0
 \end{Verbatim}
 
-The register state file must list all 32 integer registers from {\tt x0} to {\tt x31}.
-The left of an equal sign is a register name (e.g., {\tt x10}), and the right side defines its initial value.
-The example above shows that {\tt x10} and {\tt x11} registers are set to 21 and 15, respectively.
+The register state file must list all 32 integer registers from {\tt\small x0} to {\tt\small x31}.
+The left of an equal sign is a register name (e.g., {\tt\small x10}), and the right side defines its initial value.
+The example above shows that {\tt\small x10} and {\tt\small x11} registers are set to 21 and 15, respectively.
 When a simulation starts, the registers are initialized accordingly.
 A program code executes the instructions based on the defined register state.
-Since the {\tt x0} register in RISC-V is hard-wired to zero \cite{patterson_morgan2017}, assigning non-zero values to it is automatically discarded.
+Since the {\tt\small x0} register in RISC-V is hard-wired to zero \cite{patterson_morgan2017}, assigning non-zero values to it is automatically discarded.
 
-Memory state refers to the {\tt memory\char`_state} file that contains the initial values of the data memory.
+Memory state refers to the {\tt\small memory\char`_state} file that contains the initial values of the data memory.
 Every address in the memory state file must be a multiple of 8 to align with doubleword data.
 The following shows an example of the memory state file.
 
-\begin{Verbatim}[frame=single]
+\begin{Verbatim}[frame=single,fontsize=\small]
 # Kite memory state
 0 = -31
 8 = -131
@@ -188,9 +188,9 @@ The following shows an example of the memory state file.
 
 \end{Verbatim}
 
-Kite creates 4KB data memory by default, and it is modifiable in {\tt proc\char`_t::init()} in {\tt proc.cc}.
+Kite creates 4KB data memory by default, and it is modifiable in {\tt\small proc\char`_t::init()} in {\tt\small proc.cc}.
 Each memory block is 8 bytes long, and accesses to the data memory must obey the 8-byte alignment.
-The 8-byte alignment rule precludes non-doubleword memory instructions such as {\tt lhu} and {\tt sb}.
+The 8-byte alignment rule precludes non-doubleword memory instructions such as {\tt\small lhu} and {\tt\small sb}.
 This restriction will be lifted in future releases.
 In each line of the memory state, the left of an equal sign is a memory address in multiple of 8, and the right side defines a 64-bit value stored at the memory address.
 The memory state file does not have to list all memory addresses.
@@ -206,17 +206,17 @@ The program code is assumed to span the lowest memory addresses from 4 to 28, an
 \section{Running Kite Simulations} \label{sec:running}
 A Kite simulation runs a program code based on the register and memory states.
 After the program execution, Kite prints out the simulation results, including pipeline statistics (e.g., total clock cycles, number of instructions), cache statistics (e.g., number of loads and stores), and the final state of the register file and data memory.
-The following shows the results of the Kite simulation executing {\tt program\char`_code}.
+The following shows the results of the Kite simulation executing {\tt\small program\char`_code}.
 
-\begin{Verbatim}[frame=single]
+\begin{Verbatim}[frame=single,fontsize=\small]
 $ ./kite program_code
 
-***********************************************************
-* Kite: Architecture Simulator for RISC-V Instruction Set *
-* Developed by William J. Song                            *
-* Intelligent Computing Systems Lab, Yonsei University    *
-* Version: 1.11                                           *
-***********************************************************
+************************************************************
+* Kite: Architecture Simulator for RISC-V Instruction Set  *
+* Developed by William J. Song                             *
+* Computer Architecture and Systems Lab, Yonsei University *
+* Version: 1.12                                            *
+************************************************************
 
 Start running ...
 Done.
@@ -277,20 +277,20 @@ The lack of data forwarding also stalls the pipeline when an instruction depends
 The pipeline stall is lifted as soon as the preceding instructions write their results to the registers that the stalled instruction depends on.
 
 Kite offers branch prediction and data forwarding as optional features.
-These options can be enabled by re-compiling Kite with {\tt OPT="-DBR\char`_PRED} {\tt -DDATA\char`_FWD"} flags, where {\tt -DBR\char`_PRED} enables branch prediction, and {\tt -DDATA\char`_FWD} enables data forwarding, respectively.
+These options can be enabled by re-compiling Kite with {\tt\small OPT="-DBR\char`_PRED} {\tt\small -DDATA\char`_FWD"} flags, where {\tt\small -DBR\char`_PRED} enables branch prediction, and {\tt\small -DDATA\char`_FWD} enables data forwarding, respectively.
 When both features are enabled, noticeable performance improvements (i.e., cycles per instruction) can be observed as follows.
 
-\begin{Verbatim}[frame=single]
+\begin{Verbatim}[frame=single,fontsize=\small]
 $ make clean
 $ make -j OPT="-DBR_PRED -DDATA_FWD"
 $ ./kite program_code
 
-***********************************************************
-* Kite: Architecture Simulator for RISC-V Instruction Set *
-* Developed by William J. Song                            *
-* Intelligent Computing Systems Lab, Yonsei University    *
-* Version: 1.11                                           *
-***********************************************************
+************************************************************
+* Kite: Architecture Simulator for RISC-V Instruction Set  *
+* Developed by William J. Song                             *
+* Computer Architecture and Systems Lab, Yonsei University *
+* Version: 1.12                                            *
+************************************************************
 
 Start running ...
 Done.
@@ -322,19 +322,19 @@ x3 = 0
 \end{Verbatim}
 
 Kite provides a debugging option that prints out the detailed progress of instruction executions at every pipeline stage and every clock cycle.
-To enable the debugging option, Kite has to be compiled with a {\tt -DDEBUG} flag as follows.
+To enable the debugging option, Kite has to be compiled with a {\tt\small -DDEBUG} flag as follows.
 
-\begin{Verbatim}[frame=single]
+\begin{Verbatim}[frame=single,fontsize=\small]
 $ make clean
 $ make -j OPT="-DDEBUG" 
 $ ./kite program_code
 
-***********************************************************
-* Kite: Architecture Simulator for RISC-V Instruction Set *
-* Developed by William J. Song                            *
-* Intelligent Computing Systems Lab, Yonsei University    *
-* Version: 1.11                                           *
-***********************************************************
+************************************************************
+* Kite: Architecture Simulator for RISC-V Instruction Set  *
+* Developed by William J. Song                             *
+* Computer Architecture and Systems Lab, Yonsei University *
+* Version: 1.12                                            *
+************************************************************
 
 Start running ...
 1 : fetch : [pc=4] beq x11, x0, 10(exit) [beq 0, 0, 10(exit)]
@@ -363,15 +363,15 @@ Start running ...
 \end{Verbatim}
 
 The example above shows that turning on the debugging option discloses the details of instruction executions in the pipeline.
-For instance, the first instruction of the program code, {\tt beq}, is fetched at clock cycle \#1.
-The debug message shows {\tt 1} {\tt :} {\tt fetch} {\tt :} {\tt[pc = 4] beq x11, x0, 10(exit) [beq 0, 0, 10(exit)]}.
-The leading {\tt 1} indicates clock cycle \#1, and {\tt fetch} means that the instruction is currently in the fetch stage.
-{\tt pc=4} shows the PC of the {\tt beq} instruction.
+For instance, the first instruction of the program code, {\tt\small beq}, is fetched at clock cycle \#1.
+The debug message shows {\tt\small 1} {\tt\small :} {\tt\small fetch} {\tt\small :} {\tt\small[pc = 4] beq x11, x0, 10(exit) [beq 0, 0, 10(exit)]}.
+The leading {\tt\small 1} indicates clock cycle \#1, and {\tt\small fetch} means that the instruction is currently in the fetch stage.
+{\tt\small pc=4} shows the PC of the {\tt\small beq} instruction.
 The remainder of the debug message shows the instruction format.
-The last argument of the {\tt beq} instruction is an immediate value, which is the distance to the branch target in the unit of two bytes.
-The {\tt beq} instruction in {\tt program\char`_code} branches to label {\tt exit}, which is translated to immediate value 10.
+The last argument of the {\tt\small beq} instruction is an immediate value, which is the distance to the branch target in the unit of two bytes.
+The {\tt\small beq} instruction in {\tt\small program\char`_code} branches to label {\tt\small exit}, which is translated to immediate value 10.
 The repeated instruction format inside the squared brackets shows the actual values of register operands.
-Since the registers are not yet read in the fetch stage, the values of {\tt x11} and {\tt x0} registers are simply shown as zeros.
+Since the registers are not yet read in the fetch stage, the values of {\tt\small x11} and {\tt\small x0} registers are simply shown as zeros.
 The correct values of source operand registers appear when the instruction advances to the decode stage at cycle \#2.
 The value of a destination operand register (if any) becomes available when an instruction reaches the execute stage.
 As explained, turning on the debugging option shows the detailed progress of instruction executions in the pipeline.
@@ -379,9 +379,9 @@ As explained, turning on the debugging option shows the detailed progress of ins
 
 \section{Implementation} \label{sec:implementation}
 This section explains more advanced content about the Kite implementation.
-Kite consists of the following files in the {\tt kite/} directory.
+Kite consists of the following files in the {\tt\small kite/} directory.
 
-\begin{Verbatim}[frame=single]
+\begin{Verbatim}[frame=single,fontsize=\small]
 $ ls | grep ".h\|.cc"
 
 alu.cc           data_cache.cc   defs.h          inst_memory.h  proc.cc
@@ -393,67 +393,67 @@ br_predictor.h   data_memory.h   inst_memory.cc  pipe_reg.h     reg_file.h
 \begin{itemize}
 \leftskip-0.20in
 \item
-    {\tt main.cc} has the {\tt main()} function that creates, initializes, and runs Kite.
+    {\tt\small main.cc} has the {\tt\small main()} function that creates, initializes, and runs Kite.
 \item
-    {\tt defs.h} defines the {\tt enum} list of RISC-V instructions (e.g., {\tt op\char`_add}, {\tt op\char`_ld)}, instruction types (e.g., {\tt op\char`_r\char`_\linebreak type}, {\tt op\char`_i\char`_type}), integer registers (e.g., {\tt reg\char`_x0}, {\tt reg\char`_x1}), and ALU latencies of all supported instructions.
-    Kite supports multi-cycle ALU executions, and {\tt defs.h} defines that {\tt div}, {\tt divu}, {\tt mul}, {\tt remu}, {\tt remu}, {\tt fdiv.d}, and {\tt fmul.d} instructions take two cycles for an ALU to execute.
+    {\tt\small defs.h} defines the {\tt\small enum} list of RISC-V instructions (e.g., {\tt\small op\char`_add}, {\tt\small op\char`_ld)}, instruction types (e.g., {\tt\small op\char`_r\char`_\linebreak type}, {\tt\small op\char`_i\char`_type}), integer registers (e.g., {\tt\small reg\char`_x0}, {\tt\small reg\char`_x1}), and ALU latencies of all supported instructions.
+    Kite supports multi-cycle ALU executions, and {\tt\small defs.h} defines that {\tt\small div}, {\tt\small divu}, {\tt\small mul}, {\tt\small remu}, {\tt\small remu}, {\tt\small fdiv.d}, and {\tt\small fmul.d} instructions take two cycles for an ALU to execute.
     All other instructions take one clock cycle.
-    {\tt defs.h} provides several macros near the end of the file to convert strings to {\tt enum} lists (e.g., {\tt get\char`_op\char`_opcode()}, {\tt get\char`_op\char`_type()}), and vice versa.
+    {\tt\small defs.h} provides several macros near the end of the file to convert strings to {\tt\small enum} lists (e.g., {\tt\small get\char`_op\char`_opcode()}, {\tt\small get\char`_op\char`_type()}), and vice versa.
 \item
-    {\tt inst.h/cc} files define a C++ class that represents a RISC-V instruction.
-    RISC-V instructions in a program code (e.g., {\tt program\char`_code}) are read when a simulation starts.
-    Each assembly instruction in the character string is converted into the {\tt inst\char`_t} class that carries the instruction information, including the program counter (i.e., {\tt pc}), register numbers (e.g., {\tt rs1\char`_num}), register values (e.g., {\tt rs1\char`_val}), immediate value (i.e., {\tt imm}), memory addresses (i.e., {\tt memory\char`_addr}), control directives (e.g., {\tt alu\char`_latency}, {\tt rd\char`_ready}), etc.
+    {\tt\small inst.h/cc} files define a C++ class that represents a RISC-V instruction.
+    RISC-V instructions in a program code (e.g., {\tt\small program\char`_code}) are read when a simulation starts.
+    Each assembly instruction in the character string is converted into the {\tt\small inst\char`_t} class that carries the instruction information, including the program counter (i.e., {\tt\small pc}), register numbers (e.g., {\tt\small rs1\char`_num}), register values (e.g., {\tt\small rs1\char`_val}), immediate value (i.e., {\tt\small imm}), memory addresses (i.e., {\tt\small memory\char`_addr}), control directives (e.g., {\tt\small alu\char`_latency}, {\tt\small rd\char`_ready}), etc.
 \item
-    {\tt inst\char`_memory.h/cc} files implement the instruction memory.
+    {\tt\small inst\char`_memory.h/cc} files implement the instruction memory.
     It supplies instructions to the processor pipeline, directed by the program counter (PC).
     In particular, the instruction memory creates a copy of an instruction and returns a pointer to it when fetching it.
-    The processor pipeline works on the instruction pointer instead of a copy since passing the pointer is much faster than passing the sizable {\tt inst\char`_t} class.
+    The processor pipeline works on the instruction pointer instead of a copy since passing the pointer is much faster than passing the sizable {\tt\small inst\char`_t} class.
     When a simulation starts, the instruction memory loads a program code that contains RISC-V assembly instructions.
-    It parses the program code and stores the instructions using the {\tt inst\char`_t} class.
+    It parses the program code and stores the instructions using the {\tt\small inst\char`_t} class.
     The instruction memory provides the processor pipeline with instructions until the PC goes out of a code segment where there exists no valid instruction.
     PC = 0 is reserved as invalid, which makes the pipeline stop fetching instructions.
     The size of the code segment is determined by the program code.
 \item
-    {\tt pipe\char`_reg.h/cc} files define the {\tt pipe\char`_reg\char`_t} class that models a pipeline register connecting two neighboring stages such as IF/ID.
+    {\tt\small pipe\char`_reg.h/cc} files define the {\tt\small pipe\char`_reg\char`_t} class that models a pipeline register connecting two neighboring stages such as IF/ID.
     The class has the following four functions.
-    The {\tt read()} function probes the pipeline register and returns a pointer to an instruction if it holds one.
+    The {\tt\small read()} function probes the pipeline register and returns a pointer to an instruction if it holds one.
     This function does not remove the instruction from the pipeline register.
-    Removing the instruction from the pipeline register requires an explicit invocation of the {\tt clear()} function.
-    The {\tt write()} function writes an instruction to the pipeline register, and {\tt is\char`_available()} tests if the pipeline register has no instruction inside and thus is free.
-\item{\tt reg\char`_file.h/cc} files implement a register file, {\tt reg\char`_file\char`_t}.
-    The register file contains 32 64-bit integer registers (i.e., {\tt x0}-{\tt x31}).
-    When a simulation starts, the register file loads a state file (i.e., {\tt reg\char`_state}) that defines the initial values of the registers.
+    Removing the instruction from the pipeline register requires an explicit invocation of the {\tt\small clear()} function.
+    The {\tt\small write()} function writes an instruction to the pipeline register, and {\tt\small is\char`_available()} tests if the pipeline register has no instruction inside and thus is free.
+\item{\tt\small reg\char`_file.h/cc} files implement a register file, {\tt\small reg\char`_file\char`_t}.
+    The register file contains 32 64-bit integer registers (i.e., {\tt\small x0}-{\tt\small x31}).
+    When a simulation starts, the register file loads a state file (i.e., {\tt\small reg\char`_state}) that defines the initial values of the registers.
     Notably, dependency-checking logic is embedded in the register file instead of probing pipeline registers to detect data hazards.
     Checking data dependency is simply done by maintaining a table that traces which instruction is the last producer of each register.
     When a branch misprediction occurs, the table is flushed to discard the information of wrong-path instructions.
 \item
-    {\tt alu.h/cc} files model an arithmetic-logical unit (ALU) that executes instructions based on their operation types.
-    To support type-aware operations, the operand of an unsigned instruction such as {\tt divu} is cast to {\tt uint64\char`_t} to produce the correct result.
+    {\tt\small alu.h/cc} files model an arithmetic-logical unit (ALU) that executes instructions based on their operation types.
+    To support type-aware operations, the operand of an unsigned instruction such as {\tt\small divu} is cast to {\tt\small uint64\char`_t} to produce the correct result.
     It is assumed that instructions cannot be pipelined inside an ALU since doing so can potentially cause out-of-order executions.
-    If the ALU gets a multi-cycle instruction such as {\tt div} or {\tt mul}, all subsequent instructions stall until the ALU becomes free.
+    If the ALU gets a multi-cycle instruction such as {\tt\small div} or {\tt\small mul}, all subsequent instructions stall until the ALU becomes free.
 \item
-    {\tt data\char`_memory.h/cc} files implement the data memory that holds data values.
-    When a simulation starts, the data memory loads a state file (i.e., {\tt memory\char`_state}) to set memory addresses to store the defined values.
+    {\tt\small data\char`_memory.h/cc} files implement the data memory that holds data values.
+    When a simulation starts, the data memory loads a state file (i.e., {\tt\small memory\char`_state}) to set memory addresses to store the defined values.
     To align with 64-bit registers, the data memory requires that the memory address of a load or store instruction is a multiple of 8.
-    The default size of the data memory is 4KB, which is modifiable in {\tt data\char`_memory\char`_t()}.
+    The default size of the data memory is 4KB, which is modifiable in {\tt\small data\char`_memory\char`_t()}.
     Memory addresses belonging to the code segment are inaccessible because the code segment is prohibited from data access.
 \item
-    {\tt data\char`_cache.h/cc} files implement a data cache that stores a subset of memory blocks.
+    {\tt\small data\char`_cache.h/cc} files implement a data cache that stores a subset of memory blocks.
     A cache block can be any multiple of 8 bytes (e.g., 16-byte cache block).
     The default cache model implements a 1KB direct-mapped cache with 8-byte cache blocks.
     Other cache configurations, such as set-associative caches, can be easily extended from the default cache model, but they are not included in the baseline code for students to work as programming assignments.
 \item
-    {\tt br\char`_predictor.h/cc} files are used when the optional branch prediction is enabled.
-    They define two classes, {\tt br\char`_predictor\char`_t} and {\tt br\char`_target\char`_buffer\char`_t}, representing a branch predictor and branch target buffer (BTB), respectively.
+    {\tt\small br\char`_predictor.h/cc} files are used when the optional branch prediction is enabled.
+    They define two classes, {\tt\small br\char`_predictor\char`_t} and {\tt\small br\char`_target\char`_buffer\char`_t}, representing a branch predictor and branch target buffer (BTB), respectively.
     The member functions of branch predictor and BTB are left nearly empty, again for students to work as programming assignments.
     The default branch predictor makes always-not-taken branch predictions, so the BTB is not technically used.
 \item
-    {\tt proc.h/cc} files implement a five-stage processor pipeline.
-    The processor is defined as the {\tt proc\char`_t} class, which contains datapath components including the instruction memory ({\tt inst\char`_memory\char`_t}), register file ({\tt reg\char`_file\char`_t}), ALU ({\tt alu\char`_t}), data cache ({\tt data\char`_cache\char`_t}), data memory ({\tt data\char`_memory\char`_t}), branch predictor ({\tt br\char`_\linebreak predictor\char`_t}), BTB ({\tt br\char`_target\char`_buffer\char`_t}), and four pipeline registers ({\tt pipe\char`_reg\char`_t}) of IF/ID, ID/EX, EX/MEM, and MEM/ WB.
-    The {\tt run()} function of {\tt proc\char`_t} executes the five-stage pipeline in a while-loop, which repeats as long as there are in-flight instructions in the pipeline.
+    {\tt\small proc.h/cc} files implement a five-stage processor pipeline.
+    The processor is defined as the {\tt\small proc\char`_t} class, which contains datapath components including the instruction memory ({\tt\small inst\char`_memory\char`_t}), register file ({\tt\small reg\char`_file\char`_t}), ALU ({\tt\small alu\char`_t}), data cache ({\tt\small data\char`_cache\char`_t}), data memory ({\tt\small data\char`_memory\char`_t}), branch predictor ({\tt\small br\char`_\linebreak predictor\char`_t}), BTB ({\tt\small br\char`_target\char`_buffer\char`_t}), and four pipeline registers ({\tt\small pipe\char`_reg\char`_t}) of IF/ID, ID/EX, EX/MEM, and MEM/ WB.
+    The {\tt\small run()} function of {\tt\small proc\char`_t} executes the five-stage pipeline in a while-loop, which repeats as long as there are in-flight instructions in the pipeline.
     Note that the pipeline stages are executed backward from the writeback to fetch stages, not from the fetch to writeback stages.
-    Each stage function (e.g., {\tt fetch()}, {\tt decode()}) performs necessary operations that need to take place in the corresponding stage.
-    At the end of a program execution, {\tt proc\char`_t} prints out the summary of execution results, including the total number of clock cycles, stalled cycles, and executed instructions, followed by cycles per instruction, number of pipeline flushes and branch prediction accuracy (if branch prediction is enabled), and data cache statistics.
+    Each stage function (e.g., {\tt\small fetch()}, {\tt\small decode()}) performs necessary operations that need to take place in the corresponding stage.
+    At the end of a program execution, {\tt\small proc\char`_t} prints out the summary of execution results, including the total number of clock cycles, stalled cycles, and executed instructions, followed by cycles per instruction, number of pipeline flushes and branch prediction accuracy (if branch prediction is enabled), and data cache statistics.
     The final state of the register file and data memory is also displayed.
     Only the accessed memory addresses and their final values are printed for the data memory; other untouched addresses are not shown.
 \end{itemize}

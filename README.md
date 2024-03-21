@@ -8,7 +8,7 @@ Students can easily compose RISC-V assembly programs and execute them through th
 Kite implements several basic functionalities in the pipeline mode, including instruction dependency check (i.e., data hazards), pipeline stalls, data forwarding (optional), branch predictions (optional), data cache structures, etc.
 
 Kite implements the five-stage pipeline model in C++.
-Since most computer architecture simulators are written in C/C++, it gives students with hands-on experiences in computer architecture simulations using a simple, easy-to-use framework.
+Since most computer architecture simulators are written in C/C++, it gives students hands-on experience in computer architecture simulations using a simple, easy-to-use framework.
 
 \
 **Prerequisite, Download, and Build:**\
@@ -30,7 +30,7 @@ $ ./kite program_code
 
 \
 **Documentation:**\
-For more detailed information, refer to the documentation in doc/kite.pdf. Please, use the following to reference this work.
+For more detailed information, refer to the documentation in doc/kite.pdf. Please use the following to reference this work.
 ```
 @misc{song_kite2019,
     author       = {W. Song},

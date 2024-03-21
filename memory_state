@@ -1,9 +1,9 @@
-###########################################################
-# Kite: Architecture Simulator for RISC-V Instruction Set #
-# Developed by William J. Song                            #
-# Intelligent Computing Systems Lab, Yonsei University    #
-# Version: 1.12                                           #
-###########################################################
+############################################################
+# Kite: Architecture Simulator for RISC-V Instruction Set  #
+# Developed by William J. Song                             #
+# Computer Architecture and Systems Lab, Yonsei University #
+# Version: 1.12                                            #
+############################################################
 
 # Kite memory state
 #   1. Each line of state file defines "memory address = data value".

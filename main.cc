@@ -4,12 +4,12 @@
 using namespace std;
 
 static string banner = "\
-***********************************************************\n\
-* Kite: Architecture Simulator for RISC-V Instruction Set *\n\
-* Developed by William J. Song                            *\n\
-* Intelligent Computing Systems Lab, Yonsei University    *\n\
-* Version: 1.12                                           *\n\
-***********************************************************\n\
+************************************************************\n\
+* Kite: Architecture Simulator for RISC-V Instruction Set  *\n\
+* Developed by William J. Song                             *\n\
+* Computer Architecture and Systems Lab, Yonsei University *\n\
+* Version: 1.12                                            *\n\
+************************************************************\n\
 ";
 
 int main(int argc, char **argv) {

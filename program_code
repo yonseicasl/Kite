@@ -1,9 +1,9 @@
-###########################################################
-# Kite: Architecture Simulator for RISC-V Instruction Set #
-# Developed by William J. Song                            #
-# Intelligent Computing Systems Lab, Yonsei University    #
-# Version: 1.12                                           #
-###########################################################
+############################################################
+# Kite: Architecture Simulator for RISC-V Instruction Set  #
+# Developed by William J. Song                             #
+# Computer Architecture and Systems Lab, Yonsei University #
+# Version: 1.12                                            #
+############################################################
 
 # Kite program code
 #   1. The first instruction starts at PC = 4. PC = 0 is reserved as invalid.

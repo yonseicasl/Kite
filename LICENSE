@@ -1,11 +1,11 @@
-###########################################################
-# Kite: Architecture Simulator for RISC-V Instruction Set #
-# Developed by William J. Song                            #
-# Intelligent Computing Systems Lab, Yonsei University    #
-# Version: 1.12                                           #
-###########################################################
+############################################################
+# Kite: Architecture Simulator for RISC-V Instruction Set  # 
+# Developed by William J. Song                             #
+# Computer Architecture and Systems Lab, Yonsei University #
+# Version: 1.12                                            #
+############################################################
 
-Copyright (c) 2019, Intelligent Computing Systems Lab
+Copyright (c) 2019, Computer Architecture and Systems Lab
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -15,7 +15,7 @@ modification, are permitted provided that the following conditions are met:
     2. Redistributions in binary form must reproduce the above copyright
        notice, this list of conditions and the following disclaimer in the
        documentation and/or other materials provided with the distribution.
-    3. Neither the name of the Intelligent Computing Systems Lab (ICSL) nor
+    3. Neither the name of the Computer Architecture and Systems Lab (CASL) nor
        the names of its contributors may be used to endorse or promote products
        derived from this software without specific prior written permission.
 
