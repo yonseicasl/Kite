@@ -18,7 +18,7 @@ It was validated in Ubuntu 16.04 (Xenial), 18.04 (Bionic Beaver), 20.04 (Focal F
 The latest release of Kite is v1.12 (as of March 2024).
 To obtain a copy of Kite v1.12, use the following command in the terminal.
 ```
-$ git clone ––branch v1.12 https://github.com/yonsei-icsl/kite
+$ git clone ––branch v1.12 https://github.com/yonseicasl/kite
 ```
 
 The following executes an example RISC-V assembly code, `program_code`.
@@ -38,7 +38,7 @@ For more detailed information, refer to the documentation in doc/kite.pdf. Pleas
     howpublished = {Yonsei University},
     month        = {May},
     year         = {2019},
-    note         = {[Online], Available: \url{https://icsl.yonsei.ac.kr/kite}},
+    note         = {[Online], Available: \url{https://casl.yonsei.ac.kr/kite}},
 }
 ```
 
