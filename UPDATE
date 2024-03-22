@@ -194,11 +194,12 @@ Update history:
       with b-bit branch history table (BHT) indexing, p-bit pattern history
       table (PHT) indexing, and h-bit branch history per BHT entry.
 
-* Version 1.12 (Mar 21, 2024)
+* Version 1.12 (Mar 22, 2024)
     - Debug messages for SB-type instructions are updated to print actual
       branch results (i.e., inst->branch_taken) after they are resolved in
       the execute stage. If the branch predictor option is enabled (i.e.,
       OPT=-DBR_PRED), branch prediction results (i.e., inst->pred_taken)
       are printed from the fetch stage, but the actual branch results show
       up from the execute stage.
+    - The memeory_state file was renamed to mem_state.
 

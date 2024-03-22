@@ -18,7 +18,7 @@ public:
     void print_state() const;                               // Print memory state.
 
 private:
-    void load_memory_state();                               // Load initial memory state.
+    void load_mem_state();                                  // Load initial memory state.
 
     data_cache_t *cache;                                    // Pointer to the upper-level cache
     uint64_t *ticks;                                        // Pointer to processor ticks

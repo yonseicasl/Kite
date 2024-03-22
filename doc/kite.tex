@@ -172,7 +172,7 @@ When a simulation starts, the registers are initialized accordingly.
 A program code executes the instructions based on the defined register state.
 Since the {\tt\small x0} register in RISC-V is hard-wired to zero \cite{patterson_morgan2017}, assigning non-zero values to it is automatically discarded.
 
-Memory state refers to the {\tt\small memory\char`_state} file that contains the initial values of the data memory.
+Memory state refers to the {\tt\small mem\char`_state} file that contains the initial values of the data memory.
 Every address in the memory state file must be a multiple of 8 to align with doubleword data.
 The following shows an example of the memory state file.
 
@@ -433,7 +433,7 @@ br_predictor.h   data_memory.h   inst_memory.cc  pipe_reg.h     reg_file.h
     If the ALU gets a multi-cycle instruction such as {\tt\small div} or {\tt\small mul}, all subsequent instructions stall until the ALU becomes free.
 \item
     {\tt\small data\char`_memory.h/cc} files implement the data memory that holds data values.
-    When a simulation starts, the data memory loads a state file (i.e., {\tt\small memory\char`_state}) to set memory addresses to store the defined values.
+    When a simulation starts, the data memory loads a state file (i.e., {\tt\small mem\char`_state}) to set memory addresses to store the defined values.
     To align with 64-bit registers, the data memory requires that the memory address of a load or store instruction is a multiple of 8.
     The default size of the data memory is 4KB, which is modifiable in {\tt\small data\char`_memory\char`_t()}.
     Memory addresses belonging to the code segment are inaccessible because the code segment is prohibited from data access.

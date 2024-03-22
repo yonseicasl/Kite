@@ -38,7 +38,7 @@ data_memory_t::data_memory_t(uint64_t *m_ticks, uint64_t m_memory_size,
     memset(accessed, 0, num_dwords * sizeof(bool));
 
     // Load initial memory state.
-    load_memory_state();
+    load_mem_state();
 }
 
 data_memory_t::~data_memory_t() {
@@ -86,12 +86,12 @@ void data_memory_t::load_block(uint64_t m_addr, uint64_t m_block_size) {
 }
 
 // Load initial memory state.
-void data_memory_t::load_memory_state() {
+void data_memory_t::load_mem_state() {
     // Open a memory state file.
     fstream file_stream;
-    file_stream.open("memory_state", fstream::in);
+    file_stream.open("mem_state", fstream::in);
     if(!file_stream.is_open()) {
-        cerr << "Error: failed to open memory_state" << endl;
+        cerr << "Error: failed to open mem_state" << endl;
         exit(1);
     }
 
@@ -117,7 +117,7 @@ void data_memory_t::load_memory_state() {
            !addr_str.length()    || !data_str.length()) {
             cerr << "Error: invalid memory address and/or data " << addr_str
                  << " = " << data_str << " at line #" << line_num
-                 << " of memory_state" << endl;
+                 << " of mem_state" << endl;
             exit(1);
         }
 
@@ -127,13 +127,13 @@ void data_memory_t::load_memory_state() {
         // Check the alignment of memory address.
         if(memory_addr & 0b111) {
             cerr << "Error: invalid alignment of memory address " << memory_addr
-                 << " at line #" << line_num << " of memory_state" << endl;
+                 << " at line #" << line_num << " of mem_state" << endl;
             exit(1);
         }
         // The memory address goes out of bounds.
         if((memory_addr+8) > memory_size) {
             cerr << "Error: memory address " << memory_addr << " is out of bounds"
-                 << " at line #" << line_num << " of memory_state" << endl;
+                 << " at line #" << line_num << " of mem_state" << endl;
             exit(1);
         }
         // Check if multiple different values are defined at the same memory address.
@@ -141,7 +141,7 @@ void data_memory_t::load_memory_state() {
         if(dword && (dword != memory_data)) {
             cerr << "Error: memory address " << memory_addr
                  << " has multiple values defined at line # " << line_num
-                 << " of memory_state" << endl;
+                 << " of mem_state" << endl;
             exit(1);
         }
         // Store the memory data.
