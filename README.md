@@ -1,14 +1,13 @@
 ## Kite: Architecture Simulator for RISC-V Instruction Set
-*Kite* is an architecture simulator that models a five-stage pipeline of the RISC-V instruction set.
-The initial version of Kite was developed in 2019 for educational purposes as a part of EEE3530 Computer Architecture.
+*Kite* is an architecture simulator that models a five-stage pipeline based on the RISC-V instruction set.
+The initial version of Kite was developed in 2019 for educational purposes as part of EEE3530 Computer Architecture.
 Kite implements the five-stage pipeline model described in *Computer Organization and Design, RISC-V Edition: The Hardware and Software Interface by D. Patterson and J. Hennessey* ([Link to Amazon](https://www.amazon.com/Computer-Organization-Design-RISC-V-Architecture/dp/0128122757)).
-The objective of Kite is to provide students with an easy-to-use simulation framework and the precise timing model as described in the book.
+The objective of Kite is to provide students with an easy-to-use simulation framework and an accurate timing model, as described in the book.
 It supports most of the basic instructions introduced in the book, such as `add`, `slli`, `ld`, `sd`, and `beq` instructions.
-Students can easily compose RISC-V assembly programs and execute them through the pipeline model for entry-level architecture studies.
-Kite implements several basic functionalities in the pipeline mode, including instruction dependency check (i.e., data hazards), pipeline stalls, data forwarding (optional), branch predictions (optional), data cache structures, etc.
+Users can easily compose RISC-V assembly programs and execute them through the pipeline model for entry-level architecture studies.
+The pipeline model in Kite offers several basic functionalities, including instruction dependency checks (i.e., data hazards), pipeline stalls, data forwarding (optional), branch predictions (optional), data cache structures, etc.
 
-Kite implements the five-stage pipeline model in C++.
-Since most computer architecture simulators are written in C/C++, it gives students hands-on experience in computer architecture simulations using a simple, easy-to-use framework.
+The five-stage pipeline model in Kite is implemented in C++. Its purpose is to help users experience entry-level architecture simulations with a simple, easy-to-use framework. As students enter the field of computer architecture (whether in product development or research), they will likely use architecture simulators in their work. Most architecture simulators are written in C/C++, as these programming languages are well-suited for interfacing between computer hardware and software.
 
 \
 **Prerequisite, Download, and Build:**\
