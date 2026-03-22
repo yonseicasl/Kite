@@ -2,7 +2,7 @@
 # Kite: Architecture Simulator for RISC-V Instruction Set  #
 # Developed by William J. Song                             #
 # Computer Architecture and Systems Lab, Yonsei University #
-# Version: 1.12                                            #
+# Version: 1.13                                            #
 ############################################################
 
 
@@ -116,7 +116,7 @@ Update history:
     - Documentation was updated by proofreading and structurally reorganizing
       it.
 
-* Version 1.8 (Apr 25, 2022)
+* Version 1.8 (April 25, 2022)
     - A typo in the documentation was fixed, i.e., sd instruction format in the
       supported instruction table.
     - RISC-V specifications define that a jalr instruction resets the LSB of
@@ -194,7 +194,7 @@ Update history:
       with b-bit branch history table (BHT) indexing, p-bit pattern history
       table (PHT) indexing, and h-bit branch history per BHT entry.
 
-* Version 1.12 (Mar 22, 2024)
+* Version 1.12 (March 22, 2024)
     - Debug messages for SB-type instructions are updated to print actual
       branch results (i.e., inst->branch_taken) after they are resolved in
       the execute stage. If the branch predictor option is enabled (i.e.,
@@ -202,4 +202,7 @@ Update history:
       are printed from the fetch stage, but the actual branch results show
       up from the execute stage.
     - The memeory_state file was renamed to mem_state.
+
+* Version 1.13 (March 22, 2026)
+    - The default memory size is changed to 8KB.
 

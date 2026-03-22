@@ -13,11 +13,11 @@ The five-stage pipeline model in Kite is implemented in C++. Its purpose is to h
 **Prerequisite, Download, and Build:**\
 The simple implementation of Kite is easy to install.
 It requires only a g++ compiler to build and does not depend on other libraries or external tools.
-It was validated in Ubuntu 16.04 (Xenial), 18.04 (Bionic Beaver), 20.04 (Focal Fossa), 22.04 (Jammy Jellyfish) and Mac OS 10.14 (Mojave), 10.15 (Catalina), 11 (Big Sur), 12 (Monterey), 13 (Ventura), 14 (Sonoma).
-The latest release of Kite is v1.12 (as of March 2024).
-To obtain a copy of Kite v1.12, use the following command in the terminal.
+It was validated in Ubuntu 16.04 (Xenial), 18.04 (Bionic Beaver), 20.04 (Focal Fossa), 22.04 (Jammy Jellyfish), and 24.04 (Noble Numbat), as well as Mac OS 10.14 (Mojave), 10.15 (Catalina), 11 (Big Sur), 12 (Monterey), 13 (Ventura), 14 (Sonoma), 15 (Sequoia), and 26 (Tahoe).
+The latest release of Kite is v1.13 (as of March 2026).
+To obtain a copy of Kite v1.13, use the following command in the terminal.
 ```
-$ git clone ––branch v1.12 https://github.com/yonseicasl/kite
+$ git clone ––branch v1.13 https://github.com/yonseicasl/kite
 ```
 
 The following executes an example RISC-V assembly code, `program_code`.

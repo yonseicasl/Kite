@@ -25,7 +25,7 @@ data_memory_t::data_memory_t(uint64_t *m_ticks, uint64_t m_memory_size,
         exit(1);
     }
     if(memory_size < min_memory_size) {
-        cerr << "Error: memory size has to be at least 4KB" << endl;
+        cerr << "Error: memory size has to be at least " << (min_memory_size>>10) << "KB" << endl;
         exit(1);
     }
 
