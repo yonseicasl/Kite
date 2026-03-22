@@ -2,7 +2,7 @@
 # Kite: Architecture Simulator for RISC-V Instruction Set  #
 # Developed by William J. Song                             #
 # Computer Architecture and Systems Lab, Yonsei University #
-# Version: 1.12                                            #
+# Version: 1.13                                            #
 ############################################################
 
 # Kite register state
@@ -19,7 +19,7 @@ x4 = 0
 x5 = 0
 x6 = 0
 x7 = 0
-x8 = 0
+x8 = 8192
 x9 = 0
 x10 = 21
 x11 = 15
